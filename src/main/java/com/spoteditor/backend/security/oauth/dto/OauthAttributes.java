@@ -44,7 +44,6 @@ public class OauthAttributes {
     ) {
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
         String oauthUserId = String.valueOf(attributes.get("id"));
         String name = (String) properties.get("nickname");
@@ -60,12 +59,4 @@ public class OauthAttributes {
                 .build();
     }
 
-    public Map<String, Object> toMap() {
-        return Map.of(
-                "oauthUserId", oauthUserId,
-                "name", name,
-                "ImageUrl", imageUrl,
-                "email", email
-        );
-    }
 }

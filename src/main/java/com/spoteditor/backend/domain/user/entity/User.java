@@ -4,14 +4,20 @@ import com.spoteditor.backend.domain.user.entity.value.LoginStatus;
 import com.spoteditor.backend.domain.user.entity.value.OauthProvider;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Table(name = "users")
 public class User {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String email;
@@ -40,4 +46,14 @@ public class User {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Builder
+    public User(String email, String name, String imageUrl, OauthProvider provider, String oauthUserId) {
+        this.email = email;
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.provider = provider;
+        this.oauthUserId = oauthUserId;
+        this.createdAt = LocalDateTime.now();
+    }
 }
