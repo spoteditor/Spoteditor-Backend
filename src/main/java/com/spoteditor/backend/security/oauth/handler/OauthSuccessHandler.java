@@ -1,9 +1,8 @@
 package com.spoteditor.backend.security.oauth.handler;
 
-import com.spoteditor.backend.security.jwt.JwtProvider;
-import com.spoteditor.backend.security.oauth.dto.OauthAttributes;
-import com.spoteditor.backend.security.oauth.service.OauthUserResolver;
-import jakarta.servlet.FilterChain;
+import com.spoteditor.backend.common.util.CookieUtil;
+import com.spoteditor.backend.security.jwt.JwtConstants;
+import com.spoteditor.backend.security.jwt.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +19,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class OauthSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtProvider;
+    private final CookieUtil cookieUtil;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -31,8 +31,11 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler {
         Long id = (Long) attributesMap.get("id");
         String name = (String) attributesMap.get("name");
 
-        String accessToken = jwtProvider.createAccessToken(id, name);
+        String accessToken = jwtProvider.createAccessToken(id);
         String refreshToken = jwtProvider.createRefreshToken(id);
+
+        cookieUtil.addCookie(response, "/api", JwtConstants.ACCESS_TOKEN, accessToken);
+        cookieUtil.addCookie(response, "/auth", JwtConstants.REFRESH_TOKEN, refreshToken);
 
 //        redirect
     }

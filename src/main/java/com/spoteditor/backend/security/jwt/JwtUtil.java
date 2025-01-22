@@ -1,9 +1,10 @@
 package com.spoteditor.backend.security.jwt;
 
 import io.jsonwebtoken.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -11,11 +12,11 @@ import java.util.Date;
 
 @Component
 @AllArgsConstructor
-public class JwtProvider {
+public class JwtUtil {
 
     private final JwtProps jwtProps;
 
-    public String createAccessToken(Long id, String name) {
+    public String createAccessToken(Long id) {
         SecretKey signingKey = jwtProps.getSigningKey();
 
         return Jwts.builder()
@@ -24,7 +25,6 @@ public class JwtProvider {
                 .add("typ", JwtConstants.TOKEN_TYPE)
                 .and()
                 .claim("sub", id)
-                .claim("name", name)
                 .claim("iat", new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtProps.getAccessTokenExp()))
                 .compact();

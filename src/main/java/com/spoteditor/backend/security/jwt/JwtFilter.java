@@ -1,5 +1,6 @@
 package com.spoteditor.backend.security.jwt;
 
+import com.spoteditor.backend.common.util.CookieUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,29 +18,25 @@ import java.io.IOException;
 @AllArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtProvider;
+    private final CookieUtil cookieUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // jwt 추출
-        String header = request.getHeader(JwtConstants.TOKEN_HEADER);
-        if(header == null || header.isEmpty() || !header.startsWith(JwtConstants.TOKEN_PREFIX)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        String jwt = header.replace(JwtConstants.TOKEN_PREFIX, "");
+        // 쿠키에서 jwt 추출
+        String accessToken = cookieUtil.getAccessToken(request);
 
         try {
             // 토큰 인증
-            UsernamePasswordAuthenticationToken authentication = jwtProvider.setAuthentication(jwt);
+            UsernamePasswordAuthenticationToken authentication = jwtProvider.setAuthentication(accessToken);
 
             // 인증정보 SecurityContextHolder 에 등록
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch(ExpiredJwtException e) {
-            // TODO 만료된 토큰
+            // TODO 만료된 토큰 예외
             return;
         } catch (Exception e) {
-            // TODO 예외처리
+            // TODO 유효하지 않은 토큰 예외
             return;
         }
         filterChain.doFilter(request, response);

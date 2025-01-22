@@ -1,7 +1,8 @@
 package com.spoteditor.backend.security.config;
 
+import com.spoteditor.backend.common.util.CookieUtil;
 import com.spoteditor.backend.security.jwt.JwtFilter;
-import com.spoteditor.backend.security.jwt.JwtProvider;
+import com.spoteditor.backend.security.jwt.JwtUtil;
 import com.spoteditor.backend.security.oauth.handler.OauthFailureHandler;
 import com.spoteditor.backend.security.oauth.handler.OauthSuccessHandler;
 import com.spoteditor.backend.security.oauth.service.CustomOauthUserService;
@@ -23,7 +24,9 @@ public class SecurityConfig {
     private final CustomOauthUserService customOauthUserService;
     private final OauthSuccessHandler oauthSuccessHandler;
     private final OauthFailureHandler oauthFailureHandler;
-    private final JwtProvider jwtProvider;
+
+    private final JwtUtil jwtProvider;
+    private final CookieUtil cookieUtil;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,7 +36,7 @@ public class SecurityConfig {
             .sessionManagement(sessionManagement ->
                     sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtFilter(jwtProvider, cookieUtil), UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()
