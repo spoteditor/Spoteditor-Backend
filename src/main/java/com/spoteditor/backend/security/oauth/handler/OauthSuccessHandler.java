@@ -1,5 +1,6 @@
 package com.spoteditor.backend.security.oauth.handler;
 
+import com.spoteditor.backend.security.jwt.JwtProvider;
 import com.spoteditor.backend.security.oauth.dto.OauthAttributes;
 import com.spoteditor.backend.security.oauth.service.OauthUserResolver;
 import jakarta.servlet.FilterChain;
@@ -19,6 +20,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class OauthSuccessHandler implements AuthenticationSuccessHandler {
 
+    private final JwtProvider jwtProvider;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
@@ -26,7 +29,11 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler {
         Map<String, Object> attributesMap = oauthUser.getAttributes();
 
         Long id = (Long) attributesMap.get("id");
+        String name = (String) attributesMap.get("name");
 
-//        resolvedUserId로 token 발급
+        String accessToken = jwtProvider.createAccessToken(id, name);
+        String refreshToken = jwtProvider.createRefreshToken(id);
+
+//        redirect
     }
 }
