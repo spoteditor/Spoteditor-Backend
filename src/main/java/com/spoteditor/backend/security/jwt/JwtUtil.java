@@ -1,8 +1,8 @@
 package com.spoteditor.backend.security.jwt;
 
+import com.spoteditor.backend.common.exceptions.BaseException;
+import com.spoteditor.backend.common.exceptions.ErrorCode;
 import io.jsonwebtoken.*;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
@@ -52,19 +52,13 @@ public class JwtUtil {
                     .verifyWith(signingKey)
                     .build()
                     .parseSignedClaims(jwt);
-
             Long uid = claims.getPayload().get("uid", Long.class);
-            if (uid == null) {
-                throw new Exception("유효하지 않은 토큰: uid 누락");
-            }
 
             return new UsernamePasswordAuthenticationToken(uid, null);
         } catch (ExpiredJwtException e) {
-            // 만료되면 refresh token 확인 요청
-            throw new ExpiredJwtException(e.getHeader(), e.getClaims(), "만료된 AccessToken");
+            throw new ExpiredJwtException(e.getHeader(), e.getClaims(), null);
         } catch (Exception e) {
-            // 서명 불일치, 잘못된 토큰
-            throw new Exception("유효하지 않은 토큰");
+            throw new Exception();
         }
     }
 }

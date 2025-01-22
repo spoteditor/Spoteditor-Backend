@@ -1,5 +1,8 @@
 package com.spoteditor.backend.domain.user.controller;
 
+import com.spoteditor.backend.common.exceptions.BaseException;
+import com.spoteditor.backend.common.exceptions.ErrorCode;
+import com.spoteditor.backend.common.response.ApiResponse;
 import com.spoteditor.backend.common.util.CookieUtil;
 import com.spoteditor.backend.security.jwt.JwtConstants;
 import com.spoteditor.backend.security.jwt.JwtUtil;
@@ -23,7 +26,7 @@ public class AuthController {
     private final CookieUtil cookieUtil;
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ApiResponse<?> refreshAccessToken (HttpServletRequest request, HttpServletResponse response) throws Exception {
         String refreshToken = cookieUtil.getRefreshToken(request);
 
         if(refreshToken != null) {
@@ -36,9 +39,10 @@ public class AuthController {
                 String accessToken = jwtProvider.createAccessToken(id);
                 cookieUtil.addCookie(response, "/api", JwtConstants.ACCESS_TOKEN, accessToken);
             } catch (Exception e) {
-                // 검증 실패 -> 재로그인
+                throw new BaseException(ErrorCode.REFRESH_TOKEN_EXPIRED);
             }
+            return ApiResponse.ok(null);
         }
-        // RefreshToken 없음 -> 재로그인
+        throw new BaseException(ErrorCode.REFRESH_TOKEN_EXPIRED);
     }
 }
