@@ -16,7 +16,7 @@ public class JwtUtil {
 
     private final JwtProps jwtProps;
 
-    public String createAccessToken(Long id) {
+    public String createToken(Long id, long expirationTime) {
         SecretKey signingKey = jwtProps.getSigningKey();
 
         return Jwts.builder()
@@ -24,24 +24,18 @@ public class JwtUtil {
                 .header()
                 .add("typ", JwtConstants.TOKEN_TYPE)
                 .and()
-                .claim("sub", id)
+                .claim("sub", id.toString())
                 .claim("iat", new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtProps.getAccessTokenExp()))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .compact();
     }
 
-    public String createRefreshToken(Long id) {
-        SecretKey signingKey = jwtProps.getSigningKey();
+    public String createAccessToken(Long id) {
+        return createToken(id, jwtProps.getAccessTokenExp());
+    }
 
-        return Jwts.builder()
-                .signWith(signingKey, JwtConstants.ALGORITHM)
-                .header()
-                .add("typ", JwtConstants.TOKEN_TYPE)
-                .and()
-                .claim("sub", id)
-                .claim("iat", new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtProps.getRefreshTokenExp()))
-                .compact();
+    public String createRefreshToken(Long id) {
+        return createToken(id, jwtProps.getRefreshTokenExp());
     }
 
     public UsernamePasswordAuthenticationToken setAuthentication(String jwt) throws Exception {
@@ -52,7 +46,7 @@ public class JwtUtil {
                     .verifyWith(signingKey)
                     .build()
                     .parseSignedClaims(jwt);
-            Long uid = claims.getPayload().get("uid", Long.class);
+            String uid = (String) claims.getPayload().get("sub");
 
             return new UsernamePasswordAuthenticationToken(uid, null);
         } catch (ExpiredJwtException e) {

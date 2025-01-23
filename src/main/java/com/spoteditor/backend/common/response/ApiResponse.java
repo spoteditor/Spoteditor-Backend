@@ -1,8 +1,10 @@
 package com.spoteditor.backend.common.response;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public class ApiResponse<T> {
 
     private final int code;
