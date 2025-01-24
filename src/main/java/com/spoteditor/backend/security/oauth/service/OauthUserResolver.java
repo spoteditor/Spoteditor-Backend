@@ -5,10 +5,11 @@ import com.spoteditor.backend.domain.user.repository.UserRepository;
 import com.spoteditor.backend.security.oauth.dto.OauthAttributes;
 import com.spoteditor.backend.security.oauth.dto.OauthAttributesUserMapper;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OauthUserResolver {
 
     private final UserRepository userRepository;

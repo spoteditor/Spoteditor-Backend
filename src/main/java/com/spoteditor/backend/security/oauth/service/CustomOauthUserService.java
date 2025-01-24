@@ -4,6 +4,7 @@ import com.spoteditor.backend.domain.user.entity.User;
 import com.spoteditor.backend.security.oauth.dto.OauthAttributes;
 import com.spoteditor.backend.security.oauth.dto.OauthAttributesUserMapper;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -16,7 +17,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CustomOauthUserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final OauthUserResolver oauthUserResolver;

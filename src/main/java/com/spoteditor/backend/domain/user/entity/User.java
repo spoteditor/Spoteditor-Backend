@@ -1,14 +1,11 @@
 package com.spoteditor.backend.domain.user.entity;
 
-import com.spoteditor.backend.domain.user.entity.value.LoginStatus;
 import com.spoteditor.backend.domain.user.entity.value.OauthProvider;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,10 +26,8 @@ public class User {
 
     private String description;
 
-    @Column(name = "login_status")
-    private LoginStatus loginStatus;
-
     @Column(name = "provider")
+    @Enumerated(value = EnumType.STRING)
     private OauthProvider provider;
 
     @Column(name = "oauth_user_id")
@@ -41,12 +36,6 @@ public class User {
 //    @Embedded
 //    private Address address;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-
     @Builder
     public User(String email, String name, String imageUrl, OauthProvider provider, String oauthUserId) {
         this.email = email;
@@ -54,6 +43,5 @@ public class User {
         this.imageUrl = imageUrl;
         this.provider = provider;
         this.oauthUserId = oauthUserId;
-        this.createdAt = LocalDateTime.now();
     }
 }

@@ -2,10 +2,11 @@ package com.spoteditor.backend.common.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum ErrorCode {
     // 400 Bad Request
     UNSUPPORTED_PROVIDER(HttpStatus.BAD_REQUEST, "4001", "지원하지 않는 Provider"),

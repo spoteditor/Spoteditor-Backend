@@ -1,6 +1,5 @@
 package com.spoteditor.backend.security.jwt;
 
-import com.spoteditor.backend.common.exceptions.BaseException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -12,21 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import javax.crypto.SecretKey;
-
-import java.util.Base64;
-import java.util.Date;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class JwtUtilTest {
 
-    @Autowired private JwtUtil jwtUtil;
-    @Autowired private JwtProps jwtProps;
+    @Autowired private JwtUtils jwtUtils;
+    @Autowired private JwtProperties jwtProperties;
 
     @Test
     @DisplayName("AccessToken 생성 후 claim 확인")
@@ -34,12 +27,12 @@ class JwtUtilTest {
         // given
         Long userId = 24L;
 
-        String token = jwtUtil.createAccessToken(userId);
+        String token = jwtUtils.createAccessToken(userId);
         assertNotNull(token);
 
         // when
         Jws<Claims> claims = Jwts.parser()
-                .verifyWith(jwtProps.getSigningKey())
+                .verifyWith(jwtProperties.getSigningKey())
                 .build()
                 .parseSignedClaims(token);
 
@@ -55,12 +48,12 @@ class JwtUtilTest {
         // given
         Long userId = 25L;
 
-        String token = jwtUtil.createRefreshToken(userId);
+        String token = jwtUtils.createRefreshToken(userId);
         assertNotNull(token);
 
         // when
         Jws<Claims> claims = Jwts.parser()
-                .verifyWith(jwtProps.getSigningKey())
+                .verifyWith(jwtProperties.getSigningKey())
                 .build()
                 .parseSignedClaims(token);
 
@@ -74,11 +67,11 @@ class JwtUtilTest {
     @DisplayName("토큰 만료시 ExpiredJwtException 예외")
     public void 토큰_만료_테스트() throws Exception {
         // given
-        String token = jwtUtil.createToken(10L, -100);
+        String token = jwtUtils.createToken(10L, -100);
         assertNotNull(token);
 
         // when & then
-        Assertions.assertThrows(ExpiredJwtException.class, () -> jwtUtil.setAuthentication(token));
+        Assertions.assertThrows(ExpiredJwtException.class, () -> jwtUtils.setAuthentication(token));
     }
 
     @Test
@@ -87,7 +80,7 @@ class JwtUtilTest {
         // given
 
         // when & then
-        Assertions.assertThrows(Exception.class, () -> jwtUtil.setAuthentication("qwer"));
+        Assertions.assertThrows(Exception.class, () -> jwtUtils.setAuthentication("qwer"));
     }
 
     @Test
@@ -95,10 +88,10 @@ class JwtUtilTest {
     public void 인증완료_테스트() throws Exception {
         // given
         Long id = 10L;
-        String token = jwtUtil.createAccessToken(id);
+        String token = jwtUtils.createAccessToken(id);
 
         // when
-        UsernamePasswordAuthenticationToken authenticationToken = jwtUtil.setAuthentication(token);
+        UsernamePasswordAuthenticationToken authenticationToken = jwtUtils.setAuthentication(token);
 
         // then
         assertEquals(authenticationToken.getPrincipal(), id.toString());

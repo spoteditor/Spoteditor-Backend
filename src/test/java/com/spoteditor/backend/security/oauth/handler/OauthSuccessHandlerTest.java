@@ -1,34 +1,32 @@
 package com.spoteditor.backend.security.oauth.handler;
 
-import com.spoteditor.backend.common.util.CookieUtil;
+import com.spoteditor.backend.common.util.CookieUtils;
 import com.spoteditor.backend.security.jwt.JwtConstants;
-import com.spoteditor.backend.security.jwt.JwtUtil;
+import com.spoteditor.backend.security.jwt.JwtUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class OauthSuccessHandlerTest {
 
-    private JwtUtil jwtProvider;
-    private CookieUtil cookieUtil;
+    private JwtUtils jwtUtils;
+    private CookieUtils cookieUtils;
     private OauthSuccessHandler successHandler;
     private Authentication authentication;
     private OAuth2User oauth2User;
 
     @BeforeEach
     void setUp() {
-        jwtProvider = mock(JwtUtil.class);
-        cookieUtil = mock(CookieUtil.class);
-        successHandler = new OauthSuccessHandler(jwtProvider, cookieUtil);
+        jwtUtils = mock(JwtUtils.class);
+        cookieUtils = mock(CookieUtils.class);
+        successHandler = new OauthSuccessHandler(jwtUtils, cookieUtils);
         authentication = mock(Authentication.class);
         oauth2User = mock(OAuth2User.class);
     }
@@ -44,17 +42,17 @@ class OauthSuccessHandlerTest {
 
         when(authentication.getPrincipal()).thenReturn(oauth2User);
         when(oauth2User.getAttributes()).thenReturn(attributes);
-        when(jwtProvider.createAccessToken(123L)).thenReturn("mockAccessToken");
-        when(jwtProvider.createRefreshToken(123L)).thenReturn("mockRefreshToken");
+        when(jwtUtils.createAccessToken(123L)).thenReturn("mockAccessToken");
+        when(jwtUtils.createRefreshToken(123L)).thenReturn("mockRefreshToken");
 
         // when
         successHandler.onAuthenticationSuccess(null, response, authentication);
 
         // then
-        verify(jwtProvider).createAccessToken(123L);
-        verify(jwtProvider).createRefreshToken(123L);
+        verify(jwtUtils).createAccessToken(123L);
+        verify(jwtUtils).createRefreshToken(123L);
 
-        verify(cookieUtil).addCookie(response, "/api", JwtConstants.ACCESS_TOKEN, "mockAccessToken");
-        verify(cookieUtil).addCookie(response, "/auth", JwtConstants.REFRESH_TOKEN, "mockRefreshToken");
+        verify(cookieUtils).addCookie(response, "/api", JwtConstants.ACCESS_TOKEN, "mockAccessToken");
+        verify(cookieUtils).addCookie(response, "/auth", JwtConstants.REFRESH_TOKEN, "mockRefreshToken");
     }
 }

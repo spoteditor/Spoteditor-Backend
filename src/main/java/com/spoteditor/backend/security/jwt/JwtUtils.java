@@ -1,9 +1,7 @@
 package com.spoteditor.backend.security.jwt;
 
-import com.spoteditor.backend.common.exceptions.BaseException;
-import com.spoteditor.backend.common.exceptions.ErrorCode;
 import io.jsonwebtoken.*;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
@@ -11,13 +9,13 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
-@AllArgsConstructor
-public class JwtUtil {
+@RequiredArgsConstructor
+public class JwtUtils {
 
-    private final JwtProps jwtProps;
+    private final JwtProperties jwtProperties;
 
     public String createToken(Long id, long expirationTime) {
-        SecretKey signingKey = jwtProps.getSigningKey();
+        SecretKey signingKey = jwtProperties.getSigningKey();
 
         return Jwts.builder()
                 .signWith(signingKey, JwtConstants.ALGORITHM)
@@ -31,15 +29,15 @@ public class JwtUtil {
     }
 
     public String createAccessToken(Long id) {
-        return createToken(id, jwtProps.getAccessTokenExp());
+        return createToken(id, jwtProperties.getAccessTokenExp());
     }
 
     public String createRefreshToken(Long id) {
-        return createToken(id, jwtProps.getRefreshTokenExp());
+        return createToken(id, jwtProperties.getRefreshTokenExp());
     }
 
     public UsernamePasswordAuthenticationToken setAuthentication(String jwt) throws Exception {
-        SecretKey signingKey = jwtProps.getSigningKey();
+        SecretKey signingKey = jwtProperties.getSigningKey();
 
         try {
             Jws<Claims> claims = Jwts.parser()

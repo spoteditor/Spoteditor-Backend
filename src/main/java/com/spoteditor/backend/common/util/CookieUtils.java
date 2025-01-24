@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class CookieUtil {
+public class CookieUtils {
 
     public void addCookie(HttpServletResponse response, String path, String name, String value) {
         final List<String> ALLOWED_PATHS = List.of("/", "/api", "/auth");

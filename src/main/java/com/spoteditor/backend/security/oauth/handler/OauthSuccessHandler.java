@@ -1,12 +1,12 @@
 package com.spoteditor.backend.security.oauth.handler;
 
-import com.spoteditor.backend.common.util.CookieUtil;
+import com.spoteditor.backend.common.util.CookieUtils;
 import com.spoteditor.backend.security.jwt.JwtConstants;
-import com.spoteditor.backend.security.jwt.JwtUtil;
+import com.spoteditor.backend.security.jwt.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -16,11 +16,11 @@ import java.io.IOException;
 import java.util.Map;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OauthSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtUtil jwtProvider;
-    private final CookieUtil cookieUtil;
+    private final JwtUtils jwtUtils;
+    private final CookieUtils cookieUtils;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -31,11 +31,11 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler {
         Long id = (Long) attributesMap.get("id");
         String name = (String) attributesMap.get("name");
 
-        String accessToken = jwtProvider.createAccessToken(id);
-        String refreshToken = jwtProvider.createRefreshToken(id);
+        String accessToken = jwtUtils.createAccessToken(id);
+        String refreshToken = jwtUtils.createRefreshToken(id);
 
-        cookieUtil.addCookie(response, "/api", JwtConstants.ACCESS_TOKEN, accessToken);
-        cookieUtil.addCookie(response, "/auth", JwtConstants.REFRESH_TOKEN, refreshToken);
+        cookieUtils.addCookie(response, "/api", JwtConstants.ACCESS_TOKEN, accessToken);
+        cookieUtils.addCookie(response, "/auth", JwtConstants.REFRESH_TOKEN, refreshToken);
 
 //        redirect
     }

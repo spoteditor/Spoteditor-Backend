@@ -1,12 +1,12 @@
 package com.spoteditor.backend.security.config;
 
-import com.spoteditor.backend.common.util.CookieUtil;
+import com.spoteditor.backend.common.util.CookieUtils;
 import com.spoteditor.backend.security.jwt.JwtFilter;
-import com.spoteditor.backend.security.jwt.JwtUtil;
+import com.spoteditor.backend.security.jwt.JwtUtils;
 import com.spoteditor.backend.security.oauth.handler.OauthFailureHandler;
 import com.spoteditor.backend.security.oauth.handler.OauthSuccessHandler;
 import com.spoteditor.backend.security.oauth.service.CustomOauthUserService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,15 +18,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final CustomOauthUserService customOauthUserService;
     private final OauthSuccessHandler oauthSuccessHandler;
     private final OauthFailureHandler oauthFailureHandler;
 
-    private final JwtUtil jwtProvider;
-    private final CookieUtil cookieUtil;
+    private final JwtUtils jwtUtils;
+    private final CookieUtils cookieUtils;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,7 +36,7 @@ public class SecurityConfig {
             .sessionManagement(sessionManagement ->
                     sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .addFilterBefore(new JwtFilter(jwtProvider, cookieUtil), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtFilter(jwtUtils, cookieUtils), UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()

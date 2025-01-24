@@ -12,7 +12,7 @@ import java.util.Base64;
 @Data
 @Component
 @ConfigurationProperties("jwt.token")
-public class JwtProps {
+public class JwtProperties {
     private String secretKey;
     private Long accessTokenExp;
     private Long refreshTokenExp;
