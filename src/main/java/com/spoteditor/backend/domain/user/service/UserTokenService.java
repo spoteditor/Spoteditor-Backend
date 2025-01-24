@@ -30,7 +30,7 @@ public class UserTokenService {
 
             // 검증 성공 -> accessToken 발급
             String accessToken = jwtUtils.createAccessToken(id);
-            cookieUtils.addCookie(response, "/api", JwtConstants.ACCESS_TOKEN, accessToken);
+            cookieUtils.setAccessTokenCookie(response, JwtConstants.ACCESS_TOKEN, accessToken);
         } catch (Exception e) {
             throw new Exception("유효하지 않은 RefreshToken");
         }

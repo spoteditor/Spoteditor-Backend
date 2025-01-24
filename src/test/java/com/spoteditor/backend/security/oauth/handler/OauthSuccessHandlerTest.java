@@ -52,7 +52,7 @@ class OauthSuccessHandlerTest {
         verify(jwtUtils).createAccessToken(123L);
         verify(jwtUtils).createRefreshToken(123L);
 
-        verify(cookieUtils).addCookie(response, "/api", JwtConstants.ACCESS_TOKEN, "mockAccessToken");
-        verify(cookieUtils).addCookie(response, "/auth", JwtConstants.REFRESH_TOKEN, "mockRefreshToken");
+        verify(cookieUtils).setAccessTokenCookie(response, JwtConstants.ACCESS_TOKEN, "mockAccessToken");
+        verify(cookieUtils).setRefreshTokenCookie(response, JwtConstants.REFRESH_TOKEN, "mockRefreshToken");
     }
 }

@@ -34,8 +34,8 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtUtils.createAccessToken(id);
         String refreshToken = jwtUtils.createRefreshToken(id);
 
-        cookieUtils.addCookie(response, "/api", JwtConstants.ACCESS_TOKEN, accessToken);
-        cookieUtils.addCookie(response, "/auth", JwtConstants.REFRESH_TOKEN, refreshToken);
+        cookieUtils.setAccessTokenCookie(response, JwtConstants.ACCESS_TOKEN, accessToken);
+        cookieUtils.setRefreshTokenCookie(response, JwtConstants.REFRESH_TOKEN, refreshToken);
 
 //        redirect
     }

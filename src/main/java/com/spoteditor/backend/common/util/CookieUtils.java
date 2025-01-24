@@ -1,9 +1,11 @@
 package com.spoteditor.backend.common.util;
 
 import com.spoteditor.backend.security.jwt.JwtConstants;
+import com.spoteditor.backend.security.jwt.JwtProperties;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -11,13 +13,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class CookieUtils {
 
-    public void addCookie(HttpServletResponse response, String path, String name, String value) {
+    private final JwtProperties jwtProperties;
+
+    public void addCookie(HttpServletResponse response, String path, String name, String value, int maxAge) {
         final List<String> ALLOWED_PATHS = List.of("/", "/api", "/auth");
 
         // Path 값 전처리
-        if(path == null || path.trim().isEmpty()) {
+        if (path == null || path.trim().isEmpty()) {
             path = "/";
         } else if (!path.startsWith("/")) {
             path = "/" + path;
@@ -32,7 +37,7 @@ public class CookieUtils {
         cookie.setPath(path);
         cookie.setHttpOnly(true);
         // 쿠키 유효기간: 한 달 (Jwt 는 별도 exp 관리)
-        cookie.setMaxAge(3600 * 24 * 30);
+        cookie.setMaxAge(maxAge);
         cookie.setSecure(true);
         cookie.setAttribute("SameSite", "Strict");
         response.addCookie(cookie);
@@ -42,6 +47,8 @@ public class CookieUtils {
         Cookie cookie = new Cookie(name, null);
         cookie.setPath(path);
         cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         response.addCookie(cookie);
     }
 
@@ -68,4 +75,18 @@ public class CookieUtils {
                 .map(Cookie::getValue)
                 .orElse(null);
     }
+
+    public void setAccessTokenCookie(HttpServletResponse response, String name, String value) {
+        int accessTokenExp = (int) (jwtProperties.getAccessTokenExp() / 1000);
+
+        addCookie(response, "/api", name, value, accessTokenExp);
+    }
+
+    public void setRefreshTokenCookie(HttpServletResponse response, String name, String value) {
+        int refreshTokenExp = (int) (jwtProperties.getRefreshTokenExp() / 1000);
+
+        addCookie(response, "/auth", name, value, refreshTokenExp);
+    }
+
+
 }
