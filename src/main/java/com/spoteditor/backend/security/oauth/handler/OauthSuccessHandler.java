@@ -38,5 +38,6 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler {
         cookieUtils.setRefreshTokenCookie(response, JwtConstants.REFRESH_TOKEN, refreshToken);
 
 //        redirect
+        response.sendRedirect("/success");
     }
 }

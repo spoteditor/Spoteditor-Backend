@@ -24,9 +24,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getRequestURI();
+        // /favicon.ico 요청은 필터를 건너뜀
+        if ("/favicon.ico".equals(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // 쿠키에서 jwt 추출
         String accessToken = cookieUtils.getAccessToken(request);
-
         try {
             // 토큰 인증
             UsernamePasswordAuthenticationToken authentication = jwtUtils.setAuthentication(accessToken);
