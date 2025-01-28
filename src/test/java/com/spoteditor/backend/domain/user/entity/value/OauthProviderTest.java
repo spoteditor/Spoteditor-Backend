@@ -1,10 +1,9 @@
 package com.spoteditor.backend.domain.user.entity.value;
 
-import com.spoteditor.backend.common.exceptions.BaseException;
+import com.spoteditor.backend.common.exceptions.user.UserException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +30,7 @@ class OauthProviderTest {
         String registrationId = "Naver";
 
         // when
-        BaseException exception = assertThrows(BaseException.class, () -> {
+        UserException exception = assertThrows(UserException.class, () -> {
             OauthProvider.from(registrationId);
         });
 

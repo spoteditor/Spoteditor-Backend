@@ -1,7 +1,7 @@
 package com.spoteditor.backend.domain.user.entity.value;
 
-import com.spoteditor.backend.common.exceptions.BaseException;
-import com.spoteditor.backend.common.exceptions.ErrorCode;
+import com.spoteditor.backend.common.exceptions.user.UserException;
+import com.spoteditor.backend.common.exceptions.user.UserErrorCode;
 
 public enum OauthProvider {
     KAKAO("kakao");
@@ -22,6 +22,6 @@ public enum OauthProvider {
                 return provider;
             }
         }
-        throw new BaseException(ErrorCode.UNSUPPORTED_PROVIDER);
+        throw new UserException(UserErrorCode.UNSUPPORTED_PROVIDER);
     }
 }

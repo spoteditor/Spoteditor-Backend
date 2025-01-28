@@ -1,7 +1,7 @@
 package com.spoteditor.backend.security.jwt;
 
-import com.spoteditor.backend.common.exceptions.BaseException;
-import com.spoteditor.backend.common.exceptions.ErrorCode;
+import com.spoteditor.backend.common.exceptions.user.UserException;
+import com.spoteditor.backend.common.exceptions.user.UserErrorCode;
 import com.spoteditor.backend.common.util.CookieUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -41,10 +41,10 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch(ExpiredJwtException e) {
             // AccessToken 만료 -> RefreshToken 으로 재발급
-            throw new BaseException(ErrorCode.ACCESS_TOKEN_EXPIRED);
+            throw new UserException(UserErrorCode.ACCESS_TOKEN_EXPIRED);
         } catch (Exception e) {
             // TODO 유효하지 않은 토큰 -> 재로그인?
-            throw new BaseException(ErrorCode.INVALID_TOKEN);
+            throw new UserException(UserErrorCode.INVALID_TOKEN);
         }
         filterChain.doFilter(request, response);
     }

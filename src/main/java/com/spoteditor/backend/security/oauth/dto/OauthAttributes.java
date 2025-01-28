@@ -1,7 +1,7 @@
 package com.spoteditor.backend.security.oauth.dto;
 
-import com.spoteditor.backend.common.exceptions.BaseException;
-import com.spoteditor.backend.common.exceptions.ErrorCode;
+import com.spoteditor.backend.common.exceptions.user.UserException;
+import com.spoteditor.backend.common.exceptions.user.UserErrorCode;
 import com.spoteditor.backend.domain.user.entity.value.OauthProvider;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public class OauthAttributes {
             case KAKAO:
                 return ofKakao(attributes, provider);
             default:
-                throw new BaseException(ErrorCode.UNSUPPORTED_PROVIDER);
+                throw new UserException(UserErrorCode.UNSUPPORTED_PROVIDER);
         }
     }
 

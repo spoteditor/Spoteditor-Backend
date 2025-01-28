@@ -1,7 +1,7 @@
 package com.spoteditor.backend.security.oauth.dto;
 
-import com.spoteditor.backend.common.exceptions.BaseException;
-import com.spoteditor.backend.common.exceptions.ErrorCode;
+import com.spoteditor.backend.common.exceptions.user.UserException;
+import com.spoteditor.backend.common.exceptions.user.UserErrorCode;
 import com.spoteditor.backend.domain.user.entity.value.OauthProvider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -30,12 +30,12 @@ class OauthAttributesTest {
         );
 
         // when
-        BaseException exception = assertThrows(BaseException.class, () -> {
+        UserException exception = assertThrows(UserException.class, () -> {
             OauthAttributes.of(unsupportedProvider, attributes);
         });
 
         // then
-        Assertions.assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.UNSUPPORTED_PROVIDER);
+        Assertions.assertThat(exception.getErrorCode()).isEqualTo(UserErrorCode.UNSUPPORTED_PROVIDER);
     }
 
     @Test
