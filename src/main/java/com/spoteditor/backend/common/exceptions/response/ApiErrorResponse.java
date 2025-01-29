@@ -9,13 +9,21 @@ import org.springframework.http.HttpStatus;
 public class ApiErrorResponse {
 
     private final HttpStatus httpStatus;
-    private final String responseCode;
+    private final String code;
     private final String message;
 
     @Builder
-    private ApiErrorResponse(HttpStatus status, UserErrorCode errorCode) {
-        this.httpStatus = status;
-        this.responseCode = errorCode != null ? errorCode.getCode() : null;
-        this.message = errorCode != null ? errorCode.getMessage() : null;
+    private ApiErrorResponse(HttpStatus httpStatus, String code, String message) {
+        this.httpStatus = httpStatus;
+        this.code = code;
+        this.message = message;
+    }
+
+    public static ApiErrorResponse of(HttpStatus httpStatus, String code, String message) {
+        return ApiErrorResponse.builder()
+                .httpStatus(httpStatus)
+                .code(code)
+                .message(message)
+                .build();
     }
 }
