@@ -2,6 +2,7 @@ package com.spoteditor.backend.security.jwt;
 
 import com.spoteditor.backend.common.exceptions.user.UserErrorCode;
 import com.spoteditor.backend.common.exceptions.user.UserException;
+import com.spoteditor.backend.domain.user.common.dto.UserIdDto;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +44,9 @@ public class JwtUtils {
 
         String id = parseJwtGetUid(jwt, signingKey);
 
-        return new UsernamePasswordAuthenticationToken(id, null);
+        UserIdDto userIdDto = new UserIdDto(Long.parseLong(id));
+
+        return new UsernamePasswordAuthenticationToken(userIdDto, null);
     }
 
     private String parseJwtGetUid(String jwt, SecretKey signingKey) {
