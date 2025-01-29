@@ -13,6 +13,7 @@ public enum UserErrorCode {
     // 401 Unauthorized
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰 만료"),
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AccessToken 만료"),
+    NO_AUTHENTICATED_USER(HttpStatus.UNAUTHORIZED, "현재 로그인된 사용자가 없음"),
 
     // 403 Forbidden
     INVALID_TOKEN(HttpStatus.FORBIDDEN, "유효하지 않은 토큰"),
