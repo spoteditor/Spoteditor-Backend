@@ -79,13 +79,13 @@ public class CookieUtils {
     public void setAccessTokenCookie(HttpServletResponse response, String name, String value) {
         int accessTokenExp = (int) (jwtProperties.getAccessTokenExp() / 1000);
 
-        addCookie(response, "/api", name, value, accessTokenExp);
+        addCookie(response, "/", name, value, accessTokenExp);
     }
 
     public void setRefreshTokenCookie(HttpServletResponse response, String name, String value) {
         int refreshTokenExp = (int) (jwtProperties.getRefreshTokenExp() / 1000);
 
-        addCookie(response, "/auth", name, value, refreshTokenExp);
+        addCookie(response, "/", name, value, refreshTokenExp);
     }
 
 
