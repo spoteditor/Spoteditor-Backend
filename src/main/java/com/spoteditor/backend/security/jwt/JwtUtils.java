@@ -1,5 +1,7 @@
 package com.spoteditor.backend.security.jwt;
 
+import com.spoteditor.backend.common.exceptions.user.UserErrorCode;
+import com.spoteditor.backend.common.exceptions.user.UserException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,9 +50,9 @@ public class JwtUtils {
 
             return new UsernamePasswordAuthenticationToken(uid, null);
         } catch (ExpiredJwtException e) {
-            throw new ExpiredJwtException(e.getHeader(), e.getClaims(), null);
+            throw new UserException(UserErrorCode.TOKEN_EXPIRED);
         } catch (Exception e) {
-            throw new Exception();
+            throw new UserException(UserErrorCode.INVALID_TOKEN);
         }
     }
 }

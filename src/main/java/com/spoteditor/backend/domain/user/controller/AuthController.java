@@ -24,12 +24,8 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<Void> refreshAccessToken (HttpServletRequest request, HttpServletResponse response) throws Exception {
-        try {
-            userTokenService.refreshAccessToken(request, response);
+        userTokenService.refreshAccessToken(request, response);
 
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            throw new UserException(UserErrorCode.REFRESH_TOKEN_EXPIRED);
-        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

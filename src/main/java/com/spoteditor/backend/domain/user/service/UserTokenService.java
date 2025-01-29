@@ -1,5 +1,7 @@
 package com.spoteditor.backend.domain.user.service;
 
+import com.spoteditor.backend.common.exceptions.user.UserErrorCode;
+import com.spoteditor.backend.common.exceptions.user.UserException;
 import com.spoteditor.backend.common.util.CookieUtils;
 import com.spoteditor.backend.security.jwt.JwtConstants;
 import com.spoteditor.backend.security.jwt.JwtUtils;
@@ -20,7 +22,7 @@ public class UserTokenService {
         String refreshToken = cookieUtils.getRefreshToken(request);
 
         if(refreshToken == null) {
-            throw new Exception("쿠키에 RefreshToken 없음");
+            throw new UserException(UserErrorCode.REFRESH_TOKEN_NOT_IN_COOKIE);
         }
 
         try {
@@ -31,8 +33,8 @@ public class UserTokenService {
             // 검증 성공 -> accessToken 발급
             String accessToken = jwtUtils.createAccessToken(id);
             cookieUtils.setAccessTokenCookie(response, JwtConstants.ACCESS_TOKEN, accessToken);
-        } catch (Exception e) {
-            throw new Exception("유효하지 않은 RefreshToken");
+        } catch (UserException e) {
+            throw new UserException(UserErrorCode.REFRESH_TOKEN_INVALID);
         }
     }
 }
