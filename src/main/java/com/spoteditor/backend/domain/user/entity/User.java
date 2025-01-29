@@ -15,19 +15,23 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
+    @Column(name = "email")
     private String email;
 
+    @Column(name = "name")
     private String name;
 
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "description")
     private String description;
 
-    @Column(name = "provider")
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "provider")
     private OauthProvider provider;
 
     @Column(name = "oauth_user_id")
