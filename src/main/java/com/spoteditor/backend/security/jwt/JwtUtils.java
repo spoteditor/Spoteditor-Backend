@@ -41,14 +41,19 @@ public class JwtUtils {
     public UsernamePasswordAuthenticationToken setAuthentication(String jwt) throws Exception {
         SecretKey signingKey = jwtProperties.getSigningKey();
 
+        String id = parseJwtGetUid(jwt, signingKey);
+
+        return new UsernamePasswordAuthenticationToken(id, null);
+    }
+
+    private String parseJwtGetUid(String jwt, SecretKey signingKey) {
         try {
             Jws<Claims> claims = Jwts.parser()
-                    .verifyWith(signingKey)
-                    .build()
-                    .parseSignedClaims(jwt);
-            String uid = (String) claims.getPayload().get("sub");
+                .verifyWith(signingKey)
+                .build()
+                .parseSignedClaims(jwt);
 
-            return new UsernamePasswordAuthenticationToken(uid, null);
+            return (String) claims.getPayload().get("sub");
         } catch (ExpiredJwtException e) {
             throw new UserException(UserErrorCode.TOKEN_EXPIRED);
         } catch (Exception e) {
