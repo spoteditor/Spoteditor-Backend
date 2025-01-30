@@ -16,13 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final UserTokenService userTokenService;
 
-    @PostMapping("/refresh")
+    @PostMapping("/auth/refresh")
     public ResponseEntity<Void> refreshAccessToken (HttpServletRequest request, HttpServletResponse response) throws Exception {
         userTokenService.refreshAccessToken(request, response);
 

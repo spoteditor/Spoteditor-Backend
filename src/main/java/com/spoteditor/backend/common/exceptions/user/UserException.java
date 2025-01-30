@@ -13,7 +13,7 @@ public class UserException extends RuntimeException {
     public UserException(UserErrorCode errorCode){
         super(errorCode.getMessage());
         this.httpStatus = errorCode.getHttpStatus();
-        this.customStatus = "U" + errorCode.getHttpStatus().toString();
+        this.customStatus = errorCode.getCustomStatus();
         this.customMessage = errorCode.getMessage();
     }
 }

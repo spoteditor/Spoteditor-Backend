@@ -41,7 +41,7 @@ public class User {
 //    private Address address;
 
     @Builder
-    public User(String email, String name, String imageUrl, OauthProvider provider, String oauthUserId) {
+    private User(String email, String name, String imageUrl, OauthProvider provider, String oauthUserId) {
         this.email = email;
         this.name = name;
         this.imageUrl = imageUrl;
