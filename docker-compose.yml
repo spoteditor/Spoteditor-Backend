@@ -1,0 +1,11 @@
+services:
+  spoteditor_mysql:
+    container_name: spoteditor_mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: spoteditor
+      MYSQL_DATABASE: spoteditor
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
