@@ -1,0 +1,1 @@
+ALTER TABLE place DROP INDEX name;
