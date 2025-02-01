@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.1'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
 
 group = 'com.spoteditor'
@@ -24,6 +25,9 @@ repositories {
 }
 
 dependencies {
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	// log
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
@@ -72,6 +76,10 @@ dependencies {
 	// spring security & oauth2
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// serialization & deserialization
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
