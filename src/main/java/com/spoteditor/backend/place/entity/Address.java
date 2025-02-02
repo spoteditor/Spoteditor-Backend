@@ -1,27 +1,32 @@
 package com.spoteditor.backend.place.entity;
 
 import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Embeddable
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Address {
 
-	private String address;
-	private String roadAddress;
-	private double latitude;
-	private double longitude;
-	private String sido;
-	private String bname;
-	private String sigungu;
+	// final 필드로 설계 & setter 제공 X
+	private final String address;
+	private final String roadAddress;
+	private final double latitude;
+	private final double longitude;
+	private final String sido;
+	private final String bname;
+	private final String sigungu;
 
-	@Builder
-	public Address(String address, String roadAddress, double latitude,
-				   double longitude, String sido, String bname, String sigungu) {
+	protected Address() {
+		this.address = null;
+		this.roadAddress = null;
+		this.latitude = 0;
+		this.longitude = 0;
+		this.sido = null;
+		this.bname = null;
+		this.sigungu = null;
+	}
+
+	public Address(String address, String roadAddress, double latitude, double longitude, String sido, String bname, String sigungu) {
 		this.address = address;
 		this.roadAddress = roadAddress;
 		this.latitude = latitude;
