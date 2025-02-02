@@ -1,8 +1,9 @@
 package com.spoteditor.backend.security.oauth.handler;
 
-import com.spoteditor.backend.common.util.CookieUtils;
-import com.spoteditor.backend.security.jwt.JwtConstants;
-import com.spoteditor.backend.security.jwt.JwtUtils;
+import com.spoteditor.backend.config.util.CookieUtils;
+import com.spoteditor.backend.config.jwt.JwtConstants;
+import com.spoteditor.backend.config.jwt.JwtUtils;
+import com.spoteditor.backend.config.oauth.handler.OauthSuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

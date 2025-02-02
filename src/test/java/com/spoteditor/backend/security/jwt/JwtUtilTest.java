@@ -1,5 +1,7 @@
 package com.spoteditor.backend.security.jwt;
 
+import com.spoteditor.backend.config.jwt.JwtProperties;
+import com.spoteditor.backend.config.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
