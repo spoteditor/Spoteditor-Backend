@@ -27,12 +27,12 @@ public class BookmarkServiceImpl implements BookmarkService {
 
 	@Override
 	@Transactional
-	public void addBookmark(BookmarkCommand command) {
+	public void addBookmark(Long userId, BookmarkCommand command) {
 
-		User user = userRepository.findById(command.userId())
+		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
-		Place place = placeRepository.findByIdWithOptimisticLock(command.placeId())
+		Place place = placeRepository.findById(command.placeId())
 				.orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
 
 		Bookmark bookmark = Bookmark.builder()
@@ -46,12 +46,12 @@ public class BookmarkServiceImpl implements BookmarkService {
 
 	@Override
 	@Transactional
-	public void removeBookmark(BookmarkCommand command) {
+	public void removeBookmark(Long userId, BookmarkCommand command) {
 
-		Place place = placeRepository.findByIdWithOptimisticLock(command.placeId())
+		Place place = placeRepository.findById(command.placeId())
 				.orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
 
-		Bookmark bookmark = bookmarkRepository.findByUserIdAndPlaceId(command.userId(), command.placeId())
+		Bookmark bookmark = bookmarkRepository.findByUserIdAndPlaceId(userId, command.placeId())
 				.orElseThrow(() -> new BookmarkException(NOT_FOUND_BOOKMARK));
 
 		place.decreaseBookmark();

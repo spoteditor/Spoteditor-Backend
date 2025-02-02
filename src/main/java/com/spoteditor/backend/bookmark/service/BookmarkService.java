@@ -4,6 +4,6 @@ import com.spoteditor.backend.bookmark.service.dto.BookmarkCommand;
 
 public interface BookmarkService {
 
-	void addBookmark(BookmarkCommand command);
-	void removeBookmark(BookmarkCommand command);
+	void addBookmark(Long userId, BookmarkCommand command);
+	void removeBookmark(Long userId, BookmarkCommand command);
 }
