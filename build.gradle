@@ -55,6 +55,8 @@ dependencies {
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 
 	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -80,6 +82,9 @@ dependencies {
 	// serialization & deserialization
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	// redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.24.3'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
