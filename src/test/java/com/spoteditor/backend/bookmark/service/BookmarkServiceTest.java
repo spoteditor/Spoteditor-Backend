@@ -43,56 +43,90 @@ class BookmarkServiceTest {
 	}
 
 	@Test
-	@DisplayName("여러 쓰레드가 동시에 북마크 추가 요청시 쓰레드 개수만큼 북마크 개수 역시 증가해야 한다")
-	void addBookmarkConcurrencyTest() throws InterruptedException {
+	@DisplayName("여러 쓰레드가 동시에 북마크 추가 요청시 락 획득에 성공한 쓰레드만 북마크를 추가한다")
+	void 여러_쓰레드가_동시에_북마크_추가_요청시_락_획득에_성공한_쓰레드만_북마크를_추가한다() throws InterruptedException {
 		// given
 		Place place = createAndSavePlace();
 		List<User> users = createAndSaveUsers(100);
+		int threadCount = 100;
 
 		// when
-		int threadCount = 100;
-		executeMultiThreadTest(threadCount, users, place.getId(), true);
-
-		// then
-		Place findPlace = placeRepository.findById(place.getId()).orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
-		assertThat(findPlace.getBookmark()).isEqualTo(threadCount);
-	}
-
-	@Test
-	@DisplayName("여러 쓰레드가 동시에 북마크 삭제 요청시 쓰레드 개수만큼 북마크 개수 역시 감소해야 한다")
-	void removeBookmarkConcurrencyTest() throws InterruptedException {
-		// given
-		List<User> users = createAndSaveUsers(100);
-		Place place = createAndSavePlace();
-
-		int threadCount = 100;
-		executeMultiThreadTest(threadCount, users, place.getId(), true);
-
-		Place placeAfterAdd = placeRepository.findById(place.getId()).orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
-		assertThat(placeAfterAdd.getBookmark()).isEqualTo(threadCount);
-
-		// when
-		executeMultiThreadTest(threadCount, users, place.getId(), false);
-
-		// then
-		Place findPlace = placeRepository.findById(place.getId()).orElseThrow();
-		assertThat(findPlace.getBookmark()).isEqualTo(0);
-	}
-
-	private void executeMultiThreadTest(int threadCount, List<User> users, Long placeId, boolean isAdd) throws InterruptedException {
 		ExecutorService executorService = Executors.newFixedThreadPool(32);
 		CountDownLatch latch = new CountDownLatch(threadCount);
 
-		for (int i = 0; i < threadCount; i++) {
+		executeParallelBookmarkAdditions(executorService, latch, place, users);
+
+		latch.await();
+
+		// then
+		Place findPlace = placeRepository.findById(place.getId())
+				.orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
+		assertThat(findPlace.getBookmark()).isEqualTo(100);
+	}
+
+	private void executeParallelBookmarkAdditions(
+			ExecutorService executorService,
+			CountDownLatch latch,
+			Place place,
+			List<User> users
+	) {
+		for (int i = 0; i < users.size(); i++) {
 			final int index = i;
 			executorService.submit(() -> {
 				try {
-					BookmarkCommand command = new BookmarkCommand(users.get(index).getId(), placeId);
-					if (isAdd) {
-						bookmarkFacade.addBookmark(command);
-					} else {
-						bookmarkFacade.removeBookmark(command);
-					}
+					bookmarkFacade.addBookmark(users.get(index).getId(),
+							new BookmarkCommand(place.getId()));
+				} catch (Exception e) {
+					// 예외 발생 시 무시
+				} finally {
+					latch.countDown();
+				}
+			});
+		}
+	}
+
+	@Test
+	@DisplayName("여러 쓰레드가 동시에 북마크 삭제 요청시 락 획득에 성공한 쓰레드만 북마크를 삭제한다")
+	void 여러_쓰레드가_동시에_북마크_삭제_요청시_락_획득에_성공한_쓰레드만_북마크를_삭제한다() throws InterruptedException {
+		// given
+		Place place = createAndSavePlace();
+		List<User> users = createAndSaveUsers(100);
+		int threadCount = 100;
+
+		// 테스트를 위한 초기 상태 설정: 모든 사용자가 북마크한 상태
+		setupInitialBookmarks(place, users);
+
+		// when
+		ExecutorService executorService = Executors.newFixedThreadPool(32);
+		CountDownLatch latch = new CountDownLatch(threadCount);
+
+		executeParallelBookmarkDeletions(executorService, latch, place, users);
+
+		latch.await();
+
+		// then
+		Place findPlace = placeRepository.findById(place.getId())
+				.orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
+		assertThat(findPlace.getBookmark()).isEqualTo(0);
+	}
+
+	private void setupInitialBookmarks(Place place, List<User> users) {
+		for (User user : users) {
+			BookmarkCommand command = new BookmarkCommand(place.getId());
+			bookmarkFacade.addBookmark(user.getId(), command);
+		}
+	}
+
+	private void executeParallelBookmarkDeletions(
+			ExecutorService executorService,
+			CountDownLatch latch,
+			Place place,
+			List<User> users
+	) {
+		for (User user : users) {
+			executorService.submit(() -> {
+				try {
+					bookmarkFacade.removeBookmark(user.getId(), new BookmarkCommand(place.getId()));
 				} catch (InterruptedException e) {
 					throw new RuntimeException(e);
 				} finally {
@@ -100,9 +134,6 @@ class BookmarkServiceTest {
 				}
 			});
 		}
-
-		latch.await();
-		executorService.shutdown();
 	}
 
 	private List<User> createAndSaveUsers(int count) {
@@ -126,15 +157,13 @@ class BookmarkServiceTest {
 
 		Place place = Place.builder()
 				.user(owner)
-				.address(Address.builder()
-						.address("테스트주소")
-						.roadAddress("테스트도로주소")
-						.latitude(37.123)
-						.longitude(128.123)
-						.sido("테스트시도")
-						.bname("테스트법정동")
-						.sigungu("테스트시군구")
-						.build())
+				.address(new Address("테스트",
+						"테스트",
+						37.1234,
+						128.1234,
+						"테스트",
+						"테스트",
+						"테스트"))
 				.description("장소 설명")
 				.name("장소 이름")
 				.category(TOUR)

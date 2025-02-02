@@ -1,7 +1,7 @@
 package com.spoteditor.backend.place.repository;
 
-import com.spoteditor.backend.config.page.PageRequest;
-import com.spoteditor.backend.config.page.PageResponse;
+import com.spoteditor.backend.config.page.CustomPageRequest;
+import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.place.controller.dto.PlaceResponse;
 import com.spoteditor.backend.place.entity.Address;
 import com.spoteditor.backend.place.entity.Place;
@@ -39,22 +39,20 @@ class PlaceRepositoryTest {
 				.name("아무개")
 				.build());
 
-		PageRequest pageRequest = new PageRequest();
+		CustomPageRequest pageRequest = new CustomPageRequest();
 		pageRequest.setPage(1);
 		pageRequest.setSize(20);
 		pageRequest.setDirection(Sort.Direction.ASC);
 
 		Place place1 = Place.builder()
 				.user(user)
-				.address(Address.builder()
-						.address("테스트1")
-						.roadAddress("테스트1")
-						.latitude(37.123)
-						.longitude(128.123)
-						.sido("테스트1")
-						.bname("테스트1")
-						.sigungu("테스트1")
-						.build())
+				.address(new Address("테스트1",
+						"테스트1",
+						37.123,
+						128.123,
+						"테스트1",
+						"테스트1",
+						"테스트1"))
 				.description("장소 설명1")
 				.name("장소 이름1")
 				.category(TOUR)
@@ -62,15 +60,13 @@ class PlaceRepositoryTest {
 
 		Place place2 = Place.builder()
 				.user(user)
-				.address(Address.builder()
-						.address("테스트2")
-						.roadAddress("테스트2")
-						.latitude(37.1234)
-						.longitude(128.1234)
-						.sido("테스트2")
-						.bname("테스트2")
-						.sigungu("테스트2")
-						.build())
+				.address(new Address("테스트2",
+						"테스트2",
+						37.1234,
+						128.1234,
+						"테스트2",
+						"테스트2",
+						"테스트2"))
 				.description("장소 설명2")
 				.name("장소 이름2")
 				.category(CAFE)
@@ -78,15 +74,13 @@ class PlaceRepositoryTest {
 
 		Place place3 = Place.builder()
 				.user(user)
-				.address(Address.builder()
-						.address("테스트3")
-						.roadAddress("테스트3")
-						.latitude(37.12345)
-						.longitude(128.12345)
-						.sido("테스트3")
-						.bname("테스트3")
-						.sigungu("테스트3")
-						.build())
+				.address(new Address("테스트3",
+						"테스트3",
+						37.12345,
+						128.12345,
+						"테스트3",
+						"테스트3",
+						"테스트3"))
 				.description("장소 설명3")
 				.name("장소 이름3")
 				.category(RESTAURANT)
@@ -94,7 +88,7 @@ class PlaceRepositoryTest {
 		placeRepository.saveAll(List.of(place1, place2, place3));
 
 		// when
-		PageResponse<PlaceResponse> places = placeRepository.findAllPlace(pageRequest);
+		CustomPageResponse<PlaceResponse> places = placeRepository.findAllPlace(pageRequest);
 		List<PlaceResponse> content = places.getContent();
 
 		// then

@@ -1,8 +1,8 @@
 package com.spoteditor.backend.place.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spoteditor.backend.config.page.PageRequest;
-import com.spoteditor.backend.config.page.PageResponse;
+import com.spoteditor.backend.config.page.CustomPageRequest;
+import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.place.controller.dto.PlaceRegisterRequest;
 import com.spoteditor.backend.place.controller.dto.PlaceResponse;
 import com.spoteditor.backend.place.entity.Address;
@@ -10,9 +10,12 @@ import com.spoteditor.backend.place.repository.PlaceRepository;
 import com.spoteditor.backend.place.service.PlaceService;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterCommand;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterResult;
+import com.spoteditor.backend.user.common.dto.UserIdDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,8 +24,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.spoteditor.backend.place.entity.Category.TOUR;
@@ -34,13 +42,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = PlaceApiController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class PlaceApiControllerTest {
 
 	@Autowired private MockMvc mockMvc;
-	@Autowired private ObjectMapper objectMapper;	// 직렬화 / 역직렬화위한 매핑
+	@Autowired private ObjectMapper objectMapper;
 
 	@MockitoBean private PlaceService placeService;
 	@MockitoBean private PlaceRepository placeRepository;
+
+	@BeforeEach
+	void setUp() {
+		UserIdDto principal = new UserIdDto(1L);
+		Authentication authentication = new UsernamePasswordAuthenticationToken(
+				principal,
+				"",
+				Collections.emptyList()
+		);
+		SecurityContext context = SecurityContextHolder.createEmptyContext();
+		context.setAuthentication(authentication);
+		SecurityContextHolder.setContext(context);
+	}
 
 	@Test
 	@DisplayName("공간을 추가한다.")
@@ -53,15 +75,13 @@ class PlaceApiControllerTest {
 				.name("공간1")
 				.description("공간1")
 				.originalFile("원본 파일")
-				.address(Address.builder()
-						.address("테스트1")
-						.roadAddress("테스트1")
-						.latitude(37.123)
-						.longitude(128.123)
-						.sido("테스트1")
-						.bname("테스트1")
-						.sigungu("테스트1")
-						.build())
+				.address(new Address("테스트",
+						"테스트",
+						37.1234,
+						128.1234,
+						"테스트",
+						"테스트",
+						"테스트"))
 				.category(TOUR)
 				.build();
 
@@ -81,9 +101,9 @@ class PlaceApiControllerTest {
 
 		// when & then
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/places")
-				.param("userId", String.valueOf(userId))
-				.content(objectMapper.writeValueAsString(request))
-				.contentType(MediaType.APPLICATION_JSON))
+						.param("userId", String.valueOf(userId))
+						.content(objectMapper.writeValueAsString(request))
+						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated());
 	}
 
@@ -92,7 +112,7 @@ class PlaceApiControllerTest {
 	void 공간을_조회한다() throws Exception {
 
 		// given
-		PageRequest pageRequest = new PageRequest();
+		CustomPageRequest pageRequest = new CustomPageRequest();
 		pageRequest.setPage(1);
 		pageRequest.setSize(20);
 		pageRequest.setDirection(Sort.Direction.ASC);
@@ -100,9 +120,9 @@ class PlaceApiControllerTest {
 		List<PlaceResponse> content = new ArrayList<>();
 		org.springframework.data.domain.PageRequest springPageRequest = org.springframework.data.domain.PageRequest.of(0, 20, Sort.by(Sort.Direction.ASC, "id"));
 		Page<PlaceResponse> page = new PageImpl<>(content, springPageRequest, 0);
-		PageResponse<PlaceResponse> result = new PageResponse<>(page);
+		CustomPageResponse<PlaceResponse> result = new CustomPageResponse<>(page);
 
-		when(placeRepository.findAllPlace(any(PageRequest.class))).thenReturn(result);
+		when(placeRepository.findAllPlace(any(CustomPageRequest.class))).thenReturn(result);
 
 		// when & then
 		mockMvc.perform(
