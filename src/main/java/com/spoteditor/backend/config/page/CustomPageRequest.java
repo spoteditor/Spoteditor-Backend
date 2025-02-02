@@ -6,7 +6,7 @@ import lombok.Setter;
 import static org.springframework.data.domain.Sort.Direction;
 
 @Getter @Setter
-public class PageRequest {
+public class CustomPageRequest {
 
 	private int page;
 	private int size;

@@ -1,7 +1,7 @@
 package com.spoteditor.backend.place.controller;
 
-import com.spoteditor.backend.config.page.PageRequest;
-import com.spoteditor.backend.config.page.PageResponse;
+import com.spoteditor.backend.config.page.CustomPageRequest;
+import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.place.controller.dto.PlaceRegisterRequest;
 import com.spoteditor.backend.place.controller.dto.PlaceRegisterResponse;
 import com.spoteditor.backend.place.controller.dto.PlaceResponse;
@@ -38,7 +38,7 @@ public class PlaceApiController {
 	}
 
 	@GetMapping("/places")
-	public ResponseEntity<PageResponse<PlaceResponse>> retrievePlace(PageRequest pageRequest) {
+	public ResponseEntity<CustomPageResponse<PlaceResponse>> retrievePlace(CustomPageRequest pageRequest) {
 
 		return ResponseEntity
 				.status(HttpStatus.OK)

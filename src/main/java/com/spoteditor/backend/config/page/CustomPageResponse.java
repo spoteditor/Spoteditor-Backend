@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 
 @Getter
-public class PageResponse<T> {
+public class CustomPageResponse<T> {
 
 	private final List<T> content;
 	private final long totalCount;
@@ -16,7 +16,7 @@ public class PageResponse<T> {
 	private final int totalPages;
 	private final Sort sort;
 
-	public PageResponse(Page<T> page) {
+	public CustomPageResponse(Page<T> page) {
 		this.content = page.getContent();
 		this.totalCount = page.getTotalElements();
 		this.pageNumber = page.getNumber() + 1;
