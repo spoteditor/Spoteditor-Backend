@@ -24,7 +24,7 @@ public class Place extends BaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@Column(name = "name", unique = true)
+	@Column(name = "name")
 	private String name;
 
 	@Column(name = "description")
@@ -74,9 +74,4 @@ public class Place extends BaseEntity {
 		this.bookmark--;
 	}
 
-	public void update(String name, String description, Category category) {
-		this.name = name;
-		this.description = description;
-		this.category = category;
-	}
 }
