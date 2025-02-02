@@ -31,8 +31,7 @@ public class PlaceServiceImpl implements PlaceService {
 				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
 		Place savedPlace = placeRepository.save(command.toEntity(user));
-		imageService.upload(command.originalFile(), savedPlace.getId());
+		imageService.upload(command.originalFile(), command.uuid(), savedPlace.getId());
 		return PlaceRegisterResult.from(savedPlace);
 	}
-
 }

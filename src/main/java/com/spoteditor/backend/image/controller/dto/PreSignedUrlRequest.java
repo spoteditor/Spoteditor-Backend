@@ -1,6 +1,6 @@
 package com.spoteditor.backend.image.controller.dto;
 
-public record PresignedUrlRequest(
+public record PreSignedUrlRequest(
 		String originalFile
 ) {
 }

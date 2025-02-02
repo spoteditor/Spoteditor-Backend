@@ -10,6 +10,7 @@ public record PlaceRegisterRequest(
 		String name,
 		String description,
 		String originalFile,
+		String uuid,
 		Address address,
 		Category category
 ) {
@@ -19,6 +20,7 @@ public record PlaceRegisterRequest(
 				this.name,
 				this.description,
 				this.originalFile,
+				this.uuid,
 				this.address,
 				this.category
 		);

@@ -10,6 +10,7 @@ public record PlaceRegisterCommand(
 		String name,
 		String description,
 		String originalFile,
+		String uuid,
 		Address address,
 		Category category
 ) {

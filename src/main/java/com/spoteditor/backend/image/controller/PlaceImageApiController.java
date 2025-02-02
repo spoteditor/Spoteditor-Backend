@@ -1,7 +1,7 @@
 package com.spoteditor.backend.image.controller;
 
 import com.spoteditor.backend.image.controller.dto.PreSignedUrlResponse;
-import com.spoteditor.backend.image.controller.dto.PresignedUrlRequest;
+import com.spoteditor.backend.image.controller.dto.PreSignedUrlRequest;
 import com.spoteditor.backend.image.service.PlaceImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +21,9 @@ public class PlaceImageApiController {
 	private final PlaceImageService imageService;
 
 	@PostMapping("/purl")
-	public ResponseEntity<PreSignedUrlResponse> processPreSignedUrlResponse(@RequestBody PresignedUrlRequest request) {
+	public ResponseEntity<PreSignedUrlResponse> processPreSignedUrlResponse(@RequestBody PreSignedUrlRequest request) {
 
-		PreSignedUrlResponse presignedUrlResponse = imageService.processPresignedUrl(request);
+		PreSignedUrlResponse presignedUrlResponse = imageService.processPreSignedUrl(request);
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(presignedUrlResponse);

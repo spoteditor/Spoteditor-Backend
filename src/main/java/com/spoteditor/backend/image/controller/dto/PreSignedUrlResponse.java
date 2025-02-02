@@ -1,10 +1,11 @@
 package com.spoteditor.backend.image.controller.dto;
 
 public record PreSignedUrlResponse(
-		String preSignedUrl
+		String preSignedUrl,
+		String uuid
 ) {
 
-	public static PreSignedUrlResponse from(String preSignedUrl) {
-		return new PreSignedUrlResponse(preSignedUrl);
+	public static PreSignedUrlResponse from(String preSignedUrl, String uuid) {
+		return new PreSignedUrlResponse(preSignedUrl, uuid);
 	}
 }
