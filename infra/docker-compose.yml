@@ -16,23 +16,6 @@ services:
       mysql:
         condition: service_healthy
 
-  spring-2:
-    build: .
-    restart: always
-    environment:
-      - SERVER_PORT=8081
-    ports:
-      - "8081:8081"
-    depends_on:
-      master-redis:
-        condition: service_healthy
-      slave-redis-a:
-        condition: service_healthy
-      slave-redis-b:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
-
   mysql:
     container_name: mysql
     image: mysql:8.0
