@@ -61,6 +61,6 @@ jobs:
       - name: Code Deploy를 활용해 EC2에 프로젝트 코드 배포
         run: aws deploy create-deployment
             --application-name spoteditor
-            --deploy-config-name CodeDeployDefault.AllAtOnce
+            --deployment-config-name CodeDeployDefault.AllAtOnce
             --deployment-group-name spoteditor-production
-            --s3-location bucket=spoteditor-deploy-s3, bundleType=tgz, key=$GITHUB_SHA.tar.gz
+            --s3-location bucket=spoteditor-deploy-s3,bundleType=tgz,key=$GITHUB_SHA.tar.gz
