@@ -1,8 +1,5 @@
-FROM openjdk:17-jdk
+FROM openjdk:17-alpine
 COPY ./build/libs/*SNAPSHOT.jar spoteditor.jar
-
-RUN apt-get update && \
-    apt-get install -y git
 
 EXPOSE 8080 8081
 
