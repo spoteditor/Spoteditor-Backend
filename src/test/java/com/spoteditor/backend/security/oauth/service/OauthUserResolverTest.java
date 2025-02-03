@@ -1,10 +1,11 @@
 package com.spoteditor.backend.security.oauth.service;
 
-import com.spoteditor.backend.domain.user.entity.User;
-import com.spoteditor.backend.domain.user.entity.value.OauthProvider;
-import com.spoteditor.backend.domain.user.repository.UserRepository;
-import com.spoteditor.backend.security.oauth.dto.OauthAttributes;
-import com.spoteditor.backend.security.oauth.dto.OauthAttributesUserMapper;
+import com.spoteditor.backend.config.oauth.service.OauthUserResolver;
+import com.spoteditor.backend.user.entity.User;
+import com.spoteditor.backend.user.entity.value.OauthProvider;
+import com.spoteditor.backend.user.repository.UserRepository;
+import com.spoteditor.backend.config.oauth.dto.OauthAttributes;
+import com.spoteditor.backend.config.oauth.dto.OauthAttributesUserMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
