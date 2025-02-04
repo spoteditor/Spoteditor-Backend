@@ -1,4 +1,8 @@
 echo "--------------- 서버 배포 시작 -----------------"
+aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 891612578477.dkr.ecr.ap-northeast-2.amazonaws.com
+
+cd /home/ubuntu/Spoteditor-Backend/infra
+
 docker compose down || true
 docker pull 891612578477.dkr.ecr.ap-northeast-2.amazonaws.com/spoteditor:latest
 docker compose up -d --build
