@@ -41,10 +41,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Docker 이미지 생성
-        run: |
-          cd ./infra
-          docker build -t spoteditor -f Dockerfile ..
-          cd ..
+        run: docker build -t spoteditor .
 
       - name: Docker 이미지에 Tag 붙이기
         run: docker tag spoteditor ${{ steps.login-ecr.outputs.registry }}/spoteditor:latest
