@@ -86,7 +86,7 @@ services:
     environment:
       - REDIS_HOSTS=master:master-redis:6379,slave-a:slave-redis-a:6379,slave-b:slave-redis-b:6379
     ports:
-      - "8082:8082"
+      - "8081:8081"
     depends_on:
       - master-redis
       - slave-redis-a
