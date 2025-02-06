@@ -2,11 +2,15 @@ package com.spoteditor.backend.user.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.user.entity.value.OauthProvider;
+import com.spoteditor.backend.userplacelog.entity.UserPlaceLog;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,6 +22,9 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<UserPlaceLog> userPlaceLogs = new ArrayList<>();
 
     @Column(name = "email")
     private String email;
