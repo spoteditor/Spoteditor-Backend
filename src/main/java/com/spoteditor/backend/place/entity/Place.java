@@ -2,9 +2,8 @@ package com.spoteditor.backend.place.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.image.entity.PlaceImage;
-import com.spoteditor.backend.placelogplace.entity.PlaceLogPlace;
+import com.spoteditor.backend.mapping.placelogplace.entity.PlaceLogPlace;
 import com.spoteditor.backend.user.entity.User;
-import com.spoteditor.backend.userplacelog.entity.UserPlaceLog;
 import jakarta.persistence.*;
 import lombok.*;
 

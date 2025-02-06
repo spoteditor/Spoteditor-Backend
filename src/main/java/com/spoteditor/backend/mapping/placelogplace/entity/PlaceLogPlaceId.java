@@ -1,4 +1,4 @@
-package com.spoteditor.backend.placelogplace.entity;
+package com.spoteditor.backend.mapping.placelogplace.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;

@@ -1,4 +1,4 @@
-package com.spoteditor.backend.userplacelog.entity;
+package com.spoteditor.backend.mapping.userplacelog.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;

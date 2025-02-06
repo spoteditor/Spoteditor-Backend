@@ -2,7 +2,7 @@ package com.spoteditor.backend.user.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.user.entity.value.OauthProvider;
-import com.spoteditor.backend.userplacelog.entity.UserPlaceLog;
+import com.spoteditor.backend.mapping.userplacelog.entity.UserPlaceLog;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

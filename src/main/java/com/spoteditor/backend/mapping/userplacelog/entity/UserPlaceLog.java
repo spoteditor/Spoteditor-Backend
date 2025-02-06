@@ -1,26 +1,26 @@
-package com.spoteditor.backend.placelogplace.entity;
+package com.spoteditor.backend.mapping.userplacelog.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
-import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
+import com.spoteditor.backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "place_log_place")
+@Table(name = "user_place_log")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceLogPlace extends BaseEntity {
+public class UserPlaceLog extends BaseEntity {
 
     @EmbeddedId
-    private PlaceLogPlaceId id;
+    private UserPlaceLogId id;
 
-    @MapsId("placeId")
+    @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "place_id")
-    private Place place;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @MapsId("placeLogId")
     @ManyToOne(fetch = FetchType.LAZY)
