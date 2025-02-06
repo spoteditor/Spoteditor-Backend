@@ -2,7 +2,9 @@ package com.spoteditor.backend.place.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.image.entity.PlaceImage;
+import com.spoteditor.backend.placelogplace.entity.PlaceLogPlace;
 import com.spoteditor.backend.user.entity.User;
+import com.spoteditor.backend.userplacelog.entity.UserPlaceLog;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +25,9 @@ public class Place extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	@OneToMany(mappedBy = "place", orphanRemoval = true, cascade = CascadeType.ALL)
+	private List<PlaceLogPlace> placeLogPlaces = new ArrayList<>();
 
 	@Column(name = "name")
 	private String name;
