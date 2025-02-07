@@ -1,4 +1,4 @@
-package com.spoteditor.backend.mapping.placelogplace.entity;
+package com.spoteditor.backend.mapping.logplaceplacemapping.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.place.entity.Place;
@@ -9,13 +9,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "place_log_place")
+@Table(name = "log_place_place_mapping")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceLogPlace extends BaseEntity {
+public class LogPlacePlaceMapping extends BaseEntity {
 
     @EmbeddedId
-    private PlaceLogPlaceId id;
+    private LogPlacePlaceMappingId id;
 
     @MapsId("placeId")
     @ManyToOne(fetch = FetchType.LAZY)

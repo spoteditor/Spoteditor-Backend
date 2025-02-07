@@ -1,8 +1,8 @@
 package com.spoteditor.backend.user.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
+import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMapping;
 import com.spoteditor.backend.user.entity.value.OauthProvider;
-import com.spoteditor.backend.mapping.userplacelog.entity.UserPlaceLog;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,7 +24,7 @@ public class User extends BaseEntity {
     private Long id;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<UserPlaceLog> userPlaceLogs = new ArrayList<>();
+    private List<UserPlaceLogMapping> userPlaceLogMappings = new ArrayList<>();
 
     @Column(name = "email")
     private String email;

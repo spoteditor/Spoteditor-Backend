@@ -1,11 +1,11 @@
 package com.spoteditor.backend.placelog.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
+import com.spoteditor.backend.mapping.logplaceplacemapping.entity.LogPlacePlaceMapping;
 import com.spoteditor.backend.place.entity.Address;
-import com.spoteditor.backend.mapping.placelogplace.entity.PlaceLogPlace;
 import com.spoteditor.backend.user.entity.User;
 
-import com.spoteditor.backend.mapping.userplacelog.entity.UserPlaceLog;
+import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMapping;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,10 +30,10 @@ public class PlaceLog extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "placeLog", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<UserPlaceLog> userPlaceLogs = new ArrayList<>();
+    private List<UserPlaceLogMapping> userPlaceLogMappings = new ArrayList<>();
 
     @OneToMany(mappedBy = "placeLog", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<PlaceLogPlace> placeLogPlaces = new ArrayList<>();
+    private List<LogPlacePlaceMapping> logPlacePlaceMappings = new ArrayList<>();
 
     @Column(name = "name")
     private String name;
@@ -49,7 +49,7 @@ public class PlaceLog extends BaseEntity {
     private Address address;
 
     @Column(name = "views")
-    private Long views;
+    private long views;
 
     @Version
     private Long version;
