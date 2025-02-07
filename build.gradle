@@ -26,9 +26,6 @@ repositories {
 
 dependencies {
 
-	// redis
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
 	// log
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 
@@ -85,6 +82,17 @@ dependencies {
 
 	// redisson
 	implementation 'org.redisson:redisson-spring-boot-starter:3.24.3'
+
+	// rabbitmq
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	testImplementation 'org.springframework.amqp:spring-rabbit-test'
+
+	// websocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
