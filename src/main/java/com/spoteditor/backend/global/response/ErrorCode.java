@@ -19,6 +19,9 @@ public enum ErrorCode {
 	REFRESH_TOKEN_NOT_IN_COOKIE(HttpStatus.FORBIDDEN, "U008", "쿠키에 RefreshToken 없음"),
 	NOT_FOUND_USER(HttpStatus.NOT_FOUND, "U009", "해당 유저를 찾을 수 없습니다."),
 
+	// follow
+	DUPLICATED_FOLLOW(HttpStatus.NOT_FOUND, "F001", "중복 팔로우는 할 수 없습니다."),
+
 	// place
 	NOT_FOUND_PLACE(HttpStatus.NOT_FOUND, "P001", "해당 장소를 찾을 수 없습니다."),
 
