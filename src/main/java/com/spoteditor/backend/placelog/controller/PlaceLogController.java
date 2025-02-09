@@ -2,6 +2,7 @@ package com.spoteditor.backend.placelog.controller;
 
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterResponse;
+import com.spoteditor.backend.placelog.service.PlaceLogService;
 import com.spoteditor.backend.placelog.service.dto.PlaceLogRegisterCommand;
 import com.spoteditor.backend.placelog.service.dto.PlaceLogRegisterResult;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
