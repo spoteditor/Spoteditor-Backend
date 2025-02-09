@@ -1,6 +1,7 @@
 package com.spoteditor.backend.user.service;
 
 import com.spoteditor.backend.config.util.CookieUtils;
+import com.spoteditor.backend.global.exception.TokenException;
 import com.spoteditor.backend.global.exception.UserException;
 import com.spoteditor.backend.user.common.dto.UserTokenDto;
 import com.spoteditor.backend.config.jwt.JwtConstants;
@@ -25,7 +26,7 @@ public class UserTokenService {
         String refreshToken = cookieUtils.getRefreshToken(request);
 
         if(refreshToken == null) {
-            throw new UserException(REFRESH_TOKEN_NOT_IN_COOKIE);
+            throw new TokenException(REFRESH_TOKEN_NOT_IN_COOKIE);
         }
 
         try {
@@ -37,7 +38,7 @@ public class UserTokenService {
             String accessToken = jwtUtils.createAccessToken(userIdDto.getId(), userIdDto.getRole());
             cookieUtils.setAccessTokenCookie(response, JwtConstants.ACCESS_TOKEN, accessToken);
         } catch (UserException e) {
-            throw new UserException(REFRESH_TOKEN_INVALID);
+            throw new TokenException(REFRESH_TOKEN_INVALID);
         }
     }
 }

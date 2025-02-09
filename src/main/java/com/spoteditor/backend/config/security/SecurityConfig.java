@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .successHandler(oauthSuccessHandler)
                 .failureHandler(oauthFailureHandler)
             );
+
         return http.build();
     }
 }

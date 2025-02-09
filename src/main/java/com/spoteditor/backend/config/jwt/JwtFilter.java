@@ -1,7 +1,12 @@
 package com.spoteditor.backend.config.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.spoteditor.backend.config.util.CookieUtils;
+import com.spoteditor.backend.global.exception.TokenException;
 import com.spoteditor.backend.global.exception.UserException;
+import com.spoteditor.backend.global.response.ErrorCode;
+import com.spoteditor.backend.global.response.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,7 +15,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -44,11 +51,28 @@ public class JwtFilter extends OncePerRequestFilter {
 
             // 인증정보 SecurityContextHolder 에 등록
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch(ExpiredJwtException e) {
-            throw new UserException(ACCESS_TOKEN_EXPIRED);
-        } catch (Exception e) {
-            throw new UserException(INVALID_TOKEN);
+
+            filterChain.doFilter(request, response);
         }
-        filterChain.doFilter(request, response);
+        catch(ExpiredJwtException e) {
+            handleException(response, new TokenException(ACCESS_TOKEN_EXPIRED));
+        }
+        catch (Exception e) {
+            handleException(response, new TokenException(INVALID_TOKEN));
+        }
+    }
+    private void handleException(HttpServletResponse response, TokenException tokenException) throws IOException {
+        ErrorCode errorCode = tokenException.getErrorCode();
+
+        response.setStatus(errorCode.getStatus().value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        String jsonResponse = objectMapper.writeValueAsString(ErrorResponse.of(errorCode));
+        response.getWriter().write(jsonResponse);
     }
 }
+

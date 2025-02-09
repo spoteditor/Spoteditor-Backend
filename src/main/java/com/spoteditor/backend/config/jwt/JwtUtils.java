@@ -1,5 +1,6 @@
 package com.spoteditor.backend.config.jwt;
 
+import com.spoteditor.backend.global.exception.TokenException;
 import com.spoteditor.backend.global.exception.UserException;
 import com.spoteditor.backend.user.common.dto.UserTokenDto;
 import io.jsonwebtoken.*;
@@ -62,9 +63,9 @@ public class JwtUtils {
 
             return (String) claims.getPayload().get(subject);
         } catch (ExpiredJwtException e) {
-            throw new UserException(TOKEN_EXPIRED);
+            throw new TokenException(TOKEN_EXPIRED);
         } catch (Exception e) {
-            throw new UserException(INVALID_TOKEN);
+            throw new TokenException(INVALID_TOKEN);
         }
     }
 }
