@@ -8,6 +8,7 @@ import com.spoteditor.backend.user.entity.User;
 import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMapping;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -53,4 +54,14 @@ public class PlaceLog extends BaseEntity {
 
     @Version
     private Long version;
+
+    @Builder
+    private PlaceLog(User user, String name, String description, String imageUrl, Address address) {
+        this.user = user;
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.address = address;
+        this.views = 0L;
+    }
 }
