@@ -1,7 +1,7 @@
 package com.spoteditor.backend.config.util;
 
 import com.spoteditor.backend.global.exception.UserException;
-import com.spoteditor.backend.user.common.dto.UserIdDto;
+import com.spoteditor.backend.user.common.dto.UserTokenDto;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -18,6 +18,6 @@ public class SecurityUtils {
             throw new UserException(NO_AUTHENTICATED_USER);
         }
 
-        return ((UserIdDto) authentication.getPrincipal()).getId();
+        return ((UserTokenDto) authentication.getPrincipal()).getId();
     }
 }

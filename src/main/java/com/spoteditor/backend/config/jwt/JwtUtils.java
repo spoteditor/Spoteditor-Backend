@@ -1,7 +1,7 @@
 package com.spoteditor.backend.config.jwt;
 
 import com.spoteditor.backend.global.exception.UserException;
-import com.spoteditor.backend.user.common.dto.UserIdDto;
+import com.spoteditor.backend.user.common.dto.UserTokenDto;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,7 +48,7 @@ public class JwtUtils {
         Long id = Long.parseLong(parseJwtSubject(jwt, "sub", signingKey));
         String role = parseJwtSubject(jwt, "role", signingKey);
 
-        UserIdDto userIdDto = new UserIdDto(id, role);
+        UserTokenDto userIdDto = new UserTokenDto(id, role);
 
         return new UsernamePasswordAuthenticationToken(userIdDto, null);
     }

@@ -2,7 +2,7 @@ package com.spoteditor.backend.user.service;
 
 import com.spoteditor.backend.config.util.CookieUtils;
 import com.spoteditor.backend.global.exception.UserException;
-import com.spoteditor.backend.user.common.dto.UserIdDto;
+import com.spoteditor.backend.user.common.dto.UserTokenDto;
 import com.spoteditor.backend.config.jwt.JwtConstants;
 import com.spoteditor.backend.config.jwt.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +31,7 @@ public class UserTokenService {
         try {
             // RefreshToken 검증
             UsernamePasswordAuthenticationToken authentication = jwtUtils.setAuthentication(refreshToken);
-            UserIdDto userIdDto = (UserIdDto) authentication.getPrincipal();
+            UserTokenDto userIdDto = (UserTokenDto) authentication.getPrincipal();
 
             // 검증 성공 -> accessToken 발급
             String accessToken = jwtUtils.createAccessToken(userIdDto.getId(), userIdDto.getRole());

@@ -9,7 +9,7 @@ import com.spoteditor.backend.place.repository.PlaceRepository;
 import com.spoteditor.backend.place.service.PlaceService;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterCommand;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterResult;
-import com.spoteditor.backend.user.common.dto.UserIdDto;
+import com.spoteditor.backend.user.common.dto.UserTokenDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ public class PlaceApiController {
 	private final PlaceRepository placeRepository;
 
 	@PostMapping("/places")
-	public ResponseEntity<PlaceRegisterResponse> addPlace(@AuthenticationPrincipal UserIdDto dto,
+	public ResponseEntity<PlaceRegisterResponse> addPlace(@AuthenticationPrincipal UserTokenDto dto,
 														  @RequestBody final PlaceRegisterRequest request) {
 
 		PlaceRegisterCommand command = request.from();

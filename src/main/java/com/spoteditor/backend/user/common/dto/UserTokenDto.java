@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserIdDto {
+public class UserTokenDto {
     private Long id;
     private String role;
 }
