@@ -19,7 +19,7 @@ public class JwtUtils {
 
     private final JwtProperties jwtProperties;
 
-    public String createToken(Long id, long expirationTime) {
+    public String createToken(Long id, String role, long expirationTime) {
         SecretKey signingKey = jwtProperties.getSigningKey();
 
         return Jwts.builder()
@@ -28,37 +28,39 @@ public class JwtUtils {
                 .add("typ", JwtConstants.TOKEN_TYPE)
                 .and()
                 .claim("sub", id.toString())
+                .claim("role", role)
                 .claim("iat", new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .compact();
     }
 
-    public String createAccessToken(Long id) {
-        return createToken(id, jwtProperties.getAccessTokenExp());
+    public String createAccessToken(Long id, String role) {
+        return createToken(id, role, jwtProperties.getAccessTokenExp());
     }
 
-    public String createRefreshToken(Long id) {
-        return createToken(id, jwtProperties.getRefreshTokenExp());
+    public String createRefreshToken(Long id, String role) {
+        return createToken(id, role, jwtProperties.getRefreshTokenExp());
     }
 
     public UsernamePasswordAuthenticationToken setAuthentication(String jwt) throws Exception {
         SecretKey signingKey = jwtProperties.getSigningKey();
 
-        String id = parseJwtGetUid(jwt, signingKey);
+        Long id = Long.parseLong(parseJwtSubject(jwt, "sub", signingKey));
+        String role = parseJwtSubject(jwt, "role", signingKey);
 
-        UserIdDto userIdDto = new UserIdDto(Long.parseLong(id));
+        UserIdDto userIdDto = new UserIdDto(id, role);
 
         return new UsernamePasswordAuthenticationToken(userIdDto, null);
     }
 
-    private String parseJwtGetUid(String jwt, SecretKey signingKey) {
+    private String parseJwtSubject(String jwt, String subject, SecretKey signingKey) {
         try {
             Jws<Claims> claims = Jwts.parser()
                 .verifyWith(signingKey)
                 .build()
                 .parseSignedClaims(jwt);
 
-            return (String) claims.getPayload().get("sub");
+            return (String) claims.getPayload().get(subject);
         } catch (ExpiredJwtException e) {
             throw new UserException(TOKEN_EXPIRED);
         } catch (Exception e) {

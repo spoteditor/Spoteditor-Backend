@@ -34,7 +34,7 @@ public class UserTokenService {
             UserIdDto userIdDto = (UserIdDto) authentication.getPrincipal();
 
             // 검증 성공 -> accessToken 발급
-            String accessToken = jwtUtils.createAccessToken(userIdDto.getId());
+            String accessToken = jwtUtils.createAccessToken(userIdDto.getId(), userIdDto.getRole());
             cookieUtils.setAccessTokenCookie(response, JwtConstants.ACCESS_TOKEN, accessToken);
         } catch (UserException e) {
             throw new UserException(REFRESH_TOKEN_INVALID);

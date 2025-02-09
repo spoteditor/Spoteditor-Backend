@@ -1,7 +1,9 @@
 package com.spoteditor.backend.config.oauth.service;
 
 import com.spoteditor.backend.config.oauth.dto.OauthAttributes;
+import com.spoteditor.backend.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +32,12 @@ public class CustomOauthUserService implements OAuth2UserService<OAuth2UserReque
         Long createdUserId = oauthUserResolver.resolveUserId(attributes);
         Map<String, Object> userIdMap = Map.of("id", createdUserId);
 
+        Set<SimpleGrantedAuthority> authority = Collections.singleton(
+                new SimpleGrantedAuthority(UserRole.USER.name())
+        );
+
         return new DefaultOAuth2User(
-                Collections.emptySet(),
+                authority,
                 userIdMap,
                 "id"
         );
