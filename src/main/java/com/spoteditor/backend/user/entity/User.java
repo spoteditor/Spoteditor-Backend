@@ -2,7 +2,6 @@ package com.spoteditor.backend.user.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMapping;
-import com.spoteditor.backend.user.entity.value.OauthProvider;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,15 +37,19 @@ public class User extends BaseEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "instagram_id")
+    private String instagramId;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "role")
+    private UserRole role;
+
     @Enumerated(value = EnumType.STRING)
     @Column(name = "provider")
     private OauthProvider provider;
 
     @Column(name = "oauth_user_id")
     private String oauthUserId;
-
-//    @Embedded
-//    private Address address;
 
     @Builder
     private User(String email, String name, String imageUrl, OauthProvider provider, String oauthUserId) {

@@ -1,4 +1,4 @@
-package com.spoteditor.backend.user.entity.value;
+package com.spoteditor.backend.user.entity;
 
 import com.spoteditor.backend.global.exception.UserException;
 
