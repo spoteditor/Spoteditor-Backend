@@ -27,7 +27,12 @@ public enum ErrorCode {
 	BOOKMARK_PROCESSING_FAILED(HttpStatus.CONFLICT, "B002", "북마크 처리에 실패했습니다. 잠시 후 다시 시도해주세요."),
 
 	// image
-	NOT_FOUND_IMAGE(HttpStatus.NOT_FOUND, "I001", "이미지를 찾을 수 없습니다.");
+	NOT_FOUND_IMAGE(HttpStatus.NOT_FOUND, "I001", "이미지를 찾을 수 없습니다."),
+
+	// place log
+	NOT_FOUND_PLACES(HttpStatus.NOT_FOUND, "PL001", "로그에 등록된 장소들을 찾을 수 없습니다."),
+	PLACE_MINIMUM_REQUIRED(HttpStatus.BAD_REQUEST, "PL002", "로그에 장소는 최소 1개 이상 등록해야 합니다."),
+	PLACE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "PL003", "로그에 장소는 최대 10개까지 등록 가능합니다.");
 
 	private final HttpStatus status;
 	private final String code;
