@@ -1,5 +1,6 @@
 package com.spoteditor.backend.global.response;
 
+import com.spoteditor.backend.global.exception.BusinessException;
 import com.spoteditor.backend.global.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(UserException.class)
-	public ResponseEntity<ErrorResponse> handleUserException(UserException e) {
+	@ExceptionHandler(BusinessException.class)
+	public ResponseEntity<ErrorResponse> handleUserException(BusinessException e) {
 		ErrorResponse apiErrorResponse = ErrorResponse.of(
 				e.getErrorCode()
 		);
