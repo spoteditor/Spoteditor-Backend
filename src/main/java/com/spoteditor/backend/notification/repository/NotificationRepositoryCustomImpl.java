@@ -6,9 +6,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.notification.controller.dto.NotificationListDto;
+import com.spoteditor.backend.notification.entity.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
@@ -53,4 +55,32 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
 
 		return new CustomPageResponse<>(page);
 	}
+
+	@Override
+	public List<Notification> findAllByUserIdAndUnread(Long userId) {
+		return queryFactory
+				.selectFrom(notification)
+				.where(notification.toUser.id.eq(userId), notification.isRead.eq(false))
+				.orderBy(notification.toUser.id.desc())
+				.fetch();
+	}
+
+	@Override
+	public List<Notification> findAllByUserIdAndRead(Long userId) {
+		return queryFactory
+				.selectFrom(notification)
+				.where(notification.toUser.id.eq(userId), notification.isRead.eq(true))
+				.orderBy(notification.toUser.id.desc())
+				.fetch();
+	}
+
+	@Modifying(clearAutomatically = true)
+	@Override
+	public void updateNotificationRead(Long userId) {
+		queryFactory.update(notification)
+				.set(notification.isRead, true)
+				.where(notification.toUser.id.eq(userId))
+				.execute();
+	}
+
 }

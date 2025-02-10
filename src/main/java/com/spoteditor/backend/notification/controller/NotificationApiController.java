@@ -41,12 +41,18 @@ public class NotificationApiController {
 	}
 
 	@PutMapping("/notice/{id}")
-	public ResponseEntity<Void> read(@AuthenticationPrincipal UserIdDto dto) {
-		return null;
+	public ResponseEntity<Void> read(Long notificationId) {
+		notificationService.read(notificationId);
+		return ResponseEntity
+				.status(HttpStatus.NO_CONTENT)
+				.build();
 	}
 
-	@PutMapping("/notice")
+	@PutMapping("/notice/all")
 	public ResponseEntity<Void> readAll(@AuthenticationPrincipal UserIdDto dto) {
-		return null;
+		notificationService.readAll(dto.getId());
+		return ResponseEntity
+				.status(HttpStatus.NO_CONTENT)
+				.build();
 	}
 }
