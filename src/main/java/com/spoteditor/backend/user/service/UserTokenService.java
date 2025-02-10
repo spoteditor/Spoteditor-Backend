@@ -32,10 +32,11 @@ public class UserTokenService {
         try {
             // RefreshToken 검증
             UsernamePasswordAuthenticationToken authentication = jwtUtils.setAuthentication(refreshToken);
-            UserTokenDto userIdDto = (UserTokenDto) authentication.getPrincipal();
+            UserTokenDto userTokenDto = (UserTokenDto) authentication.getPrincipal();
 
             // 검증 성공 -> accessToken 발급
-            String accessToken = jwtUtils.createAccessToken(userIdDto.getId(), userIdDto.getRole());
+            String accessToken = jwtUtils.createAccessToken(userTokenDto.getId(), userTokenDto.getRole());
+
             cookieUtils.setAccessTokenCookie(response, JwtConstants.ACCESS_TOKEN, accessToken);
         } catch (UserException e) {
             throw new TokenException(REFRESH_TOKEN_INVALID);

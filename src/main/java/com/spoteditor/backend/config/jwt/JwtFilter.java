@@ -36,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
         // /favicon.ico 요청은 필터를 건너뜀
-        if ("/favicon.ico".equals(path)) {
+        if ("/favicon.ico".equals(path) || "/api/auth/refresh".equals(path)) {
             filterChain.doFilter(request, response);
             return;
         }
