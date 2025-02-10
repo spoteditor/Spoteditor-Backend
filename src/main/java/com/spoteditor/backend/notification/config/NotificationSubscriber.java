@@ -17,7 +17,7 @@ public class NotificationSubscriber {
 	private final SimpMessagingTemplate template;
 
 	@RabbitListener(queues = RabbitMqConfiguration.FOLLOW_QUEUE)
-	public void subscriberFollow(NotificationDto dto) {
+	public void subscribeFollow(NotificationDto dto) {
 		log.info("Received Notification: " + dto);
 		template.convertAndSend(CLIENT_URL, dto);
 	}
