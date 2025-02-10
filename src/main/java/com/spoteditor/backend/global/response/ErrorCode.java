@@ -30,7 +30,10 @@ public enum ErrorCode {
 	BOOKMARK_PROCESSING_FAILED(HttpStatus.CONFLICT, "B002", "북마크 처리에 실패했습니다. 잠시 후 다시 시도해주세요."),
 
 	// image
-	NOT_FOUND_IMAGE(HttpStatus.NOT_FOUND, "I001", "이미지를 찾을 수 없습니다.");
+	NOT_FOUND_IMAGE(HttpStatus.NOT_FOUND, "I001", "이미지를 찾을 수 없습니다."),
+
+	// notification
+	NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND, "N001", "알림을 찾을 수 없습니다.");
 
 	private final HttpStatus status;
 	private final String code;
