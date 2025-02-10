@@ -48,4 +48,8 @@ public class Notification extends BaseEntity {
 		this.fromUser = fromUser;
 		this.toUser = toUser;
 	}
+
+	public void read() {
+		this.isRead = true;
+	}
 }
