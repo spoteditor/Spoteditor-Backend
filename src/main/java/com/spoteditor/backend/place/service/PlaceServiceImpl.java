@@ -8,6 +8,7 @@ import com.spoteditor.backend.place.service.dto.PlaceRegisterCommand;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterResult;
 import com.spoteditor.backend.user.entity.User;
 import com.spoteditor.backend.user.repository.UserRepository;
+import com.spoteditor.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,14 +22,13 @@ public class PlaceServiceImpl implements PlaceService {
 
 	private final PlaceRepository placeRepository;
 	private final PlaceImageService imageService;
-	private final UserRepository userRepository;
+	private final UserService userService;
 
 	@Override
 	@Transactional
 	public PlaceRegisterResult addPlace(Long userId, PlaceRegisterCommand command) {
 
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
+		User user = userService.getActiveUser(userId);
 
 		Place savedPlace = placeRepository.save(command.toEntity(user));
 		imageService.upload(command.originalFile(), command.uuid(), savedPlace.getId());

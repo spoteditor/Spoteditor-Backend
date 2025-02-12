@@ -10,6 +10,7 @@ import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.place.repository.PlaceRepository;
 import com.spoteditor.backend.user.entity.User;
 import com.spoteditor.backend.user.repository.UserRepository;
+import com.spoteditor.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,14 +24,13 @@ public class BookmarkServiceImpl implements BookmarkService {
 
 	private final BookmarkRepository bookmarkRepository;
 	private final PlaceRepository placeRepository;
-	private final UserRepository userRepository;
+	private final UserService userService;
 
 	@Override
 	@Transactional
 	public void addBookmark(Long userId, BookmarkCommand command) {
 
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
+		User user = userService.getActiveUser(userId);
 
 		Place place = placeRepository.findById(command.placeId())
 				.orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
