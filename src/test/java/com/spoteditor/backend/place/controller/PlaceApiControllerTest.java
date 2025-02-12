@@ -10,7 +10,7 @@ import com.spoteditor.backend.place.repository.PlaceRepository;
 import com.spoteditor.backend.place.service.PlaceService;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterCommand;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterResult;
-import com.spoteditor.backend.user.common.dto.UserTokenDto;
+import com.spoteditor.backend.user.common.dto.UserIdDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,7 @@ class PlaceApiControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		UserTokenDto principal = new UserTokenDto(1L);
+		UserIdDto principal = new UserIdDto(1L);
 		Authentication authentication = new UsernamePasswordAuthenticationToken(
 				principal,
 				"",
