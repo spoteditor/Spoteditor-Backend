@@ -1,8 +1,10 @@
 package com.spoteditor.backend.user.controller;
 
-import com.spoteditor.backend.user.common.dto.UserTokenDto;
+import com.spoteditor.backend.config.security.annotation.AdminOnly;
+import com.spoteditor.backend.user.common.dto.UserIdDto;
 import com.spoteditor.backend.user.controller.dto.UserResponse;
 import com.spoteditor.backend.user.controller.dto.UserUpdateRequest;
+import com.spoteditor.backend.user.controller.dto.UserUpdateResponse;
 import com.spoteditor.backend.user.service.UserService;
 import com.spoteditor.backend.user.service.dto.UserResult;
 import com.spoteditor.backend.user.service.dto.UserUpdateCommand;
@@ -22,9 +24,9 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<UserResponse> getUser(
-            @AuthenticationPrincipal UserTokenDto userTokenDto
+            @AuthenticationPrincipal UserIdDto userIdDto
     ) {
-        UserResult userResult = userService.getUser(userTokenDto.getId());
+        UserResult userResult = userService.getUser(userIdDto.getId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -33,14 +35,25 @@ public class UserController {
 
     @PatchMapping("/users")
     public ResponseEntity<UserUpdateResponse> updateUser(
-            @AuthenticationPrincipal UserTokenDto userTokenDto,
+            @AuthenticationPrincipal UserIdDto userIdDto,
             @RequestBody UserUpdateRequest userUpdateRequest
     ) {
         UserUpdateCommand command = userUpdateRequest.from();
-        UserUpdateResult result = userService.updateUser(userTokenDto.getId(), command);
+        UserUpdateResult result = userService.updateUser(userIdDto.getId(), command);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(UserUpdateResponse.from(result));
+    }
+
+    @DeleteMapping("/users")
+    public ResponseEntity<Void> deleteUser(
+            @AuthenticationPrincipal UserIdDto userIdDto
+    ) {
+        userService.deleteUser(userIdDto.getId());
+
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }

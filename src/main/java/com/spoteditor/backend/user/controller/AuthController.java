@@ -23,4 +23,13 @@ public class AuthController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<Void> logout (HttpServletResponse response) throws Exception {
+        userTokenService.removeTokens(response);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
 }
