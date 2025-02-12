@@ -1,14 +1,16 @@
 package com.spoteditor.backend.config.jwt;
 
 import com.spoteditor.backend.global.exception.TokenException;
-import com.spoteditor.backend.global.exception.UserException;
-import com.spoteditor.backend.user.common.dto.UserTokenDto;
+import com.spoteditor.backend.user.common.dto.UserIdDto;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Collections;
 import java.util.Date;
 
 import static com.spoteditor.backend.global.response.ErrorCode.INVALID_TOKEN;
@@ -49,9 +51,10 @@ public class JwtUtils {
         Long id = Long.parseLong(parseJwtSubject(jwt, "sub", signingKey));
         String role = parseJwtSubject(jwt, "role", signingKey);
 
-        UserTokenDto userIdDto = new UserTokenDto(id, role);
+        UserIdDto userIdDto = new UserIdDto(id);
+        GrantedAuthority authority = new SimpleGrantedAuthority(role);
 
-        return new UsernamePasswordAuthenticationToken(userIdDto, null);
+        return new UsernamePasswordAuthenticationToken(userIdDto, null, Collections.singleton(authority));
     }
 
     private String parseJwtSubject(String jwt, String subject, SecretKey signingKey) {

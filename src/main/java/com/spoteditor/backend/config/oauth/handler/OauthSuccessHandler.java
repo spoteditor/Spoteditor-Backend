@@ -3,6 +3,7 @@ package com.spoteditor.backend.config.oauth.handler;
 import com.spoteditor.backend.config.util.CookieUtils;
 import com.spoteditor.backend.config.jwt.JwtConstants;
 import com.spoteditor.backend.config.jwt.JwtUtils;
+import com.spoteditor.backend.global.exception.UserException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,7 +16,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+
+import static com.spoteditor.backend.global.response.ErrorCode.USER_ROLE_MISSING;
 
 @Component
 @RequiredArgsConstructor
@@ -30,11 +34,12 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
         Map<String, Object> attributesMap = oauthUser.getAttributes();
-
         Long id = (Long) attributesMap.get("id");
+
         String role = authorities.stream()
                 .map(GrantedAuthority::getAuthority)
-                .toList().get(0);
+                .findFirst()
+                .orElse("ROLE_USER");
 
         String accessToken = jwtUtils.createAccessToken(id, role);
         String refreshToken = jwtUtils.createRefreshToken(id, role);
