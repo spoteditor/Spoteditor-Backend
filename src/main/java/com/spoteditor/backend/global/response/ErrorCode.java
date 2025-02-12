@@ -19,7 +19,10 @@ public enum ErrorCode {
 	// user
 	UNSUPPORTED_PROVIDER(HttpStatus.BAD_REQUEST, "U001", "지원하지 않는 Provider"),
 	NOT_FOUND_USER(HttpStatus.NOT_FOUND, "U002", "해당 유저를 찾을 수 없습니다."),
-	NO_AUTHENTICATED_USER(HttpStatus.UNAUTHORIZED, "U003", "현재 로그인된 사용자가 없음"),
+	NO_AUTHENTICATED_USER(HttpStatus.UNAUTHORIZED, "U003", "현재 사용자의 권한이 없습니다."),
+	DELETED_USER(HttpStatus.BAD_REQUEST, "U004", "삭제된 유저입니다."),
+	NEED_ADMIN_ROLE(HttpStatus.FORBIDDEN, "U005", "관리자 권한이 필요합니다."),
+	USER_ROLE_MISSING(HttpStatus.FORBIDDEN, "U006", "사용자의 역할이 없습니다."),
 
 	// place
 	NOT_FOUND_PLACE(HttpStatus.NOT_FOUND, "P001", "해당 장소를 찾을 수 없습니다."),
