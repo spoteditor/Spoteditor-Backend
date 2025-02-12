@@ -14,20 +14,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.spoteditor.backend.global.response.ErrorCode.DELETED_USER;
 import static com.spoteditor.backend.global.response.ErrorCode.NOT_FOUND_USER;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
-    private UserRepository userRepository;
-    private PlaceRepository placeRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UserResult getUser(Long userId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(NOT_FOUND_USER));
+        User user = getActiveUser(userId);
 
         Long follower = 0L;
         Long following = 0L;
@@ -41,13 +40,32 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserUpdateResult updateUser(Long userId, UserUpdateCommand command) {
 
+        User user = getActiveUser(userId);
+        user.update(command);
+
+        userRepository.save(user);
+
+        return new UserUpdateResult(user);
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+
+        User user = getActiveUser(userId);
+        user.softDelete();
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public User getActiveUser(Long userId) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
-
-
-        return UserUpdateResult(user);
+        if(user.isDeleted()) {
+            throw new UserException(DELETED_USER);
+        }
+        return user;
     }
-
-
 }

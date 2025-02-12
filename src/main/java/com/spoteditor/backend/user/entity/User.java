@@ -2,6 +2,8 @@ package com.spoteditor.backend.user.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMapping;
+import com.spoteditor.backend.place.entity.Place;
+import com.spoteditor.backend.user.service.dto.UserUpdateCommand;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,6 +26,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<UserPlaceLogMapping> userPlaceLogMappings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Place> userPlace = new ArrayList<>();
 
     @Column(name = "email")
     private String email;
@@ -51,6 +56,9 @@ public class User extends BaseEntity {
     @Column(name = "oauth_user_id")
     private String oauthUserId;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
+
     @Builder
     private User(String email, String name, String imageUrl, OauthProvider provider, String oauthUserId) {
         this.email = email;
@@ -58,5 +66,16 @@ public class User extends BaseEntity {
         this.imageUrl = imageUrl;
         this.provider = provider;
         this.oauthUserId = oauthUserId;
+    }
+
+    public void update(UserUpdateCommand command) {
+        this.name = command.name();
+        this.imageUrl = command.imageUrl();
+        this.description = command.description();
+        this.instagramId = command.instagramId();
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
     }
 }

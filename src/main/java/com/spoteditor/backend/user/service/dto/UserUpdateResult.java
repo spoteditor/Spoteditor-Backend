@@ -1,4 +1,9 @@
 package com.spoteditor.backend.user.service.dto;
 
-public class UserUpdateResult {
+import com.spoteditor.backend.user.entity.User;
+
+public record UserUpdateResult (
+        User user
+) {
+
 }
