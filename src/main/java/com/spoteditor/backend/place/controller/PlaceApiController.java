@@ -10,6 +10,7 @@ import com.spoteditor.backend.place.service.PlaceService;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterCommand;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterResult;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,11 +22,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Tag(name = "place", description = "장소 API")
 public class PlaceApiController {
 
 	private final PlaceService placeService;
 	private final PlaceRepository placeRepository;
 
+	/**
+	 *
+	 * @param dto
+	 * @param request
+	 * @return
+	 */
 	@PostMapping("/places")
 	public ResponseEntity<PlaceRegisterResponse> addPlace(@AuthenticationPrincipal UserIdDto dto,
 														  @RequestBody final PlaceRegisterRequest request) {
@@ -37,6 +45,11 @@ public class PlaceApiController {
 				.body(PlaceRegisterResponse.from(result));
 	}
 
+	/**
+	 *
+	 * @param pageRequest
+	 * @return
+	 */
 	@GetMapping("/places")
 	public ResponseEntity<CustomPageResponse<PlaceResponse>> retrievePlace(CustomPageRequest pageRequest) {
 
