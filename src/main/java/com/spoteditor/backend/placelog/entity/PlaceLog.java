@@ -56,6 +56,10 @@ public class PlaceLog extends BaseEntity {
     @Column(name = "views")
     private long views;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private PlaceLogStatus status;
+
     @Version
     private Long version;
 
