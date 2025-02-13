@@ -1,7 +1,6 @@
 package com.spoteditor.backend.placelog.service.dto;
 
-import com.spoteditor.backend.mapping.logplaceplacemapping.entity.LogPlacePlaceMapping;
-import com.spoteditor.backend.place.entity.Address;
+import com.spoteditor.backend.mapping.placelogplacemapping.entity.PlaceLogPlaceMapping;
 import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.user.entity.User;
@@ -25,14 +24,14 @@ public record PlaceLogRegisterCommand (
                 .address(firstPlace.getAddress())
                 .build();
 
-        List<LogPlacePlaceMapping> logPlacePlaceMappings = places.stream()
-                .map(place -> LogPlacePlaceMapping.builder()
+        List<PlaceLogPlaceMapping> placeLogPlaceMappings = places.stream()
+                .map(place -> PlaceLogPlaceMapping.builder()
                         .placeLog(placeLog)
                         .place(place)
                         .build())
                 .toList();
 
-        placeLog.getLogPlacePlaceMappings().addAll(logPlacePlaceMappings);
+        placeLog.getPlaceLogPlaceMappings().addAll(placeLogPlaceMappings);
 
         return placeLog;
     }

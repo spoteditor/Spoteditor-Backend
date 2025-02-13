@@ -1,7 +1,7 @@
 package com.spoteditor.backend.placelog.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
-import com.spoteditor.backend.mapping.logplaceplacemapping.entity.LogPlacePlaceMapping;
+import com.spoteditor.backend.mapping.placelogplacemapping.entity.PlaceLogPlaceMapping;
 import com.spoteditor.backend.place.entity.Address;
 import com.spoteditor.backend.user.entity.User;
 
@@ -34,7 +34,7 @@ public class PlaceLog extends BaseEntity {
     private List<UserPlaceLogMapping> userPlaceLogMappings = new ArrayList<>();
 
     @OneToMany(mappedBy = "placeLog", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<LogPlacePlaceMapping> logPlacePlaceMappings = new ArrayList<>();
+    private List<PlaceLogPlaceMapping> placeLogPlaceMappings = new ArrayList<>();
 
     @Column(name = "name")
     private String name;
