@@ -1,4 +1,4 @@
-package com.spoteditor.backend.mapping.logplacetagmapping.entity;
+package com.spoteditor.backend.mapping.placelogtagmapping.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -12,11 +12,11 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
-public class LogPlaceTagMappingId implements Serializable {
+public class PlaceLogTagMappingId implements Serializable {
     private Long placeLogId;
     private Long tagId;
 
-    public LogPlaceTagMappingId(Long placeLogId, Long tagId) {
+    public PlaceLogTagMappingId(Long placeLogId, Long tagId) {
         this.placeLogId = placeLogId;
         this.tagId = tagId;
     }

@@ -1,6 +1,7 @@
-package com.spoteditor.backend.mapping.logplacetagmapping.entity;
+package com.spoteditor.backend.mapping.placelogtagmapping.entity;
 
 
+import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.placelog.entity.Tag;
 import jakarta.persistence.*;
@@ -10,13 +11,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "log_place_tag_mapping")
+@Table(name = "place_log_tag_mapping")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LogPlaceTagMapping {
+public class PlaceLogTagMapping extends BaseEntity {
 
     @EmbeddedId
-    private LogPlaceTagMappingId id;
+    private PlaceLogTagMappingId id;
 
     @MapsId("placeLogId")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,8 +30,8 @@ public class LogPlaceTagMapping {
     private Tag tag;
 
     @Builder
-    private LogPlaceTagMapping(PlaceLog placeLog, Tag tag) {
-        this.id = new LogPlaceTagMappingId(placeLog.getId(), tag.getId());
+    private PlaceLogTagMapping(PlaceLog placeLog, Tag tag) {
+        this.id = new PlaceLogTagMappingId(placeLog.getId(), tag.getId());
         this.placeLog = placeLog;
         this.tag = tag;
     }
