@@ -24,13 +24,18 @@ public class BookmarkServiceImpl implements BookmarkService {
 
 	private final BookmarkRepository bookmarkRepository;
 	private final PlaceRepository placeRepository;
-	private final UserService userService;
+	private final UserRepository userRepository;
 
 	@Override
 	@Transactional
 	public void addBookmark(Long userId, BookmarkCommand command) {
 
-		User user = userService.getActiveUser(userId);
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
+
+		if(user.isDeleted()) {
+			throw new UserException(DELETED_USER);
+		}
 
 		Place place = placeRepository.findById(command.placeId())
 				.orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));

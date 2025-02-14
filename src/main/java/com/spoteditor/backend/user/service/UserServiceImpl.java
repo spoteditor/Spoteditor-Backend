@@ -28,7 +28,12 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public UserResult getUser(Long userId) {
 
-        User user = getActiveUser(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(NOT_FOUND_USER));
+
+        if(user.isDeleted()) {
+            throw new UserException(DELETED_USER);
+        }
 
         Long follower = 0L;
         Long following = 0L;
@@ -43,9 +48,14 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public UserUpdateResult updateUser(Long userId, UserUpdateCommand command) {
 
-        User user = getActiveUser(userId);
-        user.update(command);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
+        if(user.isDeleted()) {
+            throw new UserException(DELETED_USER);
+        }
+
+        user.update(command);
         userRepository.save(user);
 
         return new UserUpdateResult(user);
@@ -55,21 +65,14 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public void deleteUser(Long userId) {
 
-        User user = getActiveUser(userId);
-        user.softDelete();
-
-        userRepository.save(user);
-    }
-
-    @Override
-    public User getActiveUser(Long userId) {
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
         if(user.isDeleted()) {
             throw new UserException(DELETED_USER);
         }
-        return user;
+
+        user.softDelete();
+        userRepository.save(user);
     }
 }

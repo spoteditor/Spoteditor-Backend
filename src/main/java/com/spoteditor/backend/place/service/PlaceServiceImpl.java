@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.spoteditor.backend.global.response.ErrorCode.DELETED_USER;
 import static com.spoteditor.backend.global.response.ErrorCode.NOT_FOUND_USER;
 
 @Service
@@ -22,13 +23,18 @@ public class PlaceServiceImpl implements PlaceService {
 
 	private final PlaceRepository placeRepository;
 	private final PlaceImageService imageService;
-	private final UserService userService;
+	private final UserRepository userRepository;
 
 	@Override
 	@Transactional
 	public PlaceRegisterResult addPlace(Long userId, PlaceRegisterCommand command) {
 
-		User user = userService.getActiveUser(userId);
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
+
+		if(user.isDeleted()) {
+			throw new UserException(DELETED_USER);
+		}
 
 		Place savedPlace = placeRepository.save(command.toEntity(user));
 		imageService.upload(command.originalFile(), command.uuid(), savedPlace.getId());

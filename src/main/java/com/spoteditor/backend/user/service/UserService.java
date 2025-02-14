@@ -12,6 +12,4 @@ public interface UserService {
     UserUpdateResult updateUser(Long userId, UserUpdateCommand command);
 
     void deleteUser(Long userId);
-
-    User getActiveUser(Long userId);
 }
