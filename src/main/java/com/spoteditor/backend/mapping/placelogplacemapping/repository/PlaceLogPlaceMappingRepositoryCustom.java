@@ -1,4 +1,10 @@
 package com.spoteditor.backend.mapping.placelogplacemapping.repository;
 
-public class PlaceLogPlaceMappingRepositoryCustom {
+import com.spoteditor.backend.mapping.placelogplacemapping.entity.PlaceLogPlaceMapping;
+
+import java.util.List;
+
+public interface PlaceLogPlaceMappingRepositoryCustom {
+
+    List<PlaceLogPlaceMapping> findByPlaceLogId(Long placeLogId);
 }
