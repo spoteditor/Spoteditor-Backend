@@ -6,7 +6,7 @@ import com.spoteditor.backend.user.entity.User;
 
 import java.util.List;
 
-public record TempPlaceLogPlaceCommand (
+public record PlaceLogPlaceCommand(
         String name,
         String description,
         List<PlaceRegisterCommand> places,

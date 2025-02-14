@@ -6,7 +6,7 @@ import com.spoteditor.backend.tag.entity.Tag;
 
 import java.util.List;
 
-public record TempPlaceLogResult (
+public record PlaceLogResult(
         PlaceLog placeLog,
         List<Tag> tags,
         List<Place> places

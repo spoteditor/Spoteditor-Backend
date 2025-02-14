@@ -1,4 +1,8 @@
 package com.spoteditor.backend.placelog.service.dto;
 
-public class TempPlaceLogRegisterResult {
+import com.spoteditor.backend.placelog.entity.PlaceLog;
+
+public record TempPlaceLogRegisterResult (
+        PlaceLog placeLog
+){
 }

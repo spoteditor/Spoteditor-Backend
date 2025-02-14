@@ -1,12 +1,26 @@
 package com.spoteditor.backend.placelog.service;
 
-import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterRequest;
-import com.spoteditor.backend.placelog.service.dto.PlaceLogRegisterCommand;
-import com.spoteditor.backend.placelog.service.dto.PlaceLogRegisterResult;
+import com.spoteditor.backend.placelog.service.dto.*;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface PlaceLogService {
 
     PlaceLogRegisterResult addPlaceLog(Long userId, PlaceLogRegisterCommand command);
+
+    TempPlaceLogRegisterResult addTempPlaceLogTag(Long userId, TempPlaceLogRegisterCommand command);
+
+    PlaceLogResult getTempPlaceLog(Long userId, Long placeLogId);
+
+    PlaceLogResult getPlaceLog(Long userId, Long placeLogId);
+
+    PlaceLogResult addTempPlaceLogPlace(Long userId, PlaceLogPlaceCommand command);
+
+    void publishPlaceLog(Long userId, Long placeLogId);
+
+    void addBookmark(Long userId, Long placeLogId);
+
+    void removeBookmark(Long userId, Long placeLogId);
+
+    void removePlaceLog(Long userId, Long placeLogId);
 }
