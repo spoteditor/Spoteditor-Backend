@@ -34,7 +34,6 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
 						notification.id,
 						notification.toUser.id,
 						notification.message,
-						notification.redirectUrl,
 						notification.notificationType
 				))
 				.from(notification)

@@ -22,9 +22,6 @@ public class Notification extends BaseEntity {
 	@Column(nullable = false)
 	private String message;
 
-	@Column(name = "redirect_Url")
-	private String redirectUrl;
-
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private NotificationType notificationType;
