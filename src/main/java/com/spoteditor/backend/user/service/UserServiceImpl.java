@@ -11,6 +11,7 @@ import com.spoteditor.backend.user.service.dto.UserUpdateCommand;
 import com.spoteditor.backend.user.service.dto.UserUpdateResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public UserResult getUser(Long userId) {
 
         User user = getActiveUser(userId);
@@ -38,6 +40,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public UserUpdateResult updateUser(Long userId, UserUpdateCommand command) {
 
         User user = getActiveUser(userId);
@@ -49,6 +52,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long userId) {
 
         User user = getActiveUser(userId);
