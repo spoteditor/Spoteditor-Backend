@@ -3,10 +3,10 @@ package com.spoteditor.backend.notification.controller;
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.notification.controller.dto.NotificationListDto;
-import com.spoteditor.backend.notification.dto.NotificationDto;
 import com.spoteditor.backend.notification.repository.NotificationRepository;
 import com.spoteditor.backend.notification.service.NotificationService;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,20 +18,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Tag(name = "notification", description = "알림 API")
 public class NotificationApiController {
 
 	private final NotificationRepository notificationRepository;
 	private final NotificationService notificationService;
 
-	@PostMapping("/notice")
-	public ResponseEntity<Void> notice(@AuthenticationPrincipal UserIdDto dto, @RequestBody NotificationDto notificationDto) {
-
-		notificationService.send(notificationDto);
-		return ResponseEntity
-				.status(HttpStatus.CREATED)
-				.build();
-	}
-
+	/**
+	 *
+	 * @param dto
+	 * @param request
+	 * @return
+	 */
 	@GetMapping("/notice")
 	public ResponseEntity<CustomPageResponse<NotificationListDto>> noticeList(@AuthenticationPrincipal UserIdDto dto, CustomPageRequest request) {
 
@@ -40,8 +38,14 @@ public class NotificationApiController {
 				.body(notificationRepository.notificationList(dto.getId(), request));
 	}
 
-	@PutMapping("/notice/{id}")
-	public ResponseEntity<Void> read(Long notificationId) {
+	/**
+	 *
+	 * @param notificationId
+	 * @return
+	 */
+	@PutMapping("/notice/{notificationId}")
+	public ResponseEntity<Void> read(@PathVariable(name = "notificationId") Long notificationId) {
+
 		notificationService.read(notificationId);
 		return ResponseEntity
 				.status(HttpStatus.NO_CONTENT)
@@ -50,6 +54,7 @@ public class NotificationApiController {
 
 	@PutMapping("/notice/all")
 	public ResponseEntity<Void> readAll(@AuthenticationPrincipal UserIdDto dto) {
+
 		notificationService.readAll(dto.getId());
 		return ResponseEntity
 				.status(HttpStatus.NO_CONTENT)
