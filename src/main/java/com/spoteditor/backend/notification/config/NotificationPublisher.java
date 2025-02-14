@@ -13,13 +13,11 @@ public class NotificationPublisher {
 
 	private final RabbitTemplate rabbitTemplate;
 
-	public void announcementPublish(NotificationDto dto) {
-		rabbitTemplate.convertAndSend(RabbitMqConfiguration.FANOUT_EXCHANGE_NAME, "", dto);
-		log.info("[#] Published Announcement Notification: " + dto);
-	}
-
 	public void followPublish(NotificationDto dto) {
-		rabbitTemplate.convertAndSend(RabbitMqConfiguration.DIRECT_EXCHANGE_NAME, "", dto);
-		log.info("[#} Published Follow Notification: " + dto);
+		rabbitTemplate.convertAndSend(
+				RabbitMqConfiguration.FOLLOW_EXCHANGE_NAME,
+				RabbitMqConfiguration.FOLLOW_ROUTING_KEY,
+				dto);
+		log.info("[#] Published Follow Notification: " + dto);
 	}
 }

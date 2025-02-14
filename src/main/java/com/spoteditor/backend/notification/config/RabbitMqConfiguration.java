@@ -7,59 +7,52 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfiguration {
 
-	public static final String FANOUT_EXCHANGE_NAME = "announceExchange";
-	public static final String TOPIC_EXCHANGE_NAME = "activityExchange";
-	public static final String DIRECT_EXCHANGE_NAME = "followExchange";
-
+	public static final String FOLLOW_EXCHANGE_NAME = "followExchange";
 	public static final String FOLLOW_QUEUE = "followQueue";
-	public static final String ANNOUNCEMENT_QUEUE = "announcementQueue";
-	public static final String ACTIVITY_QUEUE = "activityQueue";
-
 	public static final String FOLLOW_ROUTING_KEY = "follow";
-	public static final String ACTIVITY_ROUTING_KEY = "user.activity.#";
+
+	public static final String DLX_EXCHANGE_NAME = "dlxExchange";
+	public static final String DLQ_QUEUE = "deadLetterQueue";
+	public static final String DLQ_ROUTING_KEY = "dlq";
 
 	@Bean
 	public Queue followQueue() {
-		return new Queue(FOLLOW_QUEUE, true);
+		// 데이터 영속성을 위한 true 설정
+		return QueueBuilder.durable(FOLLOW_QUEUE)
+				.withArgument("x-dead-letter-exchange", DLX_EXCHANGE_NAME)
+				.withArgument("x-dead-letter-routing-key", DLQ_ROUTING_KEY)
+				.ttl(5000)
+				.build();
 	}
 
 	@Bean
-	public Queue activityQueue() {
-		return new Queue(ACTIVITY_QUEUE, true);
+	public DirectExchange followExchange() {
+		// 사용자간 팔로우
+		return new DirectExchange(FOLLOW_EXCHANGE_NAME);
 	}
 
 	@Bean
-	public Queue announcementQueue() {
-		return new Queue(ANNOUNCEMENT_QUEUE, true);
+	public Binding followBinding(Queue followQueue, DirectExchange followExchange) {
+		return BindingBuilder.bind(followQueue)
+				.to(followExchange)
+				.with(FOLLOW_ROUTING_KEY);
 	}
 
 	@Bean
-	public FanoutExchange fanoutExchange() {
-		return new FanoutExchange(FANOUT_EXCHANGE_NAME);
+	public Queue deadLetterQueue() {
+		return QueueBuilder.durable(DLQ_QUEUE)
+				.build();
 	}
 
 	@Bean
-	public TopicExchange topicExchange() {
-		return new TopicExchange(TOPIC_EXCHANGE_NAME);
+	public DirectExchange deadLetterExchange() {
+		return new DirectExchange(DLX_EXCHANGE_NAME);
 	}
 
 	@Bean
-	public DirectExchange directExchange() {
-		return new DirectExchange(DIRECT_EXCHANGE_NAME);
-	}
-
-	@Bean
-	public Binding announcementBinding(Queue announcementQueue, FanoutExchange fanoutExchange) {
-		return BindingBuilder.bind(announcementQueue).to(fanoutExchange);
-	}
-
-	@Bean
-	public Binding activityBinding(Queue activityQueue, TopicExchange topicExchange) {
-		return BindingBuilder.bind(activityQueue).to(topicExchange).with(ACTIVITY_ROUTING_KEY);
-	}
-
-	@Bean
-	public Binding followBinding(Queue followQueue, DirectExchange directExchange) {
-		return BindingBuilder.bind(followQueue).to(directExchange).with(FOLLOW_ROUTING_KEY);
+	public Binding deadLetterBinding() {
+		return BindingBuilder.bind(deadLetterQueue())
+				.to(deadLetterExchange())
+				.with(DLQ_ROUTING_KEY);
 	}
 }

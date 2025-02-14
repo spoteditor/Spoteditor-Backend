@@ -15,17 +15,19 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 	public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
 		registry.setMessageSizeLimit(2048);
 		registry.setSendTimeLimit(5 * 1000);
-		registry.setSendBufferSizeLimit(512 * 1024);	// 수정
+		registry.setSendBufferSizeLimit(512 * 1024);
 	}
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/ws-endpoint").setAllowedOriginPatterns("localhost:3000").withSockJS();
+		registry.addEndpoint("/ws-endpoint")	// 웹 소켓 연결 엔드포인트 설정
+				.setAllowedOriginPatterns("*")
+				.withSockJS();
 	}
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
-		registry.enableSimpleBroker("/topic");
-		registry.setApplicationDestinationPrefixes("/app");
+		registry.enableSimpleBroker("/topic");	// 클라이언트가 구독할 경로 설정
+		registry.setApplicationDestinationPrefixes("/app");			// 클라이언트가 메시지를 보낼 때 사용할 prefix 설정
 	}
 }
