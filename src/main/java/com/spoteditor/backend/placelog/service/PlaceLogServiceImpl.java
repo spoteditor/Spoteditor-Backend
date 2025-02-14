@@ -74,6 +74,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Override
+    @Transactional
     public TempPlaceLogRegisterResult addTempPlaceLogTag(Long userId, TempPlaceLogRegisterCommand command) {
 
         User user = userRepository.findById(userId)
@@ -101,6 +102,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Override
+    @Transactional
     public PlaceLogResult getTempPlaceLog(Long userId, Long placeLogId) {
 
         User user = userRepository.findById(userId)
@@ -129,6 +131,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Override
+    @Transactional
     public PlaceLogResult getPlaceLog(Long userId, Long placeLogId) {
 
         User user = userRepository.findById(userId)
@@ -153,6 +156,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Override
+    @Transactional
     public PlaceLogResult addTempPlaceLogPlace(Long userId, PlaceLogPlaceCommand command) {
 
         User user = userRepository.findById(userId)
@@ -201,6 +205,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Override
+    @Transactional
     public void publishPlaceLog(Long userId, Long placeLogId) {
 
         User user = userRepository.findById(userId)
@@ -228,8 +233,9 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         if(placeIds.size() > 10) {
             throw new PlaceLogException(PLACE_LIMIT_EXCEEDED);
         }
-
         tempPlaceLog.publish();
+
+        placeLogRepository.save(tempPlaceLog);
     }
 
     @Override
