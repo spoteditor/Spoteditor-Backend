@@ -3,10 +3,10 @@ package com.spoteditor.backend.placelog.entity;
 import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.mapping.placelogplacemapping.entity.PlaceLogPlaceMapping;
 import com.spoteditor.backend.mapping.placelogtagmapping.entity.PlaceLogTagMapping;
+import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMapping;
 import com.spoteditor.backend.place.entity.Address;
 import com.spoteditor.backend.user.entity.User;
 
-import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMapping;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -64,12 +64,22 @@ public class PlaceLog extends BaseEntity {
     private Long version;
 
     @Builder
-    private PlaceLog(User user, String name, String description, String imageUrl, Address address) {
+    private PlaceLog(User user, String name, String description, String imageUrl, Address address, PlaceLogStatus status) {
         this.user = user;
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
         this.address = address;
         this.views = 0L;
+        this.status = status;
+    }
+
+    public void update(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public void publish() {
+        this.status = PlaceLogStatus.PUBLISHED;
     }
 }
