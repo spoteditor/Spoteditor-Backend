@@ -1,4 +1,4 @@
-package com.spoteditor.backend.placelog.entity;
+package com.spoteditor.backend.tag.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.mapping.placelogtagmapping.entity.PlaceLogTagMapping;

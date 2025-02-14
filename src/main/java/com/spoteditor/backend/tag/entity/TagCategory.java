@@ -1,9 +1,12 @@
-package com.spoteditor.backend.placelog.entity;
+package com.spoteditor.backend.tag.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.spoteditor.backend.global.exception.TagException;
 import lombok.Getter;
 
 import java.util.Arrays;
+
+import static com.spoteditor.backend.global.response.ErrorCode.INVALID_TAG_CATEGORY;
 
 @Getter
 public enum TagCategory {
@@ -21,6 +24,6 @@ public enum TagCategory {
         return Arrays.stream(TagCategory.values())
                 .filter(category -> category.name().equalsIgnoreCase(value) || category.description.equals(value))
                 .findFirst()
-                .orElseThrow(() -> new TagException(INVALID_TAG_CATEGORY))
+                .orElseThrow(() -> new TagException(INVALID_TAG_CATEGORY));
     }
 }
