@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.place.controller.dto.PlaceResponse;
+import com.spoteditor.backend.place.entity.Place;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,5 +52,13 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 		);
 
 		return new CustomPageResponse<>(page);
+	}
+
+	@Override
+	public List<Place> findByIdIn(List<Long> placeIds) {
+		return queryFactory
+				.selectFrom(place)
+				.where(place.id.in(placeIds))
+				.fetch();
 	}
 }
