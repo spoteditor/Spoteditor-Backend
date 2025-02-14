@@ -3,7 +3,7 @@ package com.spoteditor.backend.mapping.placelogtagmapping.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
-import com.spoteditor.backend.placelog.entity.Tag;
+import com.spoteditor.backend.tag.entity.Tag;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
