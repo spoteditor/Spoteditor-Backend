@@ -5,6 +5,7 @@ import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,11 @@ public class UserPlaceLogMapping extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_log_id")
     private PlaceLog placeLog;
+
+    @Builder
+    public UserPlaceLogMapping(User user, PlaceLog placeLog) {
+        this.id = new UserPlaceLogMappingId(user.getId(), placeLog.getId());
+        this.user = user;
+        this.placeLog = placeLog;
+    }
 }
