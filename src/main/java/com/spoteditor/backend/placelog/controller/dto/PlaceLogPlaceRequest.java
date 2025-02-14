@@ -1,18 +1,17 @@
 package com.spoteditor.backend.placelog.controller.dto;
 
 import com.spoteditor.backend.place.controller.dto.PlaceRegisterRequest;
-import com.spoteditor.backend.place.service.dto.PlaceRegisterCommand;
-import com.spoteditor.backend.placelog.service.dto.TempPlaceLogPlaceCommand;
+import com.spoteditor.backend.placelog.service.dto.PlaceLogPlaceCommand;
 
 import java.util.List;
 
-public record TempPlaceLogPlaceRequest(
+public record PlaceLogPlaceRequest(
     String name,
     String description,
     List<PlaceRegisterRequest> places
 ) {
-    public TempPlaceLogPlaceCommand from(Long placeLogId) {
-        return new TempPlaceLogPlaceCommand(
+    public PlaceLogPlaceCommand from(Long placeLogId) {
+        return new PlaceLogPlaceCommand(
                 name,
                 description,
                 places.stream()
