@@ -32,9 +32,10 @@ public class FollowApiController {
 	 * @return
 	 */
 	@PostMapping("/follow")
-	public ResponseEntity<Void> follow(@AuthenticationPrincipal UserIdDto dto, @RequestBody FollowRequest request) {
+	public ResponseEntity<Void> follow(@AuthenticationPrincipal UserIdDto dto,
+									   @RequestBody FollowRequest request) {
 
-		followService.saveFollow(dto.getId(), request);
+		followService.saveFollow(dto, request);
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
@@ -48,9 +49,10 @@ public class FollowApiController {
 	 * @return
 	 */
 	@DeleteMapping("/unfollow")
-	public ResponseEntity<Void> unfollow(@AuthenticationPrincipal UserIdDto dto, @RequestBody FollowRequest request) {
+	public ResponseEntity<Void> unfollow(@AuthenticationPrincipal UserIdDto dto,
+										 @RequestBody FollowRequest request) {
 
-		followService.removeFollow(dto.getId(), request);
+		followService.removeFollow(dto, request);
 		return ResponseEntity
 				.status(HttpStatus.NO_CONTENT)
 				.build();

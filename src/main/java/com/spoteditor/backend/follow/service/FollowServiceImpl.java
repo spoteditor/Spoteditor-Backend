@@ -7,6 +7,7 @@ import com.spoteditor.backend.global.exception.FollowException;
 import com.spoteditor.backend.global.exception.UserException;
 import com.spoteditor.backend.notification.dto.NotificationDto;
 import com.spoteditor.backend.notification.service.NotificationService;
+import com.spoteditor.backend.user.common.dto.UserIdDto;
 import com.spoteditor.backend.user.entity.User;
 import com.spoteditor.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,16 +28,16 @@ public class FollowServiceImpl implements FollowService {
 
 	/**
 	 *
-	 * @param userId
+	 * @param dto
 	 * @param request
 	 */
 	@Transactional
-	public void saveFollow(Long userId, FollowRequest request) {
+	public void saveFollow(UserIdDto dto, FollowRequest request) {
 
-		User follower = userRepository.findById(userId)
+		User follower = userRepository.findById(dto.getId())
 				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
-		User following = userRepository.findUserByEmail(request.email())
+		User following = userRepository.findById(request.userId())
 				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
 		followRepository.findFollowByFollowerAndFollowing(follower, following)
@@ -47,29 +48,29 @@ public class FollowServiceImpl implements FollowService {
 				.following(following)
 				.build();
 
-		NotificationDto dto = NotificationDto.builder()
+		NotificationDto notificationDto = NotificationDto.builder()
 				.type(FOLLOW)
 				.message("[#] 알림: " + follower.getName() + "님이 " + following.getName() + "님을 팔로우했습니다.")
 				.fromUser(follower)
 				.toUser(following)
 				.build();
 
-		notificationService.send(dto);
+		notificationService.send(notificationDto);
 		followRepository.save(follow);
 	}
 
 	/**
 	 *
-	 * @param userId
+	 * @param dto
 	 * @param request
 	 */
 	@Transactional
-	public void removeFollow(Long userId, FollowRequest request) {
+	public void removeFollow(UserIdDto dto, FollowRequest request) {
 
-		User follower = userRepository.findById(userId)
+		User follower = userRepository.findById(dto.getId())
 				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
-		User following = userRepository.findUserByEmail(request.email())
+		User following = userRepository.findById(request.userId())
 				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
 		followRepository.deleteByFollowerAndFollowing(follower, following);
