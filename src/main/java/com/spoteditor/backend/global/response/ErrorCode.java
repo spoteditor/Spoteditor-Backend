@@ -8,6 +8,13 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
+	// common
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C001", "internal server error"),
+	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "C002", "invalid input type"),
+	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "C003", "method not allowed"),
+	INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "C004", "invalid type value"),
+	BAD_CREDENTIALS(HttpStatus.BAD_REQUEST, "C005", "bad credentials"),
+
 	// user
 	UNSUPPORTED_PROVIDER(HttpStatus.BAD_REQUEST, "U001", "지원하지 않는 Provider"),
 	TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "U002", "토큰 만료"),
@@ -20,7 +27,7 @@ public enum ErrorCode {
 	NOT_FOUND_USER(HttpStatus.NOT_FOUND, "U009", "해당 유저를 찾을 수 없습니다."),
 
 	// follow
-	DUPLICATED_FOLLOW(HttpStatus.NOT_FOUND, "F001", "중복 팔로우는 할 수 없습니다."),
+	DUPLICATED_FOLLOW(HttpStatus.BAD_REQUEST, "F001", "중복 팔로우는 할 수 없습니다."),
 
 	// place
 	NOT_FOUND_PLACE(HttpStatus.NOT_FOUND, "P001", "해당 장소를 찾을 수 없습니다."),
