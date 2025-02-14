@@ -18,23 +18,34 @@ public class NotificationService {
 	private final NotificationRepository notificationRepository;
 	private final NotificationPublisher notificationPublisher;
 
+	/**
+	 *
+	 * @param dto
+	 */
 	@Transactional
 	public void send(NotificationDto dto) {
 
 		switch (dto.type()) {
-			case ANNOUNCEMENT -> notificationPublisher.announcementPublish(dto);
-			case FOLLOW -> notificationPublisher.followPublish(dto);
+			case FOLLOW -> notificationPublisher.followPublish(dto);	// Publisher
 		}
 
 		Notification notification = dto.toEntity();
 		notificationRepository.save(notification);
 	}
 
+	/**
+	 *
+	 * @param userId
+	 */
 	@Transactional
 	public void readAll(Long userId) {
 		notificationRepository.updateNotificationRead(userId);
 	}
 
+	/**
+	 *
+	 * @param notificationId
+	 */
 	@Transactional
 	public void read(Long notificationId) {
 		Notification notification = notificationRepository.findById(notificationId)
