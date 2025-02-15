@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS place_log (
     bname VARCHAR(255),
     sigungu VARCHAR(255),
     views BIGINT,
+    status VARCHAR(255) NOT NULL,
     version BIGINT,
     PRIMARY KEY (place_log_id),
     FOREIGN KEY (user_id) REFERENCES USERS (user_id)

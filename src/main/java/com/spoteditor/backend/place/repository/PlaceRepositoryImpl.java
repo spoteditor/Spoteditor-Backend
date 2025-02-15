@@ -56,6 +56,15 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 	}
 
 	@Override
+	public List<Place> findByIdIn(List<Long> placeIds) {
+		return queryFactory
+				.selectFrom(place)
+				.where(place.id.in(placeIds))
+				.fetch();
+	}
+  
+
+	@Override
 	public List<Place> findAllPlacesByUserId(Long userId) {
 		return queryFactory
 				.selectFrom(place)

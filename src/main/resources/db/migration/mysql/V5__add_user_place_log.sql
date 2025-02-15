@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS user_place_log (
+CREATE TABLE IF NOT EXISTS user_place_log_mapping (
     user_id BIGINT NOT NULL,
     place_log_id BIGINT NOT NULL,
     PRIMARY KEY (user_id, place_log_id),
