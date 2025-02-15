@@ -1,5 +1,6 @@
 package com.spoteditor.backend.global.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -11,6 +12,8 @@ public class ErrorResponse {
 	private final HttpStatus status;
 	private final String code;
 	private final String message;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
 	private final LocalDateTime timestamp;
 
 	private ErrorResponse(final ErrorCode code) {

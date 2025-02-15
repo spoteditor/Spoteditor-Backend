@@ -2,7 +2,7 @@ package com.spoteditor.backend.security.oauth.service;
 
 import com.spoteditor.backend.config.oauth.service.OauthUserResolver;
 import com.spoteditor.backend.user.entity.User;
-import com.spoteditor.backend.user.entity.value.OauthProvider;
+import com.spoteditor.backend.user.entity.OauthProvider;
 import com.spoteditor.backend.user.repository.UserRepository;
 import com.spoteditor.backend.config.oauth.dto.OauthAttributes;
 import com.spoteditor.backend.config.oauth.dto.OauthAttributesUserMapper;
