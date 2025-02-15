@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(BusinessException.class)
-	public ResponseEntity<ErrorResponse> handleUserException(BusinessException e) {
+	public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
 		ErrorResponse apiErrorResponse = ErrorResponse.of(
 				e.getErrorCode()
 		);

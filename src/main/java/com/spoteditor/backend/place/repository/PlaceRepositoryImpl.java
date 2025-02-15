@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.spoteditor.backend.image.entity.QPlaceImage.placeImage;
 import static com.spoteditor.backend.place.entity.QPlace.place;
 
 @Repository
@@ -59,6 +60,17 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 		return queryFactory
 				.selectFrom(place)
 				.where(place.id.in(placeIds))
+				.fetch();
+	}
+  
+
+	@Override
+	public List<Place> findAllPlacesByUserId(Long userId) {
+		return queryFactory
+				.selectFrom(place)
+				.leftJoin(place.placeImages, placeImage).fetchJoin()
+				.where(place.user.id.eq(userId))
+				.distinct()
 				.fetch();
 	}
 }

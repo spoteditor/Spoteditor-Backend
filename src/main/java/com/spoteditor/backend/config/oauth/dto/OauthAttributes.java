@@ -1,7 +1,7 @@
 package com.spoteditor.backend.config.oauth.dto;
 
 import com.spoteditor.backend.global.exception.UserException;
-import com.spoteditor.backend.user.entity.value.OauthProvider;
+import com.spoteditor.backend.user.entity.OauthProvider;
 import lombok.Builder;
 import lombok.Getter;
 
