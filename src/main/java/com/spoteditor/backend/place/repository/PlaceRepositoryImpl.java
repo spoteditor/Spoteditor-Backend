@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.place.controller.dto.PlaceResponse;
+import com.spoteditor.backend.place.entity.Place;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.spoteditor.backend.image.entity.QPlaceImage.placeImage;
 import static com.spoteditor.backend.place.entity.QPlace.place;
 
 @Repository
@@ -51,5 +53,24 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 		);
 
 		return new CustomPageResponse<>(page);
+	}
+
+	@Override
+	public List<Place> findByIdIn(List<Long> placeIds) {
+		return queryFactory
+				.selectFrom(place)
+				.where(place.id.in(placeIds))
+				.fetch();
+	}
+  
+
+	@Override
+	public List<Place> findAllPlacesByUserId(Long userId) {
+		return queryFactory
+				.selectFrom(place)
+				.leftJoin(place.placeImages, placeImage).fetchJoin()
+				.where(place.user.id.eq(userId))
+				.distinct()
+				.fetch();
 	}
 }

@@ -1,6 +1,8 @@
 package com.spoteditor.backend.global.response;
 
 import com.spoteditor.backend.global.exception.*;
+import com.spoteditor.backend.global.exception.BusinessException;
+import com.spoteditor.backend.global.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,14 +34,15 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UserException.class)
 	public ResponseEntity<ErrorResponse> handleUserException(UserException e) {
-		ErrorResponse apiErrorResponse = ErrorResponse.of(
+     ErrorResponse apiErrorResponse = ErrorResponse.of(
 				e.getErrorCode()
-		);
-
-		return ResponseEntity
+		)
+       
+    return ResponseEntity
 				.status(apiErrorResponse.getStatus())
 				.body(apiErrorResponse);
-	}
+  }
+
 
 	@ExceptionHandler(BookmarkException.class)
 	public ResponseEntity<ErrorResponse> handleBookmarkException(BookmarkException e) {
