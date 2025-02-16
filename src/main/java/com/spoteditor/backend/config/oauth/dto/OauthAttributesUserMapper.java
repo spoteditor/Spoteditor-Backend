@@ -1,6 +1,7 @@
 package com.spoteditor.backend.config.oauth.dto;
 
 import com.spoteditor.backend.user.entity.User;
+import com.spoteditor.backend.user.entity.UserRole;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -8,11 +9,12 @@ public class OauthAttributesUserMapper {
 
     public User toEntity(OauthAttributes attributes) {
         return User.builder()
-                .oauthUserId(attributes.getOauthUserId())
+                .email(attributes.getEmail())
                 .name(attributes.getName())
                 .imageUrl(attributes.getImageUrl())
-                .email(attributes.getEmail())
                 .provider(attributes.getProvider())
+                .oauthUserId(attributes.getOauthUserId())
+                .role(UserRole.USER)
                 .build();
     }
 }

@@ -60,12 +60,13 @@ public class User extends BaseEntity {
     private boolean isDeleted = false;
 
     @Builder
-    private User(String email, String name, String imageUrl, OauthProvider provider, String oauthUserId) {
+    private User(String email, String name, String imageUrl, OauthProvider provider, String oauthUserId, UserRole role) {
         this.email = email;
         this.name = name;
         this.imageUrl = imageUrl;
         this.provider = provider;
         this.oauthUserId = oauthUserId;
+        this.role = role;
     }
 
     public void update(UserUpdateCommand command) {
