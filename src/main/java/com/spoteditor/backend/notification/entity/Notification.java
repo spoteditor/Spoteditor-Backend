@@ -11,6 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
+@Table(name = "notification")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notification extends BaseEntity {
 

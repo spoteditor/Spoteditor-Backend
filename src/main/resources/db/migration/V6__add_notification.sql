@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS notification (
+    notification_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    message VARCHAR(255) NOT NULL,
+    notification_type VARCHAR(50) NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT false,
+    from_id BIGINT,
+    to_id BIGINT,
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (from_id) REFERENCES user (user_id),
+FOREIGN KEY (to_id) REFERENCES user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
