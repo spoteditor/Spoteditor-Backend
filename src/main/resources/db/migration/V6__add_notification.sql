@@ -7,6 +7,6 @@ CREATE TABLE IF NOT EXISTS notification (
     to_id BIGINT,
     created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    FOREIGN KEY (from_id) REFERENCES user (user_id),
-FOREIGN KEY (to_id) REFERENCES user (user_id)
+    FOREIGN KEY (from_id) REFERENCES users (user_id),
+FOREIGN KEY (to_id) REFERENCES users (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
