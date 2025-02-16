@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS place_log (
     status VARCHAR(255) NOT NULL,
     version BIGINT,
     PRIMARY KEY (place_log_id),
-    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
+    FOREIGN KEY (user_id) REFERENCES users (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
