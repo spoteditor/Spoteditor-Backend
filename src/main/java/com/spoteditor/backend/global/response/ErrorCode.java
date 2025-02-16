@@ -47,7 +47,7 @@ public enum ErrorCode {
 	NOT_FOUND_IMAGE(HttpStatus.NOT_FOUND, "I001", "이미지를 찾을 수 없습니다."),
 
 	// notification
-	NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND, "N001", "알림을 찾을 수 없습니다.");
+	NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND, "N001", "알림을 찾을 수 없습니다."),
 
 	// place log
 	NOT_FOUND_PLACES(HttpStatus.NOT_FOUND, "PL001", "로그에 등록된 장소들을 찾을 수 없습니다."),
