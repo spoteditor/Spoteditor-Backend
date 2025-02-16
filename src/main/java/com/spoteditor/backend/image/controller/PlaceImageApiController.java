@@ -3,6 +3,7 @@ package com.spoteditor.backend.image.controller;
 import com.spoteditor.backend.image.controller.dto.PreSignedUrlResponse;
 import com.spoteditor.backend.image.controller.dto.PreSignedUrlRequest;
 import com.spoteditor.backend.image.service.PlaceImageService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Tag(name = "image", description = "이미지(첨부파일) API")
 public class PlaceImageApiController {
 
 	private final PlaceImageService imageService;
 
+	/**
+	 *
+	 * @param request
+	 * @return
+	 */
 	@PostMapping("/purl")
 	public ResponseEntity<PreSignedUrlResponse> processPreSignedUrlResponse(@RequestBody PreSignedUrlRequest request) {
 

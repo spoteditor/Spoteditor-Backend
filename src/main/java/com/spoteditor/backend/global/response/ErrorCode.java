@@ -8,6 +8,13 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
+	// common
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C001", "internal server error"),
+	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "C002", "invalid input type"),
+	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "C003", "method not allowed"),
+	INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "C004", "invalid type value"),
+	BAD_CREDENTIALS(HttpStatus.BAD_REQUEST, "C005", "bad credentials"),
+
 	// token
 	TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "T001", "토큰 만료"),
 	ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "T002", "AccessToken 만료"),
@@ -24,6 +31,9 @@ public enum ErrorCode {
 	NEED_ADMIN_ROLE(HttpStatus.FORBIDDEN, "U005", "관리자 권한이 필요합니다."),
 	USER_ROLE_MISSING(HttpStatus.FORBIDDEN, "U006", "사용자의 역할이 없습니다."),
 
+	// follow
+	DUPLICATED_FOLLOW(HttpStatus.BAD_REQUEST, "F001", "중복 팔로우는 할 수 없습니다."),
+
 	// place
 	NOT_FOUND_PLACE(HttpStatus.NOT_FOUND, "P001", "해당 장소를 찾을 수 없습니다."),
 
@@ -35,6 +45,9 @@ public enum ErrorCode {
 
 	// image
 	NOT_FOUND_IMAGE(HttpStatus.NOT_FOUND, "I001", "이미지를 찾을 수 없습니다."),
+
+	// notification
+	NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND, "N001", "알림을 찾을 수 없습니다.");
 
 	// place log
 	NOT_FOUND_PLACES(HttpStatus.NOT_FOUND, "PL001", "로그에 등록된 장소들을 찾을 수 없습니다."),
@@ -51,8 +64,6 @@ public enum ErrorCode {
 	INVALID_TAG_CATEGORY(HttpStatus.BAD_REQUEST, "T001", "존재하지 않는 태그 카테고리 입니다."),
 	TAG_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "T002", "태그는 최대 5개까지 등록 가능합니다."),
 	INVALID_TAG(HttpStatus.BAD_REQUEST, "T003", "존재하지 않는 태그입니다.");
-
-
 
 	private final HttpStatus status;
 	private final String code;

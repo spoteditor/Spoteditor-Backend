@@ -25,6 +25,12 @@ public class PlaceServiceImpl implements PlaceService {
 	private final PlaceImageService imageService;
 	private final UserRepository userRepository;
 
+	/**
+	 *
+	 * @param userId
+	 * @param command
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public PlaceRegisterResult addPlace(Long userId, PlaceRegisterCommand command) {

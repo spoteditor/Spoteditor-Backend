@@ -66,6 +66,11 @@ public class PlaceImageServiceImpl implements PlaceImageService {
 		return url.toString();
 	}
 
+	/**
+	 *
+	 * @param request
+	 * @return
+	 */
 	@Override
 	public PreSignedUrlResponse processPreSignedUrl(PreSignedUrlRequest request) {
 		String uuid = UUID.randomUUID().toString();
@@ -79,6 +84,13 @@ public class PlaceImageServiceImpl implements PlaceImageService {
 		return PreSignedUrlResponse.from(preSignedUrl, uuid);
 	}
 
+	/**
+	 *
+	 * @param originalFile
+	 * @param uuid
+	 * @param placeId
+	 * @return
+	 */
 	@Override
 	public PlaceImageResponse upload(String originalFile, String uuid, Long placeId) {
 

@@ -26,6 +26,11 @@ public class BookmarkServiceImpl implements BookmarkService {
 	private final PlaceRepository placeRepository;
 	private final UserRepository userRepository;
 
+	/**
+	 *
+	 * @param userId
+	 * @param command
+	 */
 	@Override
 	@Transactional
 	public void addBookmark(Long userId, BookmarkCommand command) {
@@ -49,6 +54,11 @@ public class BookmarkServiceImpl implements BookmarkService {
 		bookmarkRepository.save(bookmark);
 	}
 
+	/**
+	 *
+	 * @param userId
+	 * @param command
+	 */
 	@Override
 	@Transactional
 	public void removeBookmark(Long userId, BookmarkCommand command) {

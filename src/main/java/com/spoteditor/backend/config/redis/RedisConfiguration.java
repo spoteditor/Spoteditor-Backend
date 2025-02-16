@@ -1,13 +1,12 @@
 package com.spoteditor.backend.config.redis;
 
-import io.lettuce.core.ReadFrom;
 import lombok.RequiredArgsConstructor;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.redisson.config.ReadMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 @Configuration
 @RequiredArgsConstructor
@@ -16,16 +15,20 @@ public class RedisConfiguration {
 	private final RedisProperties redisProperties;
 
 	@Bean
-	public RedisConnectionFactory redisConnectionFactory() {
-		LettuceClientConfiguration lettuceClientConfiguration = LettuceClientConfiguration.builder()
-				.readFrom(ReadFrom.REPLICA_PREFERRED)
-				.build();
-		RedisStaticMasterReplicaConfiguration redisStaticMasterReplicaConfiguration = new RedisStaticMasterReplicaConfiguration(
-				redisProperties.getMaster().getHost(),
-				redisProperties.getMaster().getPort()
+	public RedissonClient redissonClient() {
+		Config config = new Config();
+
+		config.useMasterSlaveServers()
+				.setMasterAddress("redis://" + redisProperties.getMaster().getHost() + ":" + redisProperties.getMaster().getPort())
+				.setReadMode(ReadMode.SLAVE)
+				.setTimeout(3000);
+
+		redisProperties.getSlaves().forEach(slave ->
+				config.useMasterSlaveServers().addSlaveAddress(
+						"redis://" + slave.getHost() + ":" + slave.getPort()
+				)
 		);
 
-		redisProperties.getSlaves().forEach(slave -> redisStaticMasterReplicaConfiguration.addNode(slave.getHost(), slave.getPort()));
-		return new LettuceConnectionFactory(redisStaticMasterReplicaConfiguration, lettuceClientConfiguration);
+		return Redisson.create(config);
 	}
 }
