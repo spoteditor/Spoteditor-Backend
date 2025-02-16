@@ -13,6 +13,6 @@ CREATE TABLE IF NOT EXISTS place_log_tag_mapping (
     created_at DATETIME(6) NOT NULL,
     updated_at DATETIME(6) NOT NULL,
     PRIMARY KEY (place_log_id, tag_id),
-    FOREIGN KEY (place_log_id) REFERENCES PLACE_LOG (place_log_id) ON DELETE CASCADE,
-    FOREIGN KEY (tag_id) REFERENCES TAG (tag_id) ON DELETE CASCADE
+    FOREIGN KEY (place_log_id) REFERENCES place_log (place_log_id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tag (tag_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
