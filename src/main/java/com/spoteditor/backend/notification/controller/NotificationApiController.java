@@ -2,6 +2,7 @@ package com.spoteditor.backend.notification.controller;
 
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
+import com.spoteditor.backend.config.swagger.NotificationApiDocument;
 import com.spoteditor.backend.notification.controller.dto.NotificationListDto;
 import com.spoteditor.backend.notification.repository.NotificationRepository;
 import com.spoteditor.backend.notification.service.NotificationService;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @Tag(name = "notification", description = "알림 API")
-public class NotificationApiController {
+public class NotificationApiController implements NotificationApiDocument {
 
 	private final NotificationRepository notificationRepository;
 	private final NotificationService notificationService;

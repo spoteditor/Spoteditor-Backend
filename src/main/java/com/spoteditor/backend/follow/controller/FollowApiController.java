@@ -2,6 +2,7 @@ package com.spoteditor.backend.follow.controller;
 
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
+import com.spoteditor.backend.config.swagger.FollowApiDocument;
 import com.spoteditor.backend.follow.controller.dto.FollowRequest;
 import com.spoteditor.backend.follow.controller.dto.FollowResponse;
 import com.spoteditor.backend.follow.repository.FollowRepository;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @Tag(name = "follow", description = "팔로우 API")
-public class FollowApiController {
+public class FollowApiController implements FollowApiDocument {
 
 	private final FollowService followService;
 	private final FollowRepository followRepository;
