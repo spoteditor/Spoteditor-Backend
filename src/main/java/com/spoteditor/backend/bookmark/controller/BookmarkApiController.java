@@ -2,6 +2,7 @@ package com.spoteditor.backend.bookmark.controller;
 
 import com.spoteditor.backend.bookmark.controller.dto.BookmarkRequest;
 import com.spoteditor.backend.bookmark.service.facade.BookmarkFacade;
+import com.spoteditor.backend.config.swagger.BookmarkApiDocument;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @Tag(name = "bookmark", description = "북마크 API")
-public class BookmarkApiController {
+public class BookmarkApiController implements BookmarkApiDocument {
 
 	private final BookmarkFacade bookmarkFacade;
 
