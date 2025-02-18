@@ -22,7 +22,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static com.spoteditor.backend.global.response.ErrorCode.ACCESS_TOKEN_EXPIRED;
 import static com.spoteditor.backend.global.response.ErrorCode.INVALID_ACCESS_TOKEN;
 
 @RequiredArgsConstructor
@@ -53,9 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
-        } catch(ExpiredJwtException e) {
-            handleException(response, new TokenException(ACCESS_TOKEN_EXPIRED));
-        } catch(IllegalArgumentException | MalformedJwtException | SignatureException e) {
+        } catch(ExpiredJwtException | IllegalArgumentException | MalformedJwtException | SignatureException e) {
             handleException(response, new TokenException(INVALID_ACCESS_TOKEN));
         }
     }
