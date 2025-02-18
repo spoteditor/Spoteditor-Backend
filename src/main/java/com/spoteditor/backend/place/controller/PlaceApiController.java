@@ -2,6 +2,7 @@ package com.spoteditor.backend.place.controller;
 
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
+import com.spoteditor.backend.config.swagger.PlaceApiDocument;
 import com.spoteditor.backend.place.controller.dto.PlaceRegisterRequest;
 import com.spoteditor.backend.place.controller.dto.PlaceRegisterResponse;
 import com.spoteditor.backend.place.controller.dto.PlaceResponse;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @Tag(name = "place", description = "장소 API")
-public class PlaceApiController {
+public class PlaceApiController implements PlaceApiDocument {
 
 	private final PlaceService placeService;
 	private final PlaceRepository placeRepository;
@@ -34,6 +35,7 @@ public class PlaceApiController {
 	 * @param request
 	 * @return
 	 */
+	@Override
 	@PostMapping("/places")
 	public ResponseEntity<PlaceRegisterResponse> addPlace(@AuthenticationPrincipal UserIdDto dto,
 														  @RequestBody final PlaceRegisterRequest request) {
@@ -50,6 +52,7 @@ public class PlaceApiController {
 	 * @param pageRequest
 	 * @return
 	 */
+	@Override
 	@GetMapping("/places")
 	public ResponseEntity<CustomPageResponse<PlaceResponse>> retrievePlace(CustomPageRequest pageRequest) {
 
