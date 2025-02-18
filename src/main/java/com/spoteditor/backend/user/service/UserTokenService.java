@@ -15,7 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import static com.spoteditor.backend.global.response.ErrorCode.*;
+import static com.spoteditor.backend.global.response.ErrorCode.REFRESH_TOKEN_NOT_IN_COOKIE;
+import static com.spoteditor.backend.global.response.ErrorCode.INVALID_REFRESH_TOKEN;
 
 @Service
 @RequiredArgsConstructor
