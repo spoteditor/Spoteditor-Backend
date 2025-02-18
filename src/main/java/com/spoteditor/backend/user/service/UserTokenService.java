@@ -2,10 +2,12 @@ package com.spoteditor.backend.user.service;
 
 import com.spoteditor.backend.config.util.CookieUtils;
 import com.spoteditor.backend.global.exception.TokenException;
-import com.spoteditor.backend.global.exception.UserException;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
 import com.spoteditor.backend.config.jwt.JwtConstants;
 import com.spoteditor.backend.config.jwt.JwtUtils;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import static com.spoteditor.backend.global.response.ErrorCode.REFRESH_TOKEN_INVALID;
-import static com.spoteditor.backend.global.response.ErrorCode.REFRESH_TOKEN_NOT_IN_COOKIE;
+import static com.spoteditor.backend.global.response.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,8 +45,10 @@ public class UserTokenService {
             String accessToken = jwtUtils.createAccessToken(userId, role);
 
             cookieUtils.setAccessTokenCookie(response, JwtConstants.ACCESS_TOKEN, accessToken);
-        } catch (UserException e) {
+        } catch (ExpiredJwtException e) {
             throw new TokenException(REFRESH_TOKEN_INVALID);
+        } catch (IllegalArgumentException | MalformedJwtException | SignatureException e) {
+            throw new TokenException(INVALID_TOKEN);
         }
     }
 
