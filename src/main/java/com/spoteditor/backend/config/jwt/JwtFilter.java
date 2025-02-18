@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.spoteditor.backend.global.response.ErrorCode.INVALID_ACCESS_TOKEN;
 
@@ -30,6 +31,28 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
     private final CookieUtils cookieUtils;
+
+    private static final List<String> WHITE_LIST = List.of(
+        "/favicon.ico",
+        "/error",
+        "/api/health",
+        "/api/docs/**",
+        "/v3/api-docs/**",
+        "/swagger-ui/**"
+    );
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return WHITE_LIST.stream()
+                .anyMatch(pattern -> {
+                    if (pattern.endsWith("/**")) {
+                        String prefix = pattern.substring(0, pattern.length() - 3);
+                        return path.startsWith(prefix);
+                    }
+                    return path.equals(pattern);
+                });
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
