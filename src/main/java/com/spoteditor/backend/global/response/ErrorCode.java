@@ -18,10 +18,11 @@ public enum ErrorCode {
 	// token
 	TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "T001", "토큰 만료"),
 	ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "T002", "AccessToken 만료"),
-	INVALID_ACCESS_TOKEN(HttpStatus.FORBIDDEN, "T003", "유효하지 않은 토큰"),
+	INVALID_ACCESS_TOKEN(HttpStatus.FORBIDDEN, "T003", "유효하지 않은 AccessToken"),
 	INVALID_TOKEN_NO_UID(HttpStatus.FORBIDDEN, "T004", "유효하지 않은 토큰: UID 없음"),
 	REFRESH_TOKEN_INVALID(HttpStatus.FORBIDDEN, "T005", "유효하지 않은 RefreshToken"),
 	REFRESH_TOKEN_NOT_IN_COOKIE(HttpStatus.FORBIDDEN, "T006", "쿠키에 RefreshToken 없음"),
+	INVALID_REFRESH_TOKEN(HttpStatus.FORBIDDEN, "T007", "유효하지 않은 RefreshToken"),
 
 	// user
 	UNSUPPORTED_PROVIDER(HttpStatus.BAD_REQUEST, "U001", "지원하지 않는 Provider"),

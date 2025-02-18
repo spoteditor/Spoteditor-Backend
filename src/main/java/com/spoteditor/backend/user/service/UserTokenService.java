@@ -48,7 +48,7 @@ public class UserTokenService {
         } catch (ExpiredJwtException e) {
             throw new TokenException(REFRESH_TOKEN_INVALID);
         } catch (IllegalArgumentException | MalformedJwtException | SignatureException e) {
-            throw new TokenException(INVALID_TOKEN);
+            throw new TokenException(INVALID_REFRESH_TOKEN);
         }
     }
 
