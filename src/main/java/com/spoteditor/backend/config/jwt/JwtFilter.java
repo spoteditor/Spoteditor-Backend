@@ -55,7 +55,7 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch(ExpiredJwtException e) {
             handleException(response, new TokenException(ACCESS_TOKEN_EXPIRED));
-        } catch (IllegalArgumentException | MalformedJwtException | SignatureException e) {
+        } catch(IllegalArgumentException | MalformedJwtException | SignatureException e) {
             handleException(response, new TokenException(INVALID_ACCESS_TOKEN));
         }
     }

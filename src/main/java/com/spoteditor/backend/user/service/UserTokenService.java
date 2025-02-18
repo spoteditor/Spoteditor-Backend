@@ -24,7 +24,7 @@ public class UserTokenService {
     private final JwtUtils jwtUtils;
     private final CookieUtils cookieUtils;
 
-    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) throws TokenException {
         String refreshToken = cookieUtils.getRefreshToken(request);
 
         if(refreshToken == null) {
@@ -45,9 +45,7 @@ public class UserTokenService {
             String accessToken = jwtUtils.createAccessToken(userId, role);
 
             cookieUtils.setAccessTokenCookie(response, JwtConstants.ACCESS_TOKEN, accessToken);
-        } catch (ExpiredJwtException e) {
-            throw new TokenException(REFRESH_TOKEN_INVALID);
-        } catch (IllegalArgumentException | MalformedJwtException | SignatureException e) {
+        } catch (ExpiredJwtException | IllegalArgumentException | MalformedJwtException | SignatureException e) {
             throw new TokenException(INVALID_REFRESH_TOKEN);
         }
     }

@@ -14,9 +14,6 @@ import javax.crypto.SecretKey;
 import java.util.Collections;
 import java.util.Date;
 
-import static com.spoteditor.backend.global.response.ErrorCode.INVALID_ACCESS_TOKEN;
-import static com.spoteditor.backend.global.response.ErrorCode.TOKEN_EXPIRED;
-
 @Component
 @RequiredArgsConstructor
 public class JwtUtils {
@@ -67,9 +64,13 @@ public class JwtUtils {
 
             return (String) claims.getPayload().get(subject);
         } catch (ExpiredJwtException e) {
-            throw new TokenException(TOKEN_EXPIRED);
-        } catch (IllegalArgumentException | MalformedJwtException | SignatureException e) {
-            throw new TokenException(INVALID_ACCESS_TOKEN);
+            throw new ExpiredJwtException(e.getHeader(), e.getClaims(), e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        } catch (MalformedJwtException e) {
+            throw new MalformedJwtException(e.getMessage(), e);
+        } catch (SignatureException e) {
+            throw new SignatureException(e.getMessage(), e);
         }
     }
 }
