@@ -2,10 +2,12 @@ package com.spoteditor.backend.user.service;
 
 import com.spoteditor.backend.config.util.CookieUtils;
 import com.spoteditor.backend.global.exception.TokenException;
-import com.spoteditor.backend.global.exception.UserException;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
 import com.spoteditor.backend.config.jwt.JwtConstants;
 import com.spoteditor.backend.config.jwt.JwtUtils;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import static com.spoteditor.backend.global.response.ErrorCode.REFRESH_TOKEN_INVALID;
 import static com.spoteditor.backend.global.response.ErrorCode.REFRESH_TOKEN_NOT_IN_COOKIE;
+import static com.spoteditor.backend.global.response.ErrorCode.INVALID_REFRESH_TOKEN;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class UserTokenService {
     private final JwtUtils jwtUtils;
     private final CookieUtils cookieUtils;
 
-    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) throws TokenException {
         String refreshToken = cookieUtils.getRefreshToken(request);
 
         if(refreshToken == null) {
@@ -44,8 +46,8 @@ public class UserTokenService {
             String accessToken = jwtUtils.createAccessToken(userId, role);
 
             cookieUtils.setAccessTokenCookie(response, JwtConstants.ACCESS_TOKEN, accessToken);
-        } catch (UserException e) {
-            throw new TokenException(REFRESH_TOKEN_INVALID);
+        } catch (ExpiredJwtException | IllegalArgumentException | MalformedJwtException | SignatureException e) {
+            throw new TokenException(INVALID_REFRESH_TOKEN);
         }
     }
 

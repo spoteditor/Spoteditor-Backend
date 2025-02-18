@@ -3,6 +3,7 @@ package com.spoteditor.backend.config.jwt;
 import com.spoteditor.backend.global.exception.TokenException;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,9 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Collections;
 import java.util.Date;
-
-import static com.spoteditor.backend.global.response.ErrorCode.INVALID_TOKEN;
-import static com.spoteditor.backend.global.response.ErrorCode.TOKEN_EXPIRED;
 
 @Component
 @RequiredArgsConstructor
@@ -45,7 +43,7 @@ public class JwtUtils {
         return createToken(id, role, jwtProperties.getRefreshTokenExp());
     }
 
-    public UsernamePasswordAuthenticationToken setAuthentication(String jwt) throws Exception {
+    public UsernamePasswordAuthenticationToken setAuthentication(String jwt) throws ExpiredJwtException, IllegalArgumentException, MalformedJwtException, SignatureException {
         SecretKey signingKey = jwtProperties.getSigningKey();
 
         Long id = Long.parseLong(parseJwtSubject(jwt, "sub", signingKey));
@@ -66,9 +64,13 @@ public class JwtUtils {
 
             return (String) claims.getPayload().get(subject);
         } catch (ExpiredJwtException e) {
-            throw new TokenException(TOKEN_EXPIRED);
-        } catch (Exception e) {
-            throw new TokenException(INVALID_TOKEN);
+            throw new ExpiredJwtException(e.getHeader(), e.getClaims(), e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        } catch (MalformedJwtException e) {
+            throw new MalformedJwtException(e.getMessage(), e);
+        } catch (SignatureException e) {
+            throw new SignatureException(e.getMessage(), e);
         }
     }
 }

@@ -4,10 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.spoteditor.backend.config.util.CookieUtils;
 import com.spoteditor.backend.global.exception.TokenException;
-import com.spoteditor.backend.global.exception.UserException;
 import com.spoteditor.backend.global.response.ErrorCode;
 import com.spoteditor.backend.global.response.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,15 +16,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static com.spoteditor.backend.global.response.ErrorCode.ACCESS_TOKEN_EXPIRED;
-import static com.spoteditor.backend.global.response.ErrorCode.INVALID_TOKEN;
+import static com.spoteditor.backend.global.response.ErrorCode.INVALID_ACCESS_TOKEN;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -53,12 +52,8 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
-        }
-        catch(ExpiredJwtException e) {
-            handleException(response, new TokenException(ACCESS_TOKEN_EXPIRED));
-        }
-        catch (Exception e) {
-            handleException(response, new TokenException(INVALID_TOKEN));
+        } catch(ExpiredJwtException | IllegalArgumentException | MalformedJwtException | SignatureException e) {
+            handleException(response, new TokenException(INVALID_ACCESS_TOKEN));
         }
     }
     private void handleException(HttpServletResponse response, TokenException tokenException) throws IOException {
