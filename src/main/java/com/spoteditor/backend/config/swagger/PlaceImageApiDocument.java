@@ -1,5 +1,6 @@
 package com.spoteditor.backend.config.swagger;
 
+import com.spoteditor.backend.global.response.ErrorResponse;
 import com.spoteditor.backend.image.controller.dto.PreSignedUrlRequest;
 import com.spoteditor.backend.image.controller.dto.PreSignedUrlResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,43 @@ public interface PlaceImageApiDocument {
 			@ApiResponse(
 					responseCode = "400",
 					description = "잘못된 요청",
-					content = @Content
+					content = @Content(
+							mediaType = "application/json",
+							schema = @Schema(implementation = ErrorResponse.class),
+							examples = {
+									@io.swagger.v3.oas.annotations.media.ExampleObject(
+											name = "유효하지 않은 입력 값",
+											value = """
+                        {
+                            "status": "BAD_REQUEST",
+                            "code": "C004",
+                            "message": "invalid type value",
+                            "timestamp": "2024-02-18T14:30:00.000000"
+                        }
+                        """
+									)
+							}
+					)
+			),
+			@ApiResponse(
+					responseCode = "404",
+					description = "이미지를 찾을 수 없음",
+					content = @Content(
+							mediaType = "application/json",
+							schema = @Schema(implementation = ErrorResponse.class),
+							examples = {
+									@io.swagger.v3.oas.annotations.media.ExampleObject(
+											value = """
+                        {
+                            "status": "NOT_FOUND",
+                            "code": "I001",
+                            "message": "이미지를 찾을 수 없습니다.",
+                            "timestamp": "2024-02-18T14:30:00.000000"
+                        }
+                        """
+									)
+							}
+					)
 			)
 	})
 	ResponseEntity<PreSignedUrlResponse> processPreSignedUrlResponse(
