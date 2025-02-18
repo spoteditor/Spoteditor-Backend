@@ -1,5 +1,6 @@
 package com.spoteditor.backend.image.controller;
 
+import com.spoteditor.backend.config.swagger.PlaceImageApiDocument;
 import com.spoteditor.backend.image.controller.dto.PreSignedUrlResponse;
 import com.spoteditor.backend.image.controller.dto.PreSignedUrlRequest;
 import com.spoteditor.backend.image.service.PlaceImageService;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 @Tag(name = "image", description = "이미지(첨부파일) API")
-public class PlaceImageApiController {
+public class PlaceImageApiController implements PlaceImageApiDocument {
 
 	private final PlaceImageService imageService;
 
