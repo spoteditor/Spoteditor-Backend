@@ -84,4 +84,15 @@ public class GlobalExceptionHandler {
 				.status(apiErrorResponse.getStatus())
 				.body(apiErrorResponse);
 	}
+
+	@ExceptionHandler(TokenException.class)
+	public ResponseEntity<ErrorResponse> handleTokenException(TokenException e) {
+		ErrorResponse apiErrorResponse = ErrorResponse.of(
+				e.getErrorCode()
+		);
+
+		return ResponseEntity
+				.status(apiErrorResponse.getStatus())
+				.body(apiErrorResponse);
+	}
 }
