@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,8 +24,7 @@ public interface PlaceApiDocument {
 
 	@Operation(
 			summary = "장소 등록",
-			description = "새로운 장소를 등록합니다.",
-			security = @SecurityRequirement(name = "Bearer Authentication")
+			description = "새로운 장소를 등록합니다."
 	)
 	@ApiResponses({
 			@ApiResponse(
