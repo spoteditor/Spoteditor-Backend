@@ -49,6 +49,7 @@ public class TempPlaceLogController implements TempPlaceLogApiDocument {
                 .body(PlaceLogResponse.from(result));
     }
 
+    @Override
     @PostMapping("/temp-placelogs/{placeLogId}/places")
     public ResponseEntity<PlaceLogResponse> saveTempPlaceLogPlace (
             @AuthenticationPrincipal UserIdDto userIdDto,
