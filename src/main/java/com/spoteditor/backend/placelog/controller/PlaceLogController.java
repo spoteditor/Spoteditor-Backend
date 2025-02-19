@@ -40,6 +40,7 @@ public class PlaceLogController implements PlaceLogApiDocument {
                 .build();
     }
 
+    @Override
     @GetMapping("/placelogs")
     public ResponseEntity<CustomPageResponse<PlaceLogResponse>> getPlaceLogs(
             CustomPageRequest pageRequest

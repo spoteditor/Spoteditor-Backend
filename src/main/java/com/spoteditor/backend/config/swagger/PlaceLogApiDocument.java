@@ -1,5 +1,7 @@
 package com.spoteditor.backend.config.swagger;
 
+import com.spoteditor.backend.config.page.CustomPageRequest;
+import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.global.response.ErrorResponse;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogPlaceRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
@@ -111,5 +113,24 @@ public interface PlaceLogApiDocument {
                     required = true
             ) UserIdDto userIdDto,
             @PathVariable Long placeLogId
+    );
+
+    @Operation(
+            summary = "로그 리스트 가져오기",
+            description = "로그 리스트 가져오기",
+            method = "GET"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = @Content(schema = @Schema(implementation = CustomPageResponse.class))
+            )
+    })
+    ResponseEntity<CustomPageResponse<PlaceLogResponse>> getPlaceLogs(
+            @Parameter(
+                    description = "페이지 요청 정보 (page, size)",
+                    required = true
+            ) CustomPageRequest pageRequest
     );
 }
