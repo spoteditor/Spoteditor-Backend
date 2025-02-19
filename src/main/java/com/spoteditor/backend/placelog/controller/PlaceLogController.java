@@ -2,6 +2,7 @@ package com.spoteditor.backend.placelog.controller;
 
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
+import com.spoteditor.backend.config.swagger.PlaceLogApiDocument;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogPlaceRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
 import com.spoteditor.backend.placelog.repository.PlaceLogRepository;
@@ -21,11 +22,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class PlaceLogController {
+public class PlaceLogController implements PlaceLogApiDocument {
 
     private final PlaceLogService placeLogService;
     private final PlaceLogRepository placeLogRepository;
 
+    @Override
     @PostMapping("/placelogs/{placeLogId}")
     public ResponseEntity<Void> publishPlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
