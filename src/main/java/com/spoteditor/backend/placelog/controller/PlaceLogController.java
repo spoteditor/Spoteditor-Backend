@@ -50,6 +50,7 @@ public class PlaceLogController implements PlaceLogApiDocument {
                 .body(placeLogRepository.findAllPlace(pageRequest));
     }
 
+    @Override
     @PatchMapping("/placelogs/{placeLogId}")
     public ResponseEntity<PlaceLogResponse> updatePlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,

@@ -133,4 +133,107 @@ public interface PlaceLogApiDocument {
                     required = true
             ) CustomPageRequest pageRequest
     );
+
+    @Operation(
+            summary = "로그 수정",
+            description = "로그 수정",
+            method = "PATCH"
+    )
+    @RequestBody(
+            description = "이름, 설명, 장소변경",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = PlaceLogPlaceRequest.class),
+                    examples = @ExampleObject(
+                            name = "PlaceLogPlaceRequest",
+                            value = """
+                                    {
+                                         "name" : "테스트 로그 이름",
+                                         "description" : "테스트 로그 설명",
+                                         "places" : [
+                                             {
+                                                 "name" : "장소이름",
+                                                 "description" : "장소 설명",
+                                                 "originalFile" : "망원시장",
+                                                 "uuid" : "af3fbd7b-a395-4df0-a9fe-39485d86e731",
+                                                 "address" : {
+                                                     "address" : "주소",
+                                                     "roadAddress" : "도로명주소",
+                                                     "latitude" : 34.123,
+                                                     "longitude" : 23.123,
+                                                     "sido" : "시도",
+                                                     "bname" : "이름",
+                                                     "sigungu" : "시군구"
+                                                 },
+                                                 "category" : "TOUR"
+                                             }
+                                         ]
+                                    }
+                                    """
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PlaceLogResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "BAD_REQUEST",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "해당 Place Log가 없을 때",
+                                            value = """
+                                                    {
+                                                        "status": "NOT_FOUND_PLACE_LOG",
+                                                        "code": "PL005",
+                                                        "message": "로그를 찾을 수 없습니다.",
+                                                        "timestamp": "2025-02-17T16:50:36.569347"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "FORBIDDEN",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "로그 소유자가 아닐 때",
+                                            value = """
+                                                    {
+                                                        "status": "NOT_PLACE_LOG_OWNER",
+                                                        "code": "PL006",
+                                                        "message": "로그 소유자가 아닙니다.",
+                                                        "timestamp": "2025-02-17T16:50:36.569347"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    ResponseEntity<PlaceLogResponse> updatePlaceLog(
+            @Parameter(
+                    description = "인증된 사용자 정보",
+                    required = true
+            ) UserIdDto userIdDto,
+            @PathVariable Long placeLogId,
+            @Parameter(
+                    description = "변경하려는 로그 정보",
+                    required = true
+            ) PlaceLogPlaceRequest request
+    );
 }
