@@ -419,4 +419,68 @@ public interface PlaceLogApiDocument {
             ) UserIdDto userIdDto,
             @PathVariable Long placeLogId
     );
+
+    @Operation(
+            summary = "로그 북마크 삭제",
+            description = "로그 북마크 삭제",
+            method = "DELETE"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "NO_CONTENT",
+                    content = @Content(
+                            mediaType = "application/json"
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "BAD_REQUEST",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "해당 로그가 없을 때",
+                                            value = """
+                                                    {
+                                                        "status": "NOT_FOUND_PLACE_LOG",
+                                                        "code": "PL005",
+                                                        "message": "로그를 찾을 수 없습니다.",
+                                                        "timestamp": "2025-02-17T16:50:36.569347"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "CONFLICT",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "해당 로그와의 북마크가 존재하지 않을 때",
+                                            value = """
+                                                    {
+                                                        "status": "BOOKMARK_ALREADY_REMOVED",
+                                                        "code": "B004",
+                                                        "message": "북마크가 존재하지 않습니다.",
+                                                        "timestamp": "2025-02-17T16:50:36.569347"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    ResponseEntity<Void> removeBookmark(
+            @Parameter(
+                    description = "인증된 사용자 정보",
+                    required = true
+            ) UserIdDto userIdDto,
+            @PathVariable Long placeLogId
+    );
 }

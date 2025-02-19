@@ -104,6 +104,7 @@ public class PlaceLogController implements PlaceLogApiDocument {
                 .build();
     }
 
+    @Override
     @DeleteMapping("/placelogs/{placeLogId}/bookmark")
     public ResponseEntity<Void> removeBookmark(
             @AuthenticationPrincipal UserIdDto userIdDto,
