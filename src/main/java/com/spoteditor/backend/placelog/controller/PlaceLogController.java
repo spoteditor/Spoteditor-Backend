@@ -91,6 +91,7 @@ public class PlaceLogController implements PlaceLogApiDocument {
                 .build();
     }
 
+    @Override
     @PostMapping("/placelogs/{placeLogId}/bookmark")
     public ResponseEntity<Void> addBookmark(
             @AuthenticationPrincipal UserIdDto userIdDto,
