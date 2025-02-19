@@ -2,6 +2,7 @@ package com.spoteditor.backend.placelog.controller;
 
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
+import com.spoteditor.backend.config.swagger.PlaceLogApiDocument;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogPlaceRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
 import com.spoteditor.backend.placelog.repository.PlaceLogRepository;
@@ -21,11 +22,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class PlaceLogController {
+public class PlaceLogController implements PlaceLogApiDocument {
 
     private final PlaceLogService placeLogService;
     private final PlaceLogRepository placeLogRepository;
 
+    @Override
     @PostMapping("/placelogs/{placeLogId}")
     public ResponseEntity<Void> publishPlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -38,6 +40,7 @@ public class PlaceLogController {
                 .build();
     }
 
+    @Override
     @GetMapping("/placelogs")
     public ResponseEntity<CustomPageResponse<PlaceLogResponse>> getPlaceLogs(
             CustomPageRequest pageRequest
@@ -47,6 +50,7 @@ public class PlaceLogController {
                 .body(placeLogRepository.findAllPlace(pageRequest));
     }
 
+    @Override
     @PatchMapping("/placelogs/{placeLogId}")
     public ResponseEntity<PlaceLogResponse> updatePlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -61,6 +65,7 @@ public class PlaceLogController {
                 .body(PlaceLogResponse.from(result));
     }
 
+    @Override
     @GetMapping("/placelogs/{placeLogId}")
     public ResponseEntity<PlaceLogResponse> getPlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -73,7 +78,7 @@ public class PlaceLogController {
                 .body(PlaceLogResponse.from(result));
     }
 
-
+    @Override
     @DeleteMapping("/placelogs/{placeLogId}")
     public ResponseEntity<Void> removePlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -86,6 +91,7 @@ public class PlaceLogController {
                 .build();
     }
 
+    @Override
     @PostMapping("/placelogs/{placeLogId}/bookmark")
     public ResponseEntity<Void> addBookmark(
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -98,6 +104,7 @@ public class PlaceLogController {
                 .build();
     }
 
+    @Override
     @DeleteMapping("/placelogs/{placeLogId}/bookmark")
     public ResponseEntity<Void> removeBookmark(
             @AuthenticationPrincipal UserIdDto userIdDto,

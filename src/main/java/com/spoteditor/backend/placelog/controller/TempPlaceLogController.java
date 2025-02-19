@@ -1,11 +1,13 @@
 package com.spoteditor.backend.placelog.controller;
 
+import com.spoteditor.backend.config.swagger.TempPlaceLogApiDocument;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogPlaceRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
 import com.spoteditor.backend.placelog.service.PlaceLogService;
 import com.spoteditor.backend.placelog.controller.dto.TempPlaceLogRegisterResponse;
 import com.spoteditor.backend.placelog.service.dto.*;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +17,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class TempPlaceLogController {
+public class TempPlaceLogController implements TempPlaceLogApiDocument {
 
     private final PlaceLogService placeLogService;
 
+    @Override
     @PostMapping("/temp-placelogs")
     public ResponseEntity<TempPlaceLogRegisterResponse> saveTempPlaceLogTag (
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -33,6 +36,7 @@ public class TempPlaceLogController {
                 .body(TempPlaceLogRegisterResponse.from(result));
     }
 
+    @Override
     @GetMapping("/temp-placelogs/{placeLogId}")
     public ResponseEntity<PlaceLogResponse> getTempPlaceLog (
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -45,6 +49,7 @@ public class TempPlaceLogController {
                 .body(PlaceLogResponse.from(result));
     }
 
+    @Override
     @PostMapping("/temp-placelogs/{placeLogId}/places")
     public ResponseEntity<PlaceLogResponse> saveTempPlaceLogPlace (
             @AuthenticationPrincipal UserIdDto userIdDto,
