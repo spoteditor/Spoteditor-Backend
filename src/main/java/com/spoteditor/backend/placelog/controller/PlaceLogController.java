@@ -78,7 +78,7 @@ public class PlaceLogController implements PlaceLogApiDocument {
                 .body(PlaceLogResponse.from(result));
     }
 
-
+    @Override
     @DeleteMapping("/placelogs/{placeLogId}")
     public ResponseEntity<Void> removePlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,

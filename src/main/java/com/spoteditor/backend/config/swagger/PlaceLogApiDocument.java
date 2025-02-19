@@ -291,4 +291,68 @@ public interface PlaceLogApiDocument {
             ) UserIdDto userIdDto,
             @PathVariable Long placeLogId
     );
+
+    @Operation(
+            summary = "단일 로그 삭제",
+            description = "단일 로그 삭제",
+            method = "DELETE"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "NO_CONTENT",
+                    content = @Content(
+                            mediaType = "application/json"
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "BAD_REQUEST",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "해당 로그가 없을 때",
+                                            value = """
+                                                    {
+                                                        "status": "NOT_FOUND_PLACE_LOG",
+                                                        "code": "PL005",
+                                                        "message": "로그를 찾을 수 없습니다.",
+                                                        "timestamp": "2025-02-17T16:50:36.569347"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "FORBIDDEN",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "퍼블리싱 로그 소유자가 아닐 때",
+                                            value = """
+                                                    {
+                                                        "status": "NOT_PLACE_LOG_OWNER",
+                                                        "code": "PL006",
+                                                        "message": "로그 소유자가 아닙니다.",
+                                                        "timestamp": "2025-02-17T16:50:36.569347"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    ResponseEntity<Void> removePlaceLog(
+            @Parameter(
+                    description = "인증된 사용자 정보",
+                    required = true
+            ) UserIdDto userIdDto,
+            @PathVariable Long placeLogId
+    );
 }
