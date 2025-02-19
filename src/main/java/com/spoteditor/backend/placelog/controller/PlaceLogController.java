@@ -65,6 +65,7 @@ public class PlaceLogController implements PlaceLogApiDocument {
                 .body(PlaceLogResponse.from(result));
     }
 
+    @Override
     @GetMapping("/placelogs/{placeLogId}")
     public ResponseEntity<PlaceLogResponse> getPlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,

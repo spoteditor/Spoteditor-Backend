@@ -236,4 +236,59 @@ public interface PlaceLogApiDocument {
                     required = true
             ) PlaceLogPlaceRequest request
     );
+
+    @Operation(
+            summary = "단일 로그 가져오기",
+            description = "단일 로그 가져오기",
+            method = "GET"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PlaceLogResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "BAD_REQUEST",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "해당 Place Log가 없을 때",
+                                            value = """
+                                                    {
+                                                        "status": "NOT_FOUND_PLACE_LOG",
+                                                        "code": "PL005",
+                                                        "message": "로그를 찾을 수 없습니다.",
+                                                        "timestamp": "2025-02-17T16:50:36.569347"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "해당 로그가 퍼블리시중이 아닐 때",
+                                            value = """
+                                                    {
+                                                        "status": "NOT_PUBLISHED_PLACE_LOG",
+                                                        "code": "PL008",
+                                                        "message": "해당 로그가 퍼블리시중이 아닙니다",
+                                                        "timestamp": "2025-02-17T16:50:36.569347"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    ResponseEntity<PlaceLogResponse> getPlaceLog(
+            @Parameter(
+                    description = "인증된 사용자 정보",
+                    required = true
+            ) UserIdDto userIdDto,
+            @PathVariable Long placeLogId
+    );
 }
