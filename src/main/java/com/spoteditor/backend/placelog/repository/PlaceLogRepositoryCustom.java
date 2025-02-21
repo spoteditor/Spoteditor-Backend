@@ -11,7 +11,5 @@ import java.util.Optional;
 
 public interface PlaceLogRepositoryCustom {
 
-    Optional<PlaceLog> findTempPlaceLogByUser(Long userId);
-
     CustomPageResponse<PlaceLogResponse> findAllPlace(CustomPageRequest pageRequest);
 }

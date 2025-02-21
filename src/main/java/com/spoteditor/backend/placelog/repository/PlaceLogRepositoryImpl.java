@@ -33,20 +33,6 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<PlaceLog> findTempPlaceLogByUser(Long userId) {
-        PlaceLog result = queryFactory
-                .selectFrom(placeLog)
-                .where(
-                        placeLog.user.id.eq(userId),
-                        placeLog.status.eq(PlaceLogStatus.TEMP)
-                )
-                .orderBy(placeLog.createdAt.desc())
-                .fetchFirst();
-
-        return Optional.ofNullable(result);
-    }
-
-    @Override
     public CustomPageResponse<PlaceLogResponse> findAllPlace(CustomPageRequest request) {
         PageRequest pageRequest = request.of();
 
@@ -57,6 +43,7 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
                         placeLog.description,
                         placeLog.imageUrl.as("image"),
                         placeLog.address,
+                        placeLog.views,
                         ExpressionUtils.as(
                                 JPAExpressions
                                         .select(tag)
@@ -75,6 +62,7 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
                         )
                 ))
                 .from(placeLog)
+                .where(placeLog.status.eq(PlaceLogStatus.PUBLIC))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
                 .orderBy(placeLog.createdAt.asc())
