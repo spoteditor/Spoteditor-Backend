@@ -1,15 +1,12 @@
 package com.spoteditor.backend.placelog.service.dto;
 
 import com.spoteditor.backend.mapping.placelogtagmapping.entity.PlaceLogTagMapping;
-import com.spoteditor.backend.placelog.controller.dto.TempPlaceLogRegisterRequest;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.placelog.entity.PlaceLogStatus;
 import com.spoteditor.backend.tag.entity.Tag;
-import com.spoteditor.backend.tag.entity.TagCategory;
 import com.spoteditor.backend.user.entity.User;
 
 import java.util.List;
-import java.util.Map;
 
 public record TempPlaceLogRegisterCommand (
         List<TempPlaceLogRegisterRequest> tags

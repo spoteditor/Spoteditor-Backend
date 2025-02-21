@@ -1,29 +1,21 @@
 package com.spoteditor.backend.config.swagger;
 
-import com.spoteditor.backend.global.response.ErrorCode;
 import com.spoteditor.backend.global.response.ErrorResponse;
-import com.spoteditor.backend.placelog.controller.dto.PlaceLogPlaceRequest;
+import com.spoteditor.backend.placelog.controller.dto.PlaceLogUpdateRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
-import com.spoteditor.backend.placelog.controller.dto.TempPlaceLogRegisterResponse;
 import com.spoteditor.backend.placelog.service.dto.TempPlaceLogRegisterCommand;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import static com.spoteditor.backend.global.response.ErrorCode.TEMP_PLACE_LOG_ALREADY_EXIST;
 
 @Tag(name = "temp-place-log", description = "임시저장 로그 API")
 public interface TempPlaceLogApiDocument {
@@ -223,7 +215,7 @@ public interface TempPlaceLogApiDocument {
             description = "장소 등록",
             content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = PlaceLogPlaceRequest.class),
+                    schema = @Schema(implementation = PlaceLogUpdateRequest.class),
                     examples = @ExampleObject(
                             name = "PlaceLogPlaceRequest",
                             value = """
@@ -325,7 +317,7 @@ public interface TempPlaceLogApiDocument {
             @Parameter(
                     description = "임시저장할 장소 정보",
                     required = true,
-                    schema = @Schema(implementation = PlaceLogPlaceRequest.class
-            )) PlaceLogPlaceRequest request
+                    schema = @Schema(implementation = PlaceLogUpdateRequest.class
+            )) PlaceLogUpdateRequest request
     );
 }

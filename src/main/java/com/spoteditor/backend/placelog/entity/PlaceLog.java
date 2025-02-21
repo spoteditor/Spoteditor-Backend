@@ -78,8 +78,4 @@ public class PlaceLog extends BaseEntity {
         this.name = name;
         this.description = description;
     }
-
-    public void publish() {
-        this.status = PlaceLogStatus.PUBLISHED;
-    }
 }
