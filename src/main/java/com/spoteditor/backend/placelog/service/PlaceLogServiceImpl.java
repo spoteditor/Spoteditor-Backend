@@ -89,7 +89,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         List<Tag> tags = tagRepository.findByNameIn(tagNames);
 
         // 로그 등록
-        PlaceLog savedPlaceLog = placeLogRepository.save(command.toEntity(user, places, tags, command.status()));
+        PlaceLog savedPlaceLog = placeLogRepository.save(command.toEntity(user, places, tags));
 
         return PlaceLogResult.from(savedPlaceLog, places, tags);
     }

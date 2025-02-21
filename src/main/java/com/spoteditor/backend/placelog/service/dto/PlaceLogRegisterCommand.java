@@ -30,7 +30,7 @@ public record PlaceLogRegisterCommand (
         );
     }
 
-    public PlaceLog toEntity(User user, List<Place> places, List<Tag> tags, PlaceLogStatus status) {
+    public PlaceLog toEntity(User user, List<Place> places, List<Tag> tags) {
 
         Place firstPlace = places.get(0);
 
