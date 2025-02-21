@@ -2,8 +2,7 @@ package com.spoteditor.backend.placelog.controller;
 
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
-import com.spoteditor.backend.config.swagger.PlaceLogApiDocument;
-import com.spoteditor.backend.placelog.controller.dto.PlaceLogPlaceRequest;
+import com.spoteditor.backend.placelog.controller.dto.PlaceLogUpdateRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
 import com.spoteditor.backend.placelog.repository.PlaceLogRepository;
 import com.spoteditor.backend.placelog.service.PlaceLogService;
@@ -17,30 +16,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class PlaceLogController implements PlaceLogApiDocument {
+public class PlaceLogController{
 
     private final PlaceLogService placeLogService;
     private final PlaceLogRepository placeLogRepository;
 
-    @Override
-    @PostMapping("/placelogs/{placeLogId}")
-    public ResponseEntity<Void> publishPlaceLog(
+    @PostMapping("/placelogs")
+    public ResponseEntity<PlaceLogResponse> savePlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
-            @PathVariable Long placeLogId
+            @RequestBody PlaceLogRegisterRequest request
     ) {
-        placeLogService.publishPlaceLog(userIdDto.getId(), placeLogId);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .build();
     }
 
-    @Override
     @GetMapping("/placelogs")
     public ResponseEntity<CustomPageResponse<PlaceLogResponse>> getPlaceLogs(
             CustomPageRequest pageRequest
@@ -50,22 +44,6 @@ public class PlaceLogController implements PlaceLogApiDocument {
                 .body(placeLogRepository.findAllPlace(pageRequest));
     }
 
-    @Override
-    @PatchMapping("/placelogs/{placeLogId}")
-    public ResponseEntity<PlaceLogResponse> updatePlaceLog(
-            @AuthenticationPrincipal UserIdDto userIdDto,
-            @PathVariable Long placeLogId,
-            @RequestBody PlaceLogPlaceRequest request
-    ) {
-        PlaceLogPlaceCommand command = request.from(placeLogId);
-        PlaceLogResult result = placeLogService.addTempPlaceLogPlace(userIdDto.getId(), command);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(PlaceLogResponse.from(result));
-    }
-
-    @Override
     @GetMapping("/placelogs/{placeLogId}")
     public ResponseEntity<PlaceLogResponse> getPlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -78,7 +56,18 @@ public class PlaceLogController implements PlaceLogApiDocument {
                 .body(PlaceLogResponse.from(result));
     }
 
-    @Override
+    @PatchMapping("/placelogs/{placeLogId}")
+    public ResponseEntity<PlaceLogResponse> updatePlaceLog(
+            @AuthenticationPrincipal UserIdDto userIdDto,
+            @PathVariable Long placeLogId,
+            @RequestBody PlaceLogUpdateRequest request
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
     @DeleteMapping("/placelogs/{placeLogId}")
     public ResponseEntity<Void> removePlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -91,29 +80,4 @@ public class PlaceLogController implements PlaceLogApiDocument {
                 .build();
     }
 
-    @Override
-    @PostMapping("/placelogs/{placeLogId}/bookmark")
-    public ResponseEntity<Void> addBookmark(
-            @AuthenticationPrincipal UserIdDto userIdDto,
-            @PathVariable Long placeLogId
-    ) {
-        placeLogService.addBookmark(userIdDto.getId(), placeLogId);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .build();
-    }
-
-    @Override
-    @DeleteMapping("/placelogs/{placeLogId}/bookmark")
-    public ResponseEntity<Void> removeBookmark(
-            @AuthenticationPrincipal UserIdDto userIdDto,
-            @PathVariable Long placeLogId
-    ) {
-        placeLogService.removeBookmark(userIdDto.getId(), placeLogId);
-
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
-    }
 }
