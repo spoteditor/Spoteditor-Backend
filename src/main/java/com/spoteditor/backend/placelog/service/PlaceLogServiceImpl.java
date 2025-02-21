@@ -35,6 +35,7 @@ import static com.spoteditor.backend.global.response.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PlaceLogServiceImpl implements PlaceLogService {
 
     private final PlaceLogRepository placeLogRepository;
@@ -95,7 +96,6 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Override
-    @Transactional
     public PlaceLogResult getPlaceLog(Long userId, Long placeLogId) {
 
         User user = userRepository.findById(userId)
