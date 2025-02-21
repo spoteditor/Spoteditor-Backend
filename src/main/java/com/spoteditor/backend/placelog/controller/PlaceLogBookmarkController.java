@@ -1,6 +1,6 @@
 package com.spoteditor.backend.placelog.controller;
 
-import com.spoteditor.backend.placelog.service.PlaceLogService;
+import com.spoteditor.backend.placelog.service.PlaceLogBookmarkService;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PlaceLogBookmarkController {
 
-    private final PlaceLogService placeLogService;
+    private final PlaceLogBookmarkService placeLogBookmarkService;
 
     @PostMapping("/placelogs/{placeLogId}/bookmark")
     public ResponseEntity<Void> addBookmark(
             @AuthenticationPrincipal UserIdDto userIdDto,
             @PathVariable Long placeLogId
     ) {
-        placeLogService.addBookmark(userIdDto.getId(), placeLogId);
+        placeLogBookmarkService.addBookmark(userIdDto.getId(), placeLogId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -32,7 +32,7 @@ public class PlaceLogBookmarkController {
             @AuthenticationPrincipal UserIdDto userIdDto,
             @PathVariable Long placeLogId
     ) {
-        placeLogService.removeBookmark(userIdDto.getId(), placeLogId);
+        placeLogBookmarkService.removeBookmark(userIdDto.getId(), placeLogId);
 
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)

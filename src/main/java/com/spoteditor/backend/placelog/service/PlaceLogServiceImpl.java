@@ -44,7 +44,6 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     private final TagRepository tagRepository;
     private final PlaceLogTagMappingRepository placeLogTagMappingRepository;
     private final PlaceLogPlaceMappingRepository placeLogPlaceMappingRepository;
-    private final UserPlaceLogMappingRepository userPlaceLogMappingRepository;
     private final PlaceService placeService;
 
     @Override
@@ -236,46 +235,6 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         tempPlaceLog.publish();
 
         placeLogRepository.save(tempPlaceLog);
-    }
-
-    @Override
-    @Transactional
-    public void addBookmark(Long userId, Long placeLogId) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(NOT_FOUND_USER));
-
-        PlaceLog placeLog = placeLogRepository.findById(placeLogId)
-                .orElseThrow(() -> new PlaceLogException(NOT_FOUND_PLACE_LOG));
-
-        UserPlaceLogMappingId mappingId = new UserPlaceLogMappingId(userId, placeLogId);
-
-        if (userPlaceLogMappingRepository.existsById(mappingId)) {
-            throw new BookmarkException(BOOKMARK_ALREADY_EXIST);
-        }
-
-        UserPlaceLogMapping mapping = new UserPlaceLogMapping(user, placeLog);
-        userPlaceLogMappingRepository.save(mapping);
-    }
-
-    @Override
-    @Transactional
-    public void removeBookmark(Long userId, Long placeLogId) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(NOT_FOUND_USER));
-
-        PlaceLog placeLog = placeLogRepository.findById(placeLogId)
-                .orElseThrow(() -> new PlaceLogException(NOT_FOUND_PLACE_LOG));
-
-        UserPlaceLogMappingId mappingId = new UserPlaceLogMappingId(userId, placeLogId);
-
-        if (!userPlaceLogMappingRepository.existsById(mappingId)) {
-            throw new BookmarkException(BOOKMARK_ALREADY_REMOVED);
-        }
-
-        UserPlaceLogMapping mapping = new UserPlaceLogMapping(user, placeLog);
-        userPlaceLogMappingRepository.delete(mapping);
     }
 
     @Override

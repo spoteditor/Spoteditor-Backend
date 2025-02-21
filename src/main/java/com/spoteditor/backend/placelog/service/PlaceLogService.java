@@ -18,9 +18,5 @@ public interface PlaceLogService {
 
     void publishPlaceLog(Long userId, Long placeLogId);
 
-    void addBookmark(Long userId, Long placeLogId);
-
-    void removeBookmark(Long userId, Long placeLogId);
-
     void removePlaceLog(Long userId, Long placeLogId);
 }
