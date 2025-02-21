@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.spoteditor.backend.global.exception.PlaceLogException;
 
+import static com.spoteditor.backend.global.response.ErrorCode.STATUS_NOT_SUPPORTED;
+
 public enum PlaceLogStatus {
     PUBLIC,
     PRIVATE;
@@ -20,6 +22,6 @@ public enum PlaceLogStatus {
                 return status;
             }
         }
-        throw new PlaceLogException("해당 status 값은 존재하지 않습니다.");
+        throw new PlaceLogException(STATUS_NOT_SUPPORTED);
     }
 }

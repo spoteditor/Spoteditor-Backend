@@ -2,11 +2,12 @@ package com.spoteditor.backend.placelog.controller;
 
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
+import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogUpdateRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
 import com.spoteditor.backend.placelog.repository.PlaceLogRepository;
 import com.spoteditor.backend.placelog.service.PlaceLogService;
-import com.spoteditor.backend.placelog.service.dto.PlaceLogPlaceCommand;
+import com.spoteditor.backend.placelog.service.dto.PlaceLogRegisterCommand;
 import com.spoteditor.backend.placelog.service.dto.PlaceLogResult;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,12 @@ public class PlaceLogController{
             @AuthenticationPrincipal UserIdDto userIdDto,
             @RequestBody PlaceLogRegisterRequest request
     ) {
+        PlaceLogRegisterCommand command = PlaceLogRegisterCommand.from(request);
+        PlaceLogResult result = placeLogService.addPlaceLog(userIdDto.getId(), command);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .build();
+                .body(PlaceLogResponse.from(result));
     }
 
     @GetMapping("/placelogs")

@@ -2,8 +2,9 @@ package com.spoteditor.backend.placelog.controller.dto;
 
 import com.spoteditor.backend.place.controller.dto.PlaceResponse;
 import com.spoteditor.backend.place.entity.Address;
+import com.spoteditor.backend.placelog.entity.PlaceLogStatus;
 import com.spoteditor.backend.placelog.service.dto.PlaceLogResult;
-import com.spoteditor.backend.tag.controller.dto.TagResponse;
+import com.spoteditor.backend.tag.dto.TagDto;
 
 import java.util.List;
 
@@ -13,7 +14,9 @@ public record PlaceLogResponse(
         String description,
         String image,
         Address address,
-        List<TagResponse> tags,
+        PlaceLogStatus status,
+        long views,
+        List<TagDto> tags,
         List<PlaceResponse> places
 ) {
     public static PlaceLogResponse from(PlaceLogResult result) {
@@ -23,8 +26,10 @@ public record PlaceLogResponse(
                 result.placeLog().getDescription(),
                 result.placeLog().getImageUrl(),
                 result.placeLog().getAddress(),
+                result.placeLog().getStatus(),
+                result.placeLog().getViews(),
                 result.tags().stream()
-                        .map(TagResponse::from)
+                        .map(TagDto::from)
                         .toList(),
                 result.places().stream()
                         .map(PlaceResponse::from)
