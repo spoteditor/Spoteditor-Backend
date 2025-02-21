@@ -56,6 +56,7 @@ public enum ErrorCode {
 	NOT_TEMP_PLACE_LOG(HttpStatus.BAD_REQUEST, "PL007", "해당 로그가 임시저장중이 아닙니다."),
 	NOT_PUBLISHED_PLACE_LOG(HttpStatus.BAD_REQUEST, "PL008", "해당 로그가 퍼블리시중이 아닙니다"),
 	NO_PLACE_LOG_NAME(HttpStatus.BAD_REQUEST, "PL009", "저장하려면 제목이 필요합니다"),
+	STATUS_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "PL010", "지원하지 않는 status 입니다."),
 
 	// tag
 	INVALID_TAG_CATEGORY(HttpStatus.BAD_REQUEST, "T001", "존재하지 않는 태그 카테고리 입니다."),
