@@ -1,16 +1,14 @@
 package com.spoteditor.backend.placelog.service;
 
-import com.spoteditor.backend.global.exception.BookmarkException;
 import com.spoteditor.backend.global.exception.PlaceLogException;
 import com.spoteditor.backend.global.exception.TagException;
 import com.spoteditor.backend.global.exception.UserException;
+import com.spoteditor.backend.image.service.PlaceImageService;
 import com.spoteditor.backend.mapping.placelogplacemapping.entity.PlaceLogPlaceMapping;
 import com.spoteditor.backend.mapping.placelogplacemapping.repository.PlaceLogPlaceMappingRepository;
 import com.spoteditor.backend.mapping.placelogtagmapping.entity.PlaceLogTagMapping;
 import com.spoteditor.backend.mapping.placelogtagmapping.repository.PlaceLogTagMappingRepository;
-import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMapping;
-import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMappingId;
-import com.spoteditor.backend.mapping.userplacelogmapping.repository.UserPlaceLogMappingRepository;
+import com.spoteditor.backend.place.controller.dto.PlaceRegisterRequest;
 import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.place.repository.PlaceRepository;
 import com.spoteditor.backend.place.service.PlaceService;
@@ -19,6 +17,7 @@ import com.spoteditor.backend.place.service.dto.PlaceRegisterResult;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.placelog.entity.PlaceLogStatus;
 import com.spoteditor.backend.placelog.service.dto.*;
+import com.spoteditor.backend.tag.dto.TagDto;
 import com.spoteditor.backend.tag.entity.Tag;
 import com.spoteditor.backend.placelog.repository.PlaceLogRepository;
 import com.spoteditor.backend.tag.repository.TagRepository;
@@ -45,31 +44,54 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     private final PlaceLogTagMappingRepository placeLogTagMappingRepository;
     private final PlaceLogPlaceMappingRepository placeLogPlaceMappingRepository;
     private final PlaceService placeService;
+    private final PlaceImageService imageService;
 
     @Override
     @Transactional
-    public PlaceLogRegisterResult addPlaceLog(Long userId, PlaceLogRegisterCommand command) {
+    public PlaceLogResult addPlaceLog(Long userId, PlaceLogRegisterCommand command) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
-        if(command.placeIds().isEmpty()) {
+        if(user.isDeleted()) {
+            throw new UserException(DELETED_USER);
+        }
+
+        // 장소는 1개 이상 등록
+        if(command.placeRegisterRequests().isEmpty()) {
             throw new PlaceLogException(PLACE_MINIMUM_REQUIRED);
         }
 
-        if(command.placeIds().size() > 10) {
+        // 장소 최대 10개까지 등록
+        if(command.placeRegisterRequests().size() > 10) {
             throw new PlaceLogException(PLACE_LIMIT_EXCEEDED);
         }
 
-        List<Place> places = placeRepository.findAllById(command.placeIds());
+        // 장소 등록
+        List<PlaceRegisterCommand> placeRegisterCommands = command.placeRegisterRequests().stream()
+                .map(PlaceRegisterRequest::from)
+                .toList();
 
-        if (places.size() != command.placeIds().size()) {
-            throw new PlaceLogException(NOT_FOUND_PLACES);
+        List<Place> places = new ArrayList<>();
+
+        for(PlaceRegisterCommand placeRegisterCommand : placeRegisterCommands) {
+            Place savedPlace = placeRepository.save(placeRegisterCommand.toEntity(user));
+            imageService.upload(placeRegisterCommand.originalFile(), placeRegisterCommand.uuid(), savedPlace.getId());
+
+            places.add(savedPlace);
         }
 
-        PlaceLog savedPlaceLog = placeLogRepository.save(command.toEntity(user, places));
+        // 태그 등록
+        List<String> tagNames = command.tags().stream()
+                .map(TagDto::name)
+                .toList();
 
-        return PlaceLogRegisterResult.from(savedPlaceLog, places);
+        List<Tag> tags = tagRepository.findByNameIn(tagNames);
+
+        // 로그 등록
+        PlaceLog savedPlaceLog = placeLogRepository.save(command.toEntity(user, places, tags, command.status()));
+
+        return PlaceLogResult.from(savedPlaceLog, places, tags);
     }
 
     @Override

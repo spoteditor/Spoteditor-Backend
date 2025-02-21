@@ -11,4 +11,11 @@ public record PlaceLogResult(
         List<Tag> tags,
         List<Place> places
 ) {
+    public static PlaceLogResult from(PlaceLog placeLog, List<Place> places, List<Tag> tags) {
+        return new PlaceLogResult(
+                placeLog,
+                tags,
+                places
+        );
+    }
 }
