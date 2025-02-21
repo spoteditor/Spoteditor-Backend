@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface PlaceLogService {
 
-    PlaceLogRegisterResult addPlaceLog(Long userId, PlaceLogRegisterCommand command);
+    PlaceLogResult addPlaceLog(Long userId, PlaceLogRegisterCommand command);
 
     TempPlaceLogRegisterResult addTempPlaceLogTag(Long userId, TempPlaceLogRegisterCommand command);
 
