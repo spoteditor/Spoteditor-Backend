@@ -96,167 +96,20 @@ public class PlaceLogServiceImpl implements PlaceLogService {
 
     @Override
     @Transactional
-    public TempPlaceLogRegisterResult addTempPlaceLogTag(Long userId, TempPlaceLogRegisterCommand command) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(NOT_FOUND_USER));
-
-        Optional<PlaceLog> tempPlaceLog = placeLogRepository.findTempPlaceLogByUser(user.getId());
-
-        if(tempPlaceLog.isPresent()) {
-            throw new PlaceLogException(TEMP_PLACE_LOG_ALREADY_EXIST);
-        }
-
-        if(command.tags().size() > 5) {
-            throw new TagException(TAG_LIMIT_EXCEEDED);
-        }
-
-        List<Tag> tags = tagRepository.findByNameIn(command.getTagNames());
-
-        if(command.tags().size() != tags.size()) {
-            throw new TagException(INVALID_TAG);
-        }
-
-        PlaceLog savedTempPlaceLog = placeLogRepository.save(command.toEntity(user, tags));
-
-        return new TempPlaceLogRegisterResult(savedTempPlaceLog);
-    }
-
-    @Override
-    @Transactional
-    public PlaceLogResult getTempPlaceLog(Long userId, Long placeLogId) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(NOT_FOUND_USER));
-
-        PlaceLog tempPlaceLog = placeLogRepository.findById(placeLogId)
-                .orElseThrow(() -> new PlaceLogException(NOT_FOUND_PLACE_LOG));
-
-        if(!tempPlaceLog.getUser().getId().equals(userId)) {
-            throw new PlaceLogException(NOT_PLACE_LOG_OWNER);
-        }
-
-        if(!tempPlaceLog.getStatus().equals(PlaceLogStatus.TEMP)) {
-            throw new PlaceLogException(NOT_TEMP_PLACE_LOG);
-        }
-
-        List<Tag> tags = placeLogTagMappingRepository.findByPlaceLogId(tempPlaceLog.getId()).stream()
-                .map(PlaceLogTagMapping::getTag)
-                .toList();
-
-        List<Place> places = placeLogPlaceMappingRepository.findByPlaceLogId(tempPlaceLog.getId()).stream()
-                .map(PlaceLogPlaceMapping::getPlace)
-                .toList();
-
-        return new PlaceLogResult(tempPlaceLog, tags, places);
-    }
-
-    @Override
-    @Transactional
     public PlaceLogResult getPlaceLog(Long userId, Long placeLogId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
-        PlaceLog tempPlaceLog = placeLogRepository.findById(placeLogId)
+        PlaceLog placeLog = placeLogRepository.findById(placeLogId)
                 .orElseThrow(() -> new PlaceLogException(NOT_FOUND_PLACE_LOG));
 
-        if(!tempPlaceLog.getStatus().equals(PlaceLogStatus.PUBLISHED)) {
-            throw new PlaceLogException(NOT_PUBLISHED_PLACE_LOG);
+        // placeLog 주인 아닐 때 PlaceLog 가 private 이면 못봄
+        if(!placeLog.getUser().getId().equals(userId) && placeLog.getStatus().equals(PlaceLogStatus.PRIVATE)) {
+            throw new PlaceLogException(PRIVATE_PLACE_LOG);
         }
 
-        List<Tag> tags = placeLogTagMappingRepository.findByPlaceLogId(tempPlaceLog.getId()).stream()
-                .map(PlaceLogTagMapping::getTag)
-                .toList();
-
-        List<Place> places = placeLogPlaceMappingRepository.findByPlaceLogId(tempPlaceLog.getId()).stream()
-                .map(PlaceLogPlaceMapping::getPlace)
-                .toList();
-
-        return new PlaceLogResult(tempPlaceLog, tags, places);
-    }
-
-    @Override
-    @Transactional
-    public PlaceLogResult addTempPlaceLogPlace(Long userId, PlaceLogPlaceCommand command) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(NOT_FOUND_USER));
-
-        PlaceLog tempPlaceLog = placeLogRepository.findById(command.placeLogId())
-                .orElseThrow(() -> new PlaceLogException(NOT_FOUND_PLACE_LOG));
-
-        if(!tempPlaceLog.getUser().getId().equals(userId)) {
-            throw new PlaceLogException(NOT_PLACE_LOG_OWNER);
-        }
-        // 이름, 설명 업데이트
-        tempPlaceLog.update(command.name(), command.description());
-
-        // 태그 가져오기
-        List<Tag> tags = placeLogTagMappingRepository.findByPlaceLogId(tempPlaceLog.getId()).stream()
-                .map(PlaceLogTagMapping::getTag)
-                .toList();
-
-        List<PlaceRegisterCommand> placeRegisterCommands = command.places();
-
-        List<PlaceRegisterResult> placeRegisterResults = new ArrayList<>();
-
-        for(PlaceRegisterCommand placeRegisterCommand: placeRegisterCommands) {
-            placeRegisterResults.add(placeService.addPlace(userId, placeRegisterCommand));
-        }
-
-        List<Long> placeIds = placeRegisterResults.stream()
-                                .map(PlaceRegisterResult::placeId)
-                                .toList();
-        // 장소 가져오기
-        List<Place> places = placeRepository.findByIdIn(placeIds);
-
-        // 중간테이블 생성
-        places.forEach(place -> {
-            PlaceLogPlaceMapping mapping = PlaceLogPlaceMapping.builder()
-                    .placeLog(tempPlaceLog)
-                    .place(place)
-                    .build();
-            tempPlaceLog.getPlaceLogPlaceMappings().add(mapping);
-        });
-
-        placeLogRepository.save(tempPlaceLog);
-
-        return new PlaceLogResult(tempPlaceLog, tags, places);
-    }
-
-    @Override
-    @Transactional
-    public void publishPlaceLog(Long userId, Long placeLogId) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(NOT_FOUND_USER));
-
-        PlaceLog tempPlaceLog = placeLogRepository.findById(placeLogId)
-                .orElseThrow(() -> new PlaceLogException(NOT_FOUND_PLACE_LOG));
-
-        if(!tempPlaceLog.getUser().getId().equals(userId)) {
-            throw new PlaceLogException(NOT_PLACE_LOG_OWNER);
-        }
-
-        if(tempPlaceLog.getName().isEmpty()) {
-            throw new PlaceLogException(NO_PLACE_LOG_NAME);
-        }
-
-        List<Long> placeIds = placeLogPlaceMappingRepository.findByPlaceLogId(placeLogId).stream()
-                .map(placeLogPlaceMapping -> placeLogPlaceMapping.getPlace().getId())
-                .toList();
-
-        if(placeIds.isEmpty()) {
-            throw new PlaceLogException(PLACE_MINIMUM_REQUIRED);
-        }
-
-        if(placeIds.size() > 10) {
-            throw new PlaceLogException(PLACE_LIMIT_EXCEEDED);
-        }
-        tempPlaceLog.publish();
-
-        placeLogRepository.save(tempPlaceLog);
+        return new PlaceLogResult(placeLog, getTags(placeLog.getId()), getPlaces(placeLog.getId()));
     }
 
     @Override
@@ -274,5 +127,17 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         }
 
         placeLogRepository.delete(placeLog);
+    }
+
+    private List<Place> getPlaces(Long placeLogId) {
+        return placeLogPlaceMappingRepository.findByPlaceLogId(placeLogId).stream()
+                .map(PlaceLogPlaceMapping::getPlace)
+                .toList();
+    }
+
+    private List<Tag> getTags(Long placeLogId) {
+        return placeLogTagMappingRepository.findByPlaceLogId(placeLogId).stream()
+                .map(PlaceLogTagMapping::getTag)
+                .toList();
     }
 }
