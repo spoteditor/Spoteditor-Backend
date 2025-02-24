@@ -1,9 +1,10 @@
 package com.spoteditor.backend.placelog.service.dto;
 
+import com.spoteditor.backend.image.entity.PlaceImage;
 import com.spoteditor.backend.mapping.placelogplacemapping.entity.PlaceLogPlaceMapping;
 import com.spoteditor.backend.mapping.placelogtagmapping.entity.PlaceLogTagMapping;
-import com.spoteditor.backend.place.controller.dto.PlaceRegisterRequest;
 import com.spoteditor.backend.place.entity.Place;
+import com.spoteditor.backend.placelog.controller.dto.PlaceLogPlaceRegisterRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterRequest;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.placelog.entity.PlaceLogStatus;
@@ -16,21 +17,25 @@ import java.util.List;
 public record PlaceLogRegisterCommand (
         String name,
         String description,
+        String originalFile,
+        String uuid,
         PlaceLogStatus status,
         List<TagDto> tags,
-        List<PlaceRegisterRequest> placeRegisterRequests
+        List<PlaceLogPlaceRegisterRequest> placeRegisterRequests
 ) {
     public static PlaceLogRegisterCommand from(PlaceLogRegisterRequest request) {
         return new PlaceLogRegisterCommand(
                 request.name(),
                 request.description(),
+                request.originalFile(),
+                request.uuid(),
                 request.status(),
                 request.tags(),
-                request.placeRegisterRequests()
+                request.places()
         );
     }
 
-    public PlaceLog toEntity(User user, List<Place> places, List<Tag> tags) {
+    public PlaceLog toEntity(User user, List<Place> places, List<Tag> tags, PlaceImage placeLogImage) {
 
         Place firstPlace = places.get(0);
 
@@ -38,7 +43,7 @@ public record PlaceLogRegisterCommand (
                 .user(user)
                 .name(name)
                 .description(description)
-                .imageUrl(firstPlace.getPlaceImages().get(0).getStoredFile())
+                .placeLogImage(placeLogImage)
                 .address(firstPlace.getAddress())
                 .status(status)
                 .build();
