@@ -2,8 +2,8 @@ package com.spoteditor.backend.placelog.controller;
 
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
+import com.spoteditor.backend.placelog.controller.dto.PlaceLogListResponse;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterRequest;
-import com.spoteditor.backend.placelog.controller.dto.PlaceLogUpdateRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
 import com.spoteditor.backend.placelog.repository.PlaceLogRepository;
 import com.spoteditor.backend.placelog.service.PlaceLogService;
@@ -39,7 +39,7 @@ public class PlaceLogController{
     }
 
     @GetMapping("/placelogs")
-    public ResponseEntity<CustomPageResponse<PlaceLogResponse>> getPlaceLogs(
+    public ResponseEntity<CustomPageResponse<PlaceLogListResponse>> getPlaceLogs(
             CustomPageRequest pageRequest
     ) {
         return ResponseEntity
@@ -57,18 +57,6 @@ public class PlaceLogController{
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(PlaceLogResponse.from(result));
-    }
-
-    @PatchMapping("/placelogs/{placeLogId}")
-    public ResponseEntity<PlaceLogResponse> updatePlaceLog(
-            @AuthenticationPrincipal UserIdDto userIdDto,
-            @PathVariable Long placeLogId,
-            @RequestBody PlaceLogUpdateRequest request
-    ) {
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .build();
     }
 
     @DeleteMapping("/placelogs/{placeLogId}")

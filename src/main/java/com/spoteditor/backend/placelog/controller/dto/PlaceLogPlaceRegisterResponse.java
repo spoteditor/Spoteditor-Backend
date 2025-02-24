@@ -9,7 +9,6 @@ import java.util.List;
 
 public record PlaceLogPlaceRegisterResponse(
         Long placeId,
-        String author,
         String name,
         String description,
         Address address,
@@ -19,7 +18,6 @@ public record PlaceLogPlaceRegisterResponse(
     public static PlaceLogPlaceRegisterResponse from (Place place) {
         return new PlaceLogPlaceRegisterResponse (
                 place.getId(),
-                place.getUser().getName(),
                 place.getName(),
                 place.getDescription(),
                 place.getAddress(),
