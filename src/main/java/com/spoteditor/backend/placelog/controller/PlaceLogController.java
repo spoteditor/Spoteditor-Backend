@@ -2,6 +2,7 @@ package com.spoteditor.backend.placelog.controller;
 
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
+import com.spoteditor.backend.config.swagger.PlaceLogApiDocument;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogListResponse;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
@@ -20,11 +21,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class PlaceLogController{
+public class PlaceLogController implements PlaceLogApiDocument {
 
     private final PlaceLogService placeLogService;
     private final PlaceLogRepository placeLogRepository;
 
+    @Override
     @PostMapping("/placelogs")
     public ResponseEntity<PlaceLogResponse> savePlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -38,6 +40,7 @@ public class PlaceLogController{
                 .body(PlaceLogResponse.from(result));
     }
 
+    @Override
     @GetMapping("/placelogs")
     public ResponseEntity<CustomPageResponse<PlaceLogListResponse>> getPlaceLogs(
             CustomPageRequest pageRequest
@@ -47,6 +50,7 @@ public class PlaceLogController{
                 .body(placeLogRepository.findAllPlace(pageRequest));
     }
 
+    @Override
     @GetMapping("/placelogs/{placeLogId}")
     public ResponseEntity<PlaceLogResponse> getPlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -59,6 +63,7 @@ public class PlaceLogController{
                 .body(PlaceLogResponse.from(result));
     }
 
+    @Override
     @DeleteMapping("/placelogs/{placeLogId}")
     public ResponseEntity<Void> removePlaceLog(
             @AuthenticationPrincipal UserIdDto userIdDto,
