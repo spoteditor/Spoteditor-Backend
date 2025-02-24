@@ -116,8 +116,6 @@ public class PlaceLogServiceImpl implements PlaceLogService {
 
                 placeSet.add(savedPlace);
             }
-
-            System.out.println("placeRegisterCommands = " + placeRegisterCommands);
         }
         List<Place> places = new ArrayList<>(placeSet);
 
