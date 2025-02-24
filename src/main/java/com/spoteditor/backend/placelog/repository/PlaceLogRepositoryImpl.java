@@ -7,9 +7,12 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
+import com.spoteditor.backend.image.controller.dto.PlaceImageResponse;
+import com.spoteditor.backend.placelog.controller.dto.PlaceLogListResponse;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.placelog.entity.PlaceLogStatus;
+import com.spoteditor.backend.tag.dto.TagDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,8 +21,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static com.spoteditor.backend.image.entity.QPlaceImage.placeImage;
 import static com.spoteditor.backend.mapping.placelogplacemapping.entity.QPlaceLogPlaceMapping.placeLogPlaceMapping;
 import static com.spoteditor.backend.mapping.placelogtagmapping.entity.QPlaceLogTagMapping.placeLogTagMapping;
 import static com.spoteditor.backend.place.entity.QPlace.place;
@@ -33,35 +39,23 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public CustomPageResponse<PlaceLogResponse> findAllPlace(CustomPageRequest request) {
+    public CustomPageResponse<PlaceLogListResponse> findAllPlace(CustomPageRequest request) {
         PageRequest pageRequest = request.of();
 
-        List<PlaceLogResponse> placeLogList = queryFactory
-                .select(Projections.constructor(PlaceLogResponse.class,
-                        placeLog.id.as("placeLogId"),
+        List<PlaceLogListResponse> placeLogList = queryFactory
+                .select(Projections.constructor(PlaceLogListResponse.class,
+                        placeLog.id,
                         placeLog.name,
-                        placeLog.description,
-                        placeLog.imageUrl.as("image"),
-                        placeLog.address,
-                        placeLog.views,
-                        ExpressionUtils.as(
-                                JPAExpressions
-                                        .select(tag)
-                                        .from(placeLogTagMapping)
-                                        .join(placeLogTagMapping.tag, tag)
-                                        .where(placeLogTagMapping.placeLog.id.eq(placeLog.id)),
-                                "tags"
+                        Projections.constructor(PlaceImageResponse.class,
+                            placeImage.id,
+                            placeImage.originalFile,
+                            placeImage.storedFile
                         ),
-                        ExpressionUtils.as(
-                                JPAExpressions
-                                        .select(place)
-                                        .from(placeLogPlaceMapping)
-                                        .join(placeLogPlaceMapping.place, place)
-                                        .where(placeLogPlaceMapping.placeLog.id.eq(placeLog.id)),
-                                "places"
-                        )
+                        placeLog.address,
+                        placeLog.views
                 ))
                 .from(placeLog)
+                .leftJoin(placeLog.placeLogImage, placeImage)
                 .where(placeLog.status.eq(PlaceLogStatus.PUBLIC))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
@@ -72,7 +66,7 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
                 .select(placeLog.count())
                 .from(placeLog);
 
-        Page<PlaceLogResponse> page = PageableExecutionUtils.getPage(
+        Page<PlaceLogListResponse> page = PageableExecutionUtils.getPage(
                 placeLogList,
                 pageRequest,
                 queryCount::fetchOne
