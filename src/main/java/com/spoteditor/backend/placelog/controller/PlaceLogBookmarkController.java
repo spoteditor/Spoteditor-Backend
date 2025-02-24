@@ -1,5 +1,6 @@
 package com.spoteditor.backend.placelog.controller;
 
+import com.spoteditor.backend.config.swagger.PlaceLogBookmarkApiDocument;
 import com.spoteditor.backend.placelog.service.PlaceLogBookmarkService;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
 import lombok.RequiredArgsConstructor;
@@ -11,10 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class PlaceLogBookmarkController {
+public class PlaceLogBookmarkController implements PlaceLogBookmarkApiDocument {
 
     private final PlaceLogBookmarkService placeLogBookmarkService;
 
+    @Override
     @PostMapping("/placelogs/{placeLogId}/bookmark")
     public ResponseEntity<Void> addBookmark(
             @AuthenticationPrincipal UserIdDto userIdDto,
@@ -27,6 +29,7 @@ public class PlaceLogBookmarkController {
                 .build();
     }
 
+    @Override
     @DeleteMapping("/placelogs/{placeLogId}/bookmark")
     public ResponseEntity<Void> removeBookmark(
             @AuthenticationPrincipal UserIdDto userIdDto,
