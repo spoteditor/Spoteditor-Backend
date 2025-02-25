@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("OauthProvider Enum 테스트")
+@DisplayName("OauthProvider 테스트")
 class OauthProviderTest {
 
     @Test
-    @DisplayName("지원하는 provider(Kakao) 확인")
+    @DisplayName("OauthProvider Kakao 지원하는지 확인")
     public void 지원하는_Provider_테스트() throws Exception {
         // given
         String registrationId = "Kakao";
@@ -25,7 +25,7 @@ class OauthProviderTest {
     }
 
     @Test
-    @DisplayName("지원하지 않는 provider(Naver) 예외")
+    @DisplayName("OauthProvider Naver 지원 안하는지 확인")
     public void 지원하지_않는_Provider_오류_테스트() throws Exception {
         // given
         String registrationId = "Naver";
@@ -36,6 +36,7 @@ class OauthProviderTest {
         });
 
         // then
-        Assertions.assertThat(exception.getMessage()).isEqualTo("지원하지 않는 Provider");
+        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo("U001");
+        Assertions.assertThat(exception.getErrorCode().getMessage()).isEqualTo("지원하지 않는 Provider");
     }
 }
