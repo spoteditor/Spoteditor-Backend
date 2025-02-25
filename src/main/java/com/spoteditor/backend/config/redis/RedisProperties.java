@@ -1,18 +1,24 @@
 package com.spoteditor.backend.config.redis;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Configuration
 @ConfigurationProperties(prefix = "spring.data.redis")
 public class RedisProperties {
 
-	private String host;
-	private int port;
-	private RedisProperties master;
-	private List<RedisProperties> slaves;
+	private Cluster cluster;
+
+	@Getter
+	@Setter
+	public static class Cluster {
+		private List<String> nodes;
+		private int maxRedirects;
+	}
 }

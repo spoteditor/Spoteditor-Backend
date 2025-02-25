@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
-import org.redisson.config.ReadMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,18 +15,13 @@ public class RedisConfiguration {
 
 	@Bean
 	public RedissonClient redissonClient() {
-		Config config = new Config();
+		final Config config = new Config();
 
-		config.useMasterSlaveServers()
-				.setMasterAddress("redis://" + redisProperties.getMaster().getHost() + ":" + redisProperties.getMaster().getPort())
-				.setReadMode(ReadMode.SLAVE)
-				.setTimeout(3000);
+		String[] nodes = redisProperties.getCluster().getNodes().toArray(String[]::new);
 
-		redisProperties.getSlaves().forEach(slave ->
-				config.useMasterSlaveServers().addSlaveAddress(
-						"redis://" + slave.getHost() + ":" + slave.getPort()
-				)
-		);
+		config.useClusterServers()
+				.setScanInterval(2000)
+				.addNodeAddress(nodes);
 
 		return Redisson.create(config);
 	}
