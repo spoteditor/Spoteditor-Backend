@@ -115,6 +115,25 @@ public class PlaceImageServiceImpl implements PlaceImageService {
 		return PlaceImageResponse.from(savedImage);
 	}
 
+	@Override
+	public PlaceImageResponse uploadWithoutPlace(String originalFile, String uuid) {
+
+		String tempPath = redisTemplate.opsForValue().get(FILE_KEY_PREFIX + uuid + originalFile);
+		validateValue(tempPath);
+
+		String mainPath = createPath(originalFile);	// S3 메인 버킷에 저장되는 경로명 생성
+		copyImageToMainBucket(tempPath, mainPath);
+		deleteImageFromTempBucket(tempPath);
+
+		PlaceImage image = PlaceImage.builder()
+				.originalFile(originalFile)
+				.storedFile(mainPath)
+				.build();
+
+		PlaceImage savedImage = imageRepository.save(image);
+		return PlaceImageResponse.from(savedImage);
+	}
+
 	private void validateValue(String value) {
 		if (value == null) {
 			throw new ImageException(NOT_FOUND_IMAGE);

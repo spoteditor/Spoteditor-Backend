@@ -1,6 +1,7 @@
 package com.spoteditor.backend.placelog.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
+import com.spoteditor.backend.image.entity.PlaceImage;
 import com.spoteditor.backend.mapping.placelogplacemapping.entity.PlaceLogPlaceMapping;
 import com.spoteditor.backend.mapping.placelogtagmapping.entity.PlaceLogTagMapping;
 import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMapping;
@@ -46,8 +47,9 @@ public class PlaceLog extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private PlaceImage placeLogImage;
 
     @Column(name = "address")
     @Embedded
@@ -64,11 +66,11 @@ public class PlaceLog extends BaseEntity {
     private Long version;
 
     @Builder
-    private PlaceLog(User user, String name, String description, String imageUrl, Address address, PlaceLogStatus status) {
+    private PlaceLog(User user, String name, String description, PlaceImage placeLogImage, Address address, PlaceLogStatus status) {
         this.user = user;
         this.name = name;
         this.description = description;
-        this.imageUrl = imageUrl;
+        this.placeLogImage = placeLogImage;
         this.address = address;
         this.views = 0L;
         this.status = status;
@@ -77,9 +79,5 @@ public class PlaceLog extends BaseEntity {
     public void update(String name, String description) {
         this.name = name;
         this.description = description;
-    }
-
-    public void publish() {
-        this.status = PlaceLogStatus.PUBLISHED;
     }
 }

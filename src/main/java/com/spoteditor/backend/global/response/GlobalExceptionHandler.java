@@ -95,4 +95,15 @@ public class GlobalExceptionHandler {
 				.status(apiErrorResponse.getStatus())
 				.body(apiErrorResponse);
 	}
+
+	@ExceptionHandler(PlaceLogException.class)
+	public ResponseEntity<ErrorResponse> handlePlaceLogException(PlaceLogException e) {
+		ErrorResponse apiErrorResponse = ErrorResponse.of(
+				e.getErrorCode()
+		);
+
+		return ResponseEntity
+				.status(apiErrorResponse.getStatus())
+				.body(apiErrorResponse);
+	}
 }

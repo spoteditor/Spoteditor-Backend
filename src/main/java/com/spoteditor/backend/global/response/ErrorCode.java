@@ -33,6 +33,8 @@ public enum ErrorCode {
 
 	// place
 	NOT_FOUND_PLACE(HttpStatus.NOT_FOUND, "P001", "해당 장소를 찾을 수 없습니다."),
+	IMAGE_MINIMUM_REQUIRED(HttpStatus.BAD_REQUEST, "P002", "장소에 이미지를 최소 1장 이상 등록해야합니다."),
+	IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "P003", "장소에 이미지를 최대 3장까지 등록 가능합니다."),
 
 	// bookmark
 	NOT_FOUND_BOOKMARK(HttpStatus.NOT_FOUND, "B001", "해당 북마크를 찾을 수 없습니다."),
@@ -42,6 +44,7 @@ public enum ErrorCode {
 
 	// image
 	NOT_FOUND_IMAGE(HttpStatus.NOT_FOUND, "I001", "이미지를 찾을 수 없습니다."),
+	IMAGE_UUID_MISMATCH(HttpStatus.BAD_REQUEST, "I002", "사진 개수와 UUID 개수가 일치해야 합니다."),
 
 	// notification
 	NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND, "N001", "알림을 찾을 수 없습니다."),
@@ -56,6 +59,8 @@ public enum ErrorCode {
 	NOT_TEMP_PLACE_LOG(HttpStatus.BAD_REQUEST, "PL007", "해당 로그가 임시저장중이 아닙니다."),
 	NOT_PUBLISHED_PLACE_LOG(HttpStatus.BAD_REQUEST, "PL008", "해당 로그가 퍼블리시중이 아닙니다"),
 	NO_PLACE_LOG_NAME(HttpStatus.BAD_REQUEST, "PL009", "저장하려면 제목이 필요합니다"),
+	STATUS_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "PL010", "지원하지 않는 status 입니다."),
+	PRIVATE_PLACE_LOG(HttpStatus.FORBIDDEN, "PL011", "비공개 로그는 소유자만 조회 가능합니다."),
 
 	// tag
 	INVALID_TAG_CATEGORY(HttpStatus.BAD_REQUEST, "T001", "존재하지 않는 태그 카테고리 입니다."),

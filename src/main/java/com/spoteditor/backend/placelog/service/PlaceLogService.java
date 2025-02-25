@@ -6,21 +6,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface PlaceLogService {
 
-    PlaceLogRegisterResult addPlaceLog(Long userId, PlaceLogRegisterCommand command);
-
-    TempPlaceLogRegisterResult addTempPlaceLogTag(Long userId, TempPlaceLogRegisterCommand command);
-
-    PlaceLogResult getTempPlaceLog(Long userId, Long placeLogId);
+    PlaceLogResult addPlaceLog(Long userId, PlaceLogRegisterCommand command);
 
     PlaceLogResult getPlaceLog(Long userId, Long placeLogId);
-
-    PlaceLogResult addTempPlaceLogPlace(Long userId, PlaceLogPlaceCommand command);
-
-    void publishPlaceLog(Long userId, Long placeLogId);
-
-    void addBookmark(Long userId, Long placeLogId);
-
-    void removeBookmark(Long userId, Long placeLogId);
 
     void removePlaceLog(Long userId, Long placeLogId);
 }

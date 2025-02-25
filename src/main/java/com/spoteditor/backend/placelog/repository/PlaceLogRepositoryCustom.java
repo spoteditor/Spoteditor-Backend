@@ -3,6 +3,7 @@ package com.spoteditor.backend.placelog.repository;
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
 
+import com.spoteditor.backend.placelog.controller.dto.PlaceLogListResponse;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
 
@@ -11,7 +12,5 @@ import java.util.Optional;
 
 public interface PlaceLogRepositoryCustom {
 
-    Optional<PlaceLog> findTempPlaceLogByUser(Long userId);
-
-    CustomPageResponse<PlaceLogResponse> findAllPlace(CustomPageRequest pageRequest);
+    CustomPageResponse<PlaceLogListResponse> findAllPlace(CustomPageRequest pageRequest);
 }
