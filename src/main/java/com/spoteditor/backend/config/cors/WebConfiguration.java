@@ -16,12 +16,14 @@ public class WebConfiguration implements WebMvcConfigurer {
 	@Value("${app.oauth.success-redirect-url}")
 	private String FRONT_END;
 
+	private final String BACK_END = "https://spoteditor.shop";
+
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 
 		corsConfiguration.setAllowCredentials(true);
-		corsConfiguration.setAllowedOrigins(List.of(FRONT_END));
+		corsConfiguration.setAllowedOrigins(List.of(FRONT_END, BACK_END));
 		corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		corsConfiguration.setAllowedHeaders(List.of("*"));
 		corsConfiguration.setExposedHeaders(List.of("Set-Cookie", "*"));
