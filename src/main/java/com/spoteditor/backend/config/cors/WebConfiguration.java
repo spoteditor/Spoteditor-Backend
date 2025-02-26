@@ -1,5 +1,6 @@
 package com.spoteditor.backend.config.cors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -12,7 +13,8 @@ import java.util.List;
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 
-	private static final String FRONT_END = "http://localhost:3000";
+	@Value("${app.oauth.success-redirect-url}")
+	private String FRONT_END;
 
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
