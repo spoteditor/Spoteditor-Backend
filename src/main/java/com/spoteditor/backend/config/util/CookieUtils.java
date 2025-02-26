@@ -38,8 +38,8 @@ public class CookieUtils {
         cookie.setHttpOnly(true);
         // 쿠키 유효기간: 한 달 (Jwt 는 별도 exp 관리)
         cookie.setMaxAge(maxAge);
-        cookie.setSecure(false);
-        //cookie.setAttribute("SameSite", "Strict");
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 
