@@ -13,4 +13,8 @@ import java.util.Optional;
 public interface PlaceLogRepositoryCustom {
 
     CustomPageResponse<PlaceLogListResponse> findAllPlace(CustomPageRequest pageRequest);
+
+    CustomPageResponse<PlaceLogListResponse> findMyPlaceLog(Long userId, CustomPageRequest pageRequest);
+
+    CustomPageResponse<PlaceLogListResponse> findMyBookmarkPlaceLog(Long userId, CustomPageRequest pageRequest);
 }
