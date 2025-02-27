@@ -8,4 +8,7 @@ public interface FollowRepositoryCustom {
 
 	CustomPageResponse<FollowResponse> findAllFollower(Long userId, CustomPageRequest request);
 	CustomPageResponse<FollowResponse> findAllFollowing(Long userId, CustomPageRequest request);
+
+	long countFollower(Long userId);
+	long countFollowing(Long userId);
 }

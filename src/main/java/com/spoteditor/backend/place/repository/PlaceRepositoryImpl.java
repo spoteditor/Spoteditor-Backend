@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.spoteditor.backend.bookmark.entity.QBookmark.bookmark;
 import static com.spoteditor.backend.image.entity.QPlaceImage.placeImage;
 import static com.spoteditor.backend.place.entity.QPlace.place;
 
@@ -45,6 +46,39 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 		JPAQuery<Long> queryCount = queryFactory
 				.select(place.count())
 				.from(place);
+
+		Page<PlaceResponse> page = PageableExecutionUtils.getPage(
+				placeList,
+				pageRequest,
+				queryCount::fetchOne
+		);
+
+		return new CustomPageResponse<>(page);
+	}
+
+	@Override
+	public CustomPageResponse<PlaceResponse> findMyBookmarkPlace(Long userId, CustomPageRequest request) {
+		PageRequest pageRequest = request.of();
+
+		List<PlaceResponse> placeList = queryFactory
+				.select(Projections.constructor(PlaceResponse.class,
+						place.id.as("placeId"),
+						place.user.name.as("author"),
+						place.name,
+						place.description,
+						place.address,
+						place.category))
+				.from(bookmark)
+				.join(bookmark.place, place)
+				.offset(pageRequest.getOffset())
+				.limit(pageRequest.getPageSize())
+				.orderBy(place.createdAt.desc())
+				.fetch();
+
+		JPAQuery<Long> queryCount = queryFactory
+				.select(bookmark.count())
+				.from(bookmark)
+				.where(bookmark.user.id.eq(userId));
 
 		Page<PlaceResponse> page = PageableExecutionUtils.getPage(
 				placeList,

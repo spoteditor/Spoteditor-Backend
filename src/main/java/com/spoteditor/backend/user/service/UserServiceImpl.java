@@ -1,9 +1,11 @@
 package com.spoteditor.backend.user.service;
 
+import com.spoteditor.backend.follow.repository.FollowRepository;
 import com.spoteditor.backend.global.exception.UserException;
 import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.place.repository.PlaceRepository;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
+import com.spoteditor.backend.placelog.repository.PlaceLogRepository;
 import com.spoteditor.backend.user.entity.User;
 import com.spoteditor.backend.user.repository.UserRepository;
 import com.spoteditor.backend.user.service.dto.UserResult;
@@ -23,6 +25,7 @@ import static com.spoteditor.backend.global.response.ErrorCode.NOT_FOUND_USER;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
 
     @Override
     @Transactional
@@ -35,13 +38,10 @@ public class UserServiceImpl implements UserService{
             throw new UserException(DELETED_USER);
         }
 
-        Long follower = 0L;
-        Long following = 0L;
-        List<PlaceLog> placeLogs = List.of();
-        List<PlaceLog> bookmarkPlaceLogs = List.of();
-        List<Place> bookmarkPlaces = List.of();
+        Long follower = followRepository.countFollower(userId);
+        Long following = followRepository.countFollowing(userId);
 
-        return new UserResult(user, follower, following, placeLogs, bookmarkPlaceLogs, bookmarkPlaces);
+        return new UserResult(user, follower, following);
     }
 
     @Override

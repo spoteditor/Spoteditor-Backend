@@ -9,26 +9,17 @@ import java.util.List;
 public record UserResult(
         User user,
         Long follower,
-        Long following,
-        List<PlaceLog> placeLogs,
-        List<PlaceLog> bookmarkPlaceLogs,
-        List<Place> bookmarkPlaces
+        Long following
 ) {
     public static UserResult from(
             User user,
             Long follower,
-            Long following,
-            List<PlaceLog> placeLogs,
-            List<PlaceLog> bookmarkPlaceLogs,
-            List<Place> bookmarkPlaces
+            Long following
     ){
         return new UserResult(
                 user,
                 follower,
-                following,
-                placeLogs,
-                bookmarkPlaceLogs,
-                bookmarkPlaces
+                following
         );
     }
 }

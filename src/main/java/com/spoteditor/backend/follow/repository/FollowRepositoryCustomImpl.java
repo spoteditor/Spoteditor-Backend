@@ -81,4 +81,26 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom {
 
 		return new CustomPageResponse<>(page);
 	}
+
+	public long countFollower(Long userId) {
+		Long count = queryFactory
+				.select(follow.count())
+				.from(follow)
+				.where(follow.following.id.eq(userId))
+				.fetchOne();
+
+		return count != null ? count : 0L;
+	}
+
+	public long countFollowing(Long userId) {
+		Long count = queryFactory
+				.select(follow.count())
+				.from(follow)
+				.where(follow.follower.id.eq(userId))
+				.fetchOne();
+
+		return count != null ? count : 0L;
+	}
+
+
 }

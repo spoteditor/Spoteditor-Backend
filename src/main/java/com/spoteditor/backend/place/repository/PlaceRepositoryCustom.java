@@ -13,6 +13,8 @@ public interface PlaceRepositoryCustom {
 
 	CustomPageResponse<PlaceResponse> findAllPlace(CustomPageRequest pageRequest);
 
+	CustomPageResponse<PlaceResponse> findMyBookmarkPlace(Long userId, CustomPageRequest pageRequest);
+
 	List<Place> findByIdIn(List<Long> placeIds);
 
 	List<Place> findAllPlacesByUserId(Long userId);
