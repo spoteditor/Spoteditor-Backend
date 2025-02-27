@@ -10,10 +10,7 @@ public record UserResponse(
         String imageUrl,
         String description,
         Long follower,
-        Long following,
-        List<UserPlaceLogDto> userPlaceLogDtoList,
-        List<UserBookmarkPlaceLogDto> userBookmarkPlaceLogDtoList,
-        List<UserBookmarkPlaceDto> userBookmarkPlaceDtoList
+        Long following
 ) {
     public static UserResponse from(UserResult userResult) {
         return new UserResponse(
@@ -22,16 +19,7 @@ public record UserResponse(
                 userResult.user().getImageUrl(),
                 userResult.user().getDescription(),
                 userResult.follower(),
-                userResult.following(),
-                userResult.placeLogs().stream()
-                        .map(UserPlaceLogDto::from)
-                        .toList(),
-                userResult.bookmarkPlaceLogs().stream()
-                        .map(UserBookmarkPlaceLogDto::from)
-                        .toList(),
-                userResult.bookmarkPlaces().stream()
-                        .map(UserBookmarkPlaceDto::from)
-                        .toList()
+                userResult.following()
         );
     }
 }
