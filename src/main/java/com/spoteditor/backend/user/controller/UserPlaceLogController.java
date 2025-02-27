@@ -8,7 +8,6 @@ import com.spoteditor.backend.placelog.controller.dto.PlaceLogListResponse;
 import com.spoteditor.backend.placelog.repository.PlaceLogRepository;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
 import com.spoteditor.backend.user.service.UserService;
-import com.spoteditor.backend.user.service.dto.UserPlaceLogResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
