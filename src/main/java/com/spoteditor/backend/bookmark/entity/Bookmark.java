@@ -9,7 +9,6 @@ import lombok.*;
 @Getter
 @Entity
 @Table(name = "bookmark")
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Bookmark extends BaseEntity {
 

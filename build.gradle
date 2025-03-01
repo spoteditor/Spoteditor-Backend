@@ -26,6 +26,9 @@ repositories {
 
 dependencies {
 
+	// SpEL
+	implementation 'org.springframework:spring-expression'
+
 	// log
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 
@@ -91,6 +94,11 @@ dependencies {
 	// thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+	// testContainer
+	testImplementation 'org.testcontainers:testcontainers:1.19.3'
+	testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
+	testImplementation 'org.awaitility:awaitility:4.2.0'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"

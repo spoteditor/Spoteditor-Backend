@@ -21,18 +21,11 @@ public class BookmarkApiController implements BookmarkApiDocument {
 
 	private final BookmarkFacade bookmarkFacade;
 
-	/**
-	 *
-	 * @param dto
-	 * @param bookmarkRequest
-	 * @return
-	 * @throws InterruptedException
-	 */
 	@PostMapping("/bookmark")
 	public ResponseEntity<Void> addBookmark(@AuthenticationPrincipal UserIdDto dto,
 											@RequestBody BookmarkRequest bookmarkRequest) throws InterruptedException {
 
-		bookmarkFacade.addBookmark(dto.getId(), bookmarkRequest.from());
+		bookmarkFacade.addBookmark(dto.getId(), bookmarkRequest.toCommandDto());	// 컨트롤러 DTO를 서비스 DTO로 명확하게 변환하는 네이밍으로 수정
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.build();
@@ -49,7 +42,7 @@ public class BookmarkApiController implements BookmarkApiDocument {
 	public ResponseEntity<Void> removeBookmark(@AuthenticationPrincipal UserIdDto dto,
 											   @RequestBody BookmarkRequest bookmarkRequest) throws InterruptedException {
 
-		bookmarkFacade.removeBookmark(dto.getId(), bookmarkRequest.from());
+		bookmarkFacade.removeBookmark(dto.getId(), bookmarkRequest.toCommandDto());
 		return ResponseEntity
 				.status(HttpStatus.NO_CONTENT)
 				.build();
