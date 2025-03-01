@@ -16,12 +16,15 @@ public class WebConfiguration implements WebMvcConfigurer {
 	@Value("${app.oauth.success-redirect-url}")
 	private String FRONT_END;
 
+	@Value("${app.oauth.prod-redirect-url}")
+	private String FRONT_END_TEST;
+
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 
 		corsConfiguration.setAllowCredentials(true);
-		corsConfiguration.setAllowedOrigins(List.of(FRONT_END));
+		corsConfiguration.setAllowedOrigins(List.of(FRONT_END, FRONT_END_TEST));
 		corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		corsConfiguration.setAllowedHeaders(List.of("*"));
 		corsConfiguration.setExposedHeaders(List.of("Set-Cookie", "*"));
