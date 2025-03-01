@@ -16,5 +16,7 @@ public interface PlaceLogRepositoryCustom {
 
     CustomPageResponse<PlaceLogListResponse> findMyPlaceLog(Long userId, CustomPageRequest pageRequest);
 
+    CustomPageResponse<PlaceLogListResponse> findOtherPlaceLog(Long userId, CustomPageRequest pageRequest);
+
     CustomPageResponse<PlaceLogListResponse> findMyBookmarkPlaceLog(Long userId, CustomPageRequest pageRequest);
 }

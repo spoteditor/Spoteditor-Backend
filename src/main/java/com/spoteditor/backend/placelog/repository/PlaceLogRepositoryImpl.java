@@ -115,6 +115,46 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
     }
 
     @Override
+    public CustomPageResponse<PlaceLogListResponse> findOtherPlaceLog(Long userId, CustomPageRequest request) {
+        PageRequest pageRequest = request.of();
+
+        List<PlaceLogListResponse> placeLogList = queryFactory
+                .select(Projections.constructor(PlaceLogListResponse.class,
+                        placeLog.id,
+                        placeLog.name,
+                        Projections.constructor(PlaceImageResponse.class,
+                                placeImage.id,
+                                placeImage.originalFile,
+                                placeImage.storedFile
+                        ),
+                        placeLog.address,
+                        placeLog.views
+                ))
+                .from(placeLog)
+                .leftJoin(placeLog.placeLogImage, placeImage)
+                .where(placeLog.user.id.eq(userId))
+                .where(placeLog.status.eq(PlaceLogStatus.PUBLIC))
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .orderBy(placeLog.createdAt.desc())
+                .fetch();
+
+        JPAQuery<Long> queryCount = queryFactory
+                .select(placeLog.count())
+                .from(placeLog)
+                .where(placeLog.user.id.eq(userId))
+                .where(placeLog.status.eq(PlaceLogStatus.PUBLIC));
+
+        Page<PlaceLogListResponse> page = PageableExecutionUtils.getPage(
+                placeLogList,
+                pageRequest,
+                queryCount::fetchOne
+        );
+
+        return new CustomPageResponse<>(page);
+    }
+
+    @Override
     public CustomPageResponse<PlaceLogListResponse> findMyBookmarkPlaceLog(Long userId, CustomPageRequest request) {
         PageRequest pageRequest = request.of();
 
