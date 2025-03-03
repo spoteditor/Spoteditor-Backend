@@ -139,13 +139,8 @@ services:
     image: redis
     restart: no
     container_name: redis-cluster-entry
-    command: redis-cli --cluster create 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 --cluster-replicas 1 --cluster-yes
-##    로컬용
-#    command: >
-#      redis-cli --cluster create
-#      127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381
-#      127.0.0.1:7379 127.0.0.1:7380 127.0.0.1:7381
-#      --cluster-replicas 1 --cluster-yes
+    #command: redis-cli --cluster create 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 --cluster-replicas 1 --cluster-yes
+    command: redis-cli --cluster create redis-node-1:6379 redis-node-2:6380 redis-node-3:6381 slave-node-1:6382 slave-node-2:6383 slave-node-3:6384 --cluster-replicas 1 --cluster-yes
     depends_on:
       - redis-node-1
       - redis-node-2
