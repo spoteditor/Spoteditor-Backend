@@ -5,8 +5,6 @@ services:
       - SERVER_PORT=8080
     ports:
       - "8080:8080"
-    networks:
-      - app-network
     depends_on:
       redis-node-1:
         condition: service_healthy
