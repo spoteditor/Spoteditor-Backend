@@ -33,6 +33,17 @@ public class UserController {
                 .body(UserResponse.from(userResult));
     }
 
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<UserResponse> getOtherUser(
+            @PathVariable Long userId
+    ) {
+        UserResult userResult = userService.getUser(userId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(UserResponse.from(userResult));
+    }
+
     @PatchMapping("/users")
     public ResponseEntity<UserUpdateResponse> updateUser(
             @AuthenticationPrincipal UserIdDto userIdDto,
