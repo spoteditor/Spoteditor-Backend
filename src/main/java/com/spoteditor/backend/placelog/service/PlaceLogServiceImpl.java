@@ -77,7 +77,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         // 장소 등록
         List<PlaceLogPlaceRegisterRequest> placeRegisterRequests = command.placeRegisterRequests();
 
-        Set<Place> placeSet = new LinkedHashSet<>();
+        List<Place> places = new ArrayList<>();
 
         for(PlaceLogPlaceRegisterRequest request : placeRegisterRequests) {
             List<String> originalFiles = request.originalFiles();
@@ -95,29 +95,23 @@ public class PlaceLogServiceImpl implements PlaceLogService {
                 throw new PlaceException(IMAGE_LIMIT_EXCEEDED);
             }
 
-            List<PlaceRegisterCommand> placeRegisterCommands = new ArrayList<>();
+            PlaceRegisterRequest placeRegisterRequest = PlaceRegisterRequest.builder()
+                    .name(request.name())
+                    .description(request.description())
+                    .originalFile(originalFiles.get(0))
+                    .uuid(uuids.get(0))
+                    .address(request.address())
+                    .category(request.category())
+                    .build();
+            PlaceRegisterCommand placeRegisterCommand = placeRegisterRequest.from();
+
+            Place savedPlace = placeRepository.save(placeRegisterCommand.toEntity(user));
 
             for(int imageIndex = 0; imageIndex < originalFiles.size(); imageIndex++) {
-                PlaceRegisterRequest placeRegisterRequest = PlaceRegisterRequest.builder()
-                        .name(request.name())
-                        .description(request.description())
-                        .originalFile(originalFiles.get(imageIndex))
-                        .uuid(uuids.get(imageIndex))
-                        .address(request.address())
-                        .category(request.category())
-                        .build();
-
-                placeRegisterCommands.add(placeRegisterRequest.from());
+                imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), savedPlace.getId());
             }
-
-            for(PlaceRegisterCommand placeRegisterCommand : placeRegisterCommands) {
-                Place savedPlace = placeRepository.save(placeRegisterCommand.toEntity(user));
-                imageService.upload(placeRegisterCommand.originalFile(), placeRegisterCommand.uuid(), savedPlace.getId());
-
-                placeSet.add(savedPlace);
-            }
+            places.add(savedPlace);
         }
-        List<Place> places = new ArrayList<>(placeSet);
 
         // 태그 등록
         List<String> tagNames = command.tags().stream()
