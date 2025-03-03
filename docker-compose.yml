@@ -5,6 +5,8 @@ services:
       - SERVER_PORT=8080
     ports:
       - "8080:8080"
+    networks:
+      - app-network
     depends_on:
       redis-node-1:
         condition: service_healthy
@@ -19,16 +21,16 @@ services:
       slave-node-3:
         condition: service_healthy
       redis-cluster-entry:
-        condition: service_healthy
+        condition: service_completed_successfully
 
   mysql:
     container_name: mysql
     image: mysql:8.0
+    networks:
+      - app-network
     environment:
       MYSQL_ROOT_PASSWORD: spoteditor
       MYSQL_DATABASE: spoteditor
-    ports:
-      - "3306:3306"
     volumes:
       - ./mysql_data:/var/lib/mysql
     healthcheck:
@@ -39,6 +41,8 @@ services:
     restart: unless-stopped
 
   rabbitmq:
+    networks:
+      - app-network
     image: rabbitmq:management-alpine
     container_name: rabbit-mq-container
     hostname: rabbitmq
@@ -48,70 +52,115 @@ services:
       - RABBITMQ_DEFAULT_PASS=admin
 
   redis-node-1:
+    networks:
+      - app-network
     image: redis
     container_name: redis-test1
     volumes:
       - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     ports:
-      - 6380:6380
-      - 6381:6381
-      - 6379:6379
-      - 7380:7380
-      - 7381:7381
-      - 7379:7379
+      - "6379:6379"
+      - "7381:7381"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis-node-2:
-    network_mode: "service:redis-node-1"
+    networks:
+      - app-network
     image: redis
     container_name: redis-test2
     volumes:
       - ./conf/redis1.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "6380:6380"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis-node-3:
-    network_mode: "service:redis-node-1"
+    networks:
+      - app-network
     image: redis
     container_name: redis-test3
     volumes:
       - ./conf/redis2.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "6381:6381"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   slave-node-1:
-    network_mode: "service:redis-node-1"
+    networks:
+      - app-network
     image: redis
     container_name: redis-slave-test1
     volumes:
       - ./conf/slave.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "17379:17379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   slave-node-2:
-    network_mode: "service:redis-node-1"
+    networks:
+      - app-network
     image: redis
     container_name: redis-slave-test2
     volumes:
       - ./conf/slave1.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "17380:17380"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   slave-node-3:
-    network_mode: "service:redis-node-1"
+    networks:
+      - app-network
     image: redis
     container_name: redis-slave-test3
     volumes:
       - ./conf/slave2.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "17381:17381"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis-cluster-entry:
-    network_mode: "service:redis-node-1"
+    networks:
+      - app-network
     image: redis
+    restart: no
     container_name: redis-cluster-entry
-#   프로덕션용
+##  프로덕션용
     command: >
       redis-cli --cluster create
       redis-test1:6379 redis-test2:6380 redis-test3:6381
-      redis-slave-test1:7379 redis-slave-test2:7380 redis-slave-test3:7381
+      redis-slave-test1:17379 redis-slave-test2:17380 redis-slave-test3:17381
       --cluster-replicas 1 --cluster-yes
-#    로컬용
+##    로컬용
 #    command: >
 #      redis-cli --cluster create
 #      127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381
@@ -124,3 +173,7 @@ services:
       - slave-node-1
       - slave-node-2
       - slave-node-3
+
+networks:
+  app-network:
+    driver: bridge
