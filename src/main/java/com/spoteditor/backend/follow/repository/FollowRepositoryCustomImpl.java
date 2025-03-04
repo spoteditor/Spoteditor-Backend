@@ -41,7 +41,8 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom {
 
 		JPAQuery<Long> queryCount = queryFactory
 				.select(follow.count())
-				.from(follow);
+				.from(follow)
+				.where(follow.following.id.eq(userId));
 
 		Page<FollowResponse> page = PageableExecutionUtils.getPage(
 				content,
@@ -71,7 +72,8 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom {
 
 		JPAQuery<Long> queryCount = queryFactory
 				.select(follow.count())
-				.from(follow);
+				.from(follow)
+				.where(follow.follower.id.eq(userId));
 
 		Page<FollowResponse> page = PageableExecutionUtils.getPage(
 				content,
