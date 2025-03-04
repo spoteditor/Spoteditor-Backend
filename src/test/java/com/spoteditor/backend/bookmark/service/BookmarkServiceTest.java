@@ -83,4 +83,36 @@ class BookmarkServiceTest {
 		long count = bookmarkRepository.count();
 		assertThat(count).isEqualTo(numberOfThreads);
 	}
+
+	@Test
+	@DisplayName("북마크삭제_분산락_적용_동시성200명_테스트")
+	void 북마크삭제_분산락_적용_동시성200명_테스트() throws InterruptedException {
+		// given
+		int numberOfThreads = 200;
+		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+		CountDownLatch latch = new CountDownLatch(numberOfThreads);
+
+		BookmarkCommand command = new BookmarkCommand(savedPlace.getId());
+
+		for (int i = 0; i < numberOfThreads; i++) {
+			final Long userId = savedUsers.get(i).getId();
+			bookmarkFacade.addBookmark(userId, command);
+		}
+
+		for (int i = 0; i < numberOfThreads; i++) {
+			final Long userId = savedUsers.get(i).getId();
+			executorService.submit(() -> {
+				try {
+					bookmarkFacade.removeBookmark(userId, command);
+				} finally {
+					latch.countDown();
+				}
+			});
+		}
+
+		latch.await();
+
+		long count = bookmarkRepository.count();
+		assertThat(count).isEqualTo(0);
+	}
 }
