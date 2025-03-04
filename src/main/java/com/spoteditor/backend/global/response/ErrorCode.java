@@ -19,7 +19,6 @@ public enum ErrorCode {
 	INVALID_ACCESS_TOKEN(HttpStatus.FORBIDDEN, "T003", "유효하지 않은 AccessToken"),
 	INVALID_REFRESH_TOKEN(HttpStatus.FORBIDDEN, "T005", "유효하지 않은 RefreshToken"),
 	REFRESH_TOKEN_NOT_IN_COOKIE(HttpStatus.FORBIDDEN, "T006", "쿠키에 RefreshToken 없음"),
-	ACCESS_TOKEN_NOT_IN_COOKE(HttpStatus.FORBIDDEN, "T007", "쿠키에 AccessToken 없음"),
 
 	// user
 	UNSUPPORTED_PROVIDER(HttpStatus.BAD_REQUEST, "U001", "지원하지 않는 Provider"),

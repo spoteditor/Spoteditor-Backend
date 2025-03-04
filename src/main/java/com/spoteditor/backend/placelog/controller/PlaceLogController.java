@@ -19,8 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static com.spoteditor.backend.global.response.ErrorCode.ACCESS_TOKEN_NOT_IN_COOKE;
-
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -35,10 +33,6 @@ public class PlaceLogController implements PlaceLogApiDocument {
             @AuthenticationPrincipal UserIdDto userIdDto,
             @RequestBody PlaceLogRegisterRequest request
     ) {
-        if (userIdDto == null) {
-            throw new TokenException(ACCESS_TOKEN_NOT_IN_COOKE);
-        }
-
         PlaceLogRegisterCommand command = PlaceLogRegisterCommand.from(request);
         PlaceLogResult result = placeLogService.addPlaceLog(userIdDto.getId(), command);
 
@@ -82,10 +76,6 @@ public class PlaceLogController implements PlaceLogApiDocument {
             @AuthenticationPrincipal UserIdDto userIdDto,
             @PathVariable Long placeLogId
     ) {
-        if (userIdDto == null) {
-            throw new TokenException(ACCESS_TOKEN_NOT_IN_COOKE);
-        }
-
         placeLogService.removePlaceLog(userIdDto.getId(), placeLogId);
 
         return ResponseEntity
