@@ -58,7 +58,9 @@ public class JwtFilter extends OncePerRequestFilter {
                     if (pattern.endsWith("/**")) {
                         String prefix = pattern.substring(0, pattern.length() - 3);
 
-                        return path.startsWith(prefix);
+                        return path.startsWith(prefix)
+                                && path.length() > prefix.length()
+                                && path.charAt(prefix.length()) == '/';
                     }
                     return path.equals(pattern);
                 });
@@ -73,12 +75,17 @@ public class JwtFilter extends OncePerRequestFilter {
                         if(pattern.endsWith("/**")) {
                             String prefix = pattern.substring(0, pattern.length() - 3);
 
-                            return path.startsWith(prefix);
+                            return path.startsWith(prefix)
+                                    && path.length() > prefix.length()
+                                    && path.charAt(prefix.length()) == '/';
                         } else if (pattern.endsWith("/*")) {
                             String prefix = pattern.substring(0, pattern.length() - 2);
                             String[] pathParts = path.split("/");
 
-                            return path.startsWith(prefix) && pathParts.length == prefix.split("/").length + 1;
+                            return path.startsWith(prefix)
+                                    && path.length() > prefix.length()
+                                    && path.charAt(prefix.length()) == '/'
+                                    && pathParts.length == prefix.split("/").length + 1 ;
                         }
                         return path.equals(pattern);
                     });
