@@ -32,30 +32,58 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
     private final CookieUtils cookieUtils;
 
-    private static final List<String> WHITE_LIST = List.of(
-        "/favicon.ico",
-        "/error",
-        "/api/health",
-        "/api/docs/**",
-        "/v3/api-docs/**",
-        "/swagger-ui/**",
-        "/api/placelogs",
-        "/api/placelogs/*",
-        "/api/auth/**",
-        "/api/users/**"
+    private static final List<String> ALL_METHOD_WHITE_LIST = List.of(
+            "/error",
+            "/api/auth/**"
+    );
+
+    private static final List<String> GET_METHOD_WHITE_LIST = List.of(
+            "/favicon.ico",
+            "/api/health",
+            "/api/docs/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/api/placelogs",
+            "/api/placelogs/*",
+            "/api/users/**"
     );
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return WHITE_LIST.stream()
+        String method = request.getMethod();
+
+        boolean isAllMethodWhiteList = ALL_METHOD_WHITE_LIST.stream()
                 .anyMatch(pattern -> {
                     if (pattern.endsWith("/**")) {
                         String prefix = pattern.substring(0, pattern.length() - 3);
+
                         return path.startsWith(prefix);
                     }
                     return path.equals(pattern);
                 });
+
+        if(isAllMethodWhiteList) {
+            return true;
+        }
+
+        if (method.equals("GET")) {
+            return GET_METHOD_WHITE_LIST.stream()
+                    .anyMatch(pattern -> {
+                        if(pattern.endsWith("/**")) {
+                            String prefix = pattern.substring(0, pattern.length() - 3);
+
+                            return path.startsWith(prefix);
+                        } else if (pattern.endsWith("/*")) {
+                            String prefix = pattern.substring(0, pattern.length() - 2);
+                            String[] pathParts = path.split("/");
+
+                            return path.startsWith(prefix) && pathParts.length == prefix.split("/").length + 1;
+                        }
+                        return path.equals(pattern);
+                    });
+        }
+        return false;
     }
 
     @Override
