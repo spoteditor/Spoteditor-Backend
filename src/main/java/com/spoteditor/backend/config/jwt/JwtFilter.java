@@ -41,6 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/favicon.ico",
             "/api/health",
             "/api/docs/**",
+            "/v3/api-docs",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/api/placelogs",
