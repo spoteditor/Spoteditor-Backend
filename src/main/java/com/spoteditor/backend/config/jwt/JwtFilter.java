@@ -38,7 +38,11 @@ public class JwtFilter extends OncePerRequestFilter {
         "/api/health",
         "/api/docs/**",
         "/v3/api-docs/**",
-        "/swagger-ui/**"
+        "/swagger-ui/**",
+        "/api/placelogs",
+        "/api/placelogs/*",
+        "/api/auth/**",
+        "/api/users/**"
     );
 
     @Override
@@ -56,12 +60,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-        // /favicon.ico 요청은 필터를 건너뜀
-        if ("/favicon.ico".equals(path) || "/api/auth/refresh".equals(path)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         // 쿠키에서 jwt 추출
         String accessToken = cookieUtils.getAccessToken(request);
