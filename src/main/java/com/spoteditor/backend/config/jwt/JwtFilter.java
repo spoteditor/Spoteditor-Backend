@@ -32,36 +32,36 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
     private final CookieUtils cookieUtils;
 
-    private static final List<String> WHITE_LIST = List.of(
-        "/favicon.ico",
-        "/error",
-        "/api/health",
-        "/api/docs/**",
-        "/v3/api-docs/**",
-        "/swagger-ui/**"
+    private static final List<String> ALL_METHOD_WHITE_LIST = List.of(
+            "/error",
+            "/api/auth/**"
+    );
+
+    private static final List<String> GET_METHOD_WHITE_LIST = List.of(
+            "/favicon.ico",
+            "/api/health",
+            "/api/docs/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/api/placelogs",
+            "/api/placelogs/*",
+            "/api/users/**"
     );
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return WHITE_LIST.stream()
-                .anyMatch(pattern -> {
-                    if (pattern.endsWith("/**")) {
-                        String prefix = pattern.substring(0, pattern.length() - 3);
-                        return path.startsWith(prefix);
-                    }
-                    return path.equals(pattern);
-                });
+        String method = request.getMethod();
+
+        if (isPathInWhiteList(ALL_METHOD_WHITE_LIST, path)) {
+            return true;
+        }
+
+        return method.equals("GET") && isPathInWhiteList(GET_METHOD_WHITE_LIST, path);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-        // /favicon.ico 요청은 필터를 건너뜀
-        if ("/favicon.ico".equals(path) || "/api/auth/refresh".equals(path)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         // 쿠키에서 jwt 추출
         String accessToken = cookieUtils.getAccessToken(request);
@@ -79,6 +79,7 @@ public class JwtFilter extends OncePerRequestFilter {
             handleException(response, new TokenException(INVALID_ACCESS_TOKEN));
         }
     }
+
     private void handleException(HttpServletResponse response, TokenException tokenException) throws IOException {
         ErrorCode errorCode = tokenException.getErrorCode();
 
@@ -91,6 +92,29 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String jsonResponse = objectMapper.writeValueAsString(ErrorResponse.of(errorCode));
         response.getWriter().write(jsonResponse);
+    }
+
+    private boolean isPathInWhiteList(List<String> whiteList, String path) {
+        return whiteList.stream().anyMatch(pattern -> matchesPattern(pattern, path));
+    }
+
+    private boolean matchesPattern(String pattern, String path) {
+        if(pattern.endsWith("/**")) {
+            String prefix = pattern.substring(0, pattern.length() - 3);
+
+            return path.startsWith(prefix)
+                    && path.length() > prefix.length()
+                    && path.charAt(prefix.length()) == '/';
+        } else if (pattern.endsWith("/*")) {
+            String prefix = pattern.substring(0, pattern.length() - 2);
+            String[] pathParts = path.split("/");
+
+            return path.startsWith(prefix)
+                    && path.length() > prefix.length()
+                    && path.charAt(prefix.length()) == '/'
+                    && pathParts.length == prefix.split("/").length + 1 ;
+        }
+        return path.equals(pattern);
     }
 }
 

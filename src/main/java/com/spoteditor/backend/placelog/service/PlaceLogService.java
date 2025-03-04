@@ -10,5 +10,7 @@ public interface PlaceLogService {
 
     PlaceLogResult getPlaceLog(Long userId, Long placeLogId);
 
+    PlaceLogResult getPublicPlaceLog(Long placeLogId);
+
     void removePlaceLog(Long userId, Long placeLogId);
 }

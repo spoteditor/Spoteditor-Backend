@@ -3,6 +3,7 @@ package com.spoteditor.backend.placelog.controller;
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.config.swagger.PlaceLogApiDocument;
+import com.spoteditor.backend.global.exception.TokenException;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogListResponse;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
@@ -56,7 +57,13 @@ public class PlaceLogController implements PlaceLogApiDocument {
             @AuthenticationPrincipal UserIdDto userIdDto,
             @PathVariable Long placeLogId
     ) {
-        PlaceLogResult result = placeLogService.getPlaceLog(userIdDto.getId(), placeLogId);
+        PlaceLogResult result;
+
+        if (userIdDto == null) {
+            result = placeLogService.getPublicPlaceLog(placeLogId);
+        } else {
+            result = placeLogService.getPlaceLog(userIdDto.getId(), placeLogId);
+        }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
