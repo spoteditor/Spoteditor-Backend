@@ -3,6 +3,7 @@ package com.spoteditor.backend.placelog.controller;
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.config.swagger.PlaceLogApiDocument;
+import com.spoteditor.backend.global.exception.TokenException;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogListResponse;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
@@ -18,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import static com.spoteditor.backend.global.response.ErrorCode.ACCESS_TOKEN_NOT_IN_COOKE;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -32,6 +35,10 @@ public class PlaceLogController implements PlaceLogApiDocument {
             @AuthenticationPrincipal UserIdDto userIdDto,
             @RequestBody PlaceLogRegisterRequest request
     ) {
+        if (userIdDto == null) {
+            throw new TokenException(ACCESS_TOKEN_NOT_IN_COOKE);
+        }
+
         PlaceLogRegisterCommand command = PlaceLogRegisterCommand.from(request);
         PlaceLogResult result = placeLogService.addPlaceLog(userIdDto.getId(), command);
 
@@ -56,7 +63,13 @@ public class PlaceLogController implements PlaceLogApiDocument {
             @AuthenticationPrincipal UserIdDto userIdDto,
             @PathVariable Long placeLogId
     ) {
-        PlaceLogResult result = placeLogService.getPlaceLog(userIdDto.getId(), placeLogId);
+        PlaceLogResult result;
+
+        if (userIdDto == null) {
+            result = placeLogService.getPublicPlaceLog(placeLogId);
+        } else {
+            result = placeLogService.getPlaceLog(userIdDto.getId(), placeLogId);
+        }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -69,6 +82,10 @@ public class PlaceLogController implements PlaceLogApiDocument {
             @AuthenticationPrincipal UserIdDto userIdDto,
             @PathVariable Long placeLogId
     ) {
+        if (userIdDto == null) {
+            throw new TokenException(ACCESS_TOKEN_NOT_IN_COOKE);
+        }
+
         placeLogService.removePlaceLog(userIdDto.getId(), placeLogId);
 
         return ResponseEntity
