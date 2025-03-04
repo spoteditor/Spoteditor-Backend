@@ -53,44 +53,11 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        boolean isAllMethodWhiteList = ALL_METHOD_WHITE_LIST.stream()
-                .anyMatch(pattern -> {
-                    if (pattern.endsWith("/**")) {
-                        String prefix = pattern.substring(0, pattern.length() - 3);
-
-                        return path.startsWith(prefix)
-                                && path.length() > prefix.length()
-                                && path.charAt(prefix.length()) == '/';
-                    }
-                    return path.equals(pattern);
-                });
-
-        if(isAllMethodWhiteList) {
+        if (isPathInWhiteList(ALL_METHOD_WHITE_LIST, path)) {
             return true;
         }
 
-        if (method.equals("GET")) {
-            return GET_METHOD_WHITE_LIST.stream()
-                    .anyMatch(pattern -> {
-                        if(pattern.endsWith("/**")) {
-                            String prefix = pattern.substring(0, pattern.length() - 3);
-
-                            return path.startsWith(prefix)
-                                    && path.length() > prefix.length()
-                                    && path.charAt(prefix.length()) == '/';
-                        } else if (pattern.endsWith("/*")) {
-                            String prefix = pattern.substring(0, pattern.length() - 2);
-                            String[] pathParts = path.split("/");
-
-                            return path.startsWith(prefix)
-                                    && path.length() > prefix.length()
-                                    && path.charAt(prefix.length()) == '/'
-                                    && pathParts.length == prefix.split("/").length + 1 ;
-                        }
-                        return path.equals(pattern);
-                    });
-        }
-        return false;
+        return method.equals("GET") && isPathInWhiteList(GET_METHOD_WHITE_LIST, path);
     }
 
     @Override
@@ -112,6 +79,7 @@ public class JwtFilter extends OncePerRequestFilter {
             handleException(response, new TokenException(INVALID_ACCESS_TOKEN));
         }
     }
+
     private void handleException(HttpServletResponse response, TokenException tokenException) throws IOException {
         ErrorCode errorCode = tokenException.getErrorCode();
 
@@ -124,6 +92,29 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String jsonResponse = objectMapper.writeValueAsString(ErrorResponse.of(errorCode));
         response.getWriter().write(jsonResponse);
+    }
+
+    private boolean isPathInWhiteList(List<String> whiteList, String path) {
+        return whiteList.stream().anyMatch(pattern -> matchesPattern(pattern, path));
+    }
+
+    private boolean matchesPattern(String pattern, String path) {
+        if(pattern.endsWith("/**")) {
+            String prefix = pattern.substring(0, pattern.length() - 3);
+
+            return path.startsWith(prefix)
+                    && path.length() > prefix.length()
+                    && path.charAt(prefix.length()) == '/';
+        } else if (pattern.endsWith("/*")) {
+            String prefix = pattern.substring(0, pattern.length() - 2);
+            String[] pathParts = path.split("/");
+
+            return path.startsWith(prefix)
+                    && path.length() > prefix.length()
+                    && path.charAt(prefix.length()) == '/'
+                    && pathParts.length == prefix.split("/").length + 1 ;
+        }
+        return path.equals(pattern);
     }
 }
 
