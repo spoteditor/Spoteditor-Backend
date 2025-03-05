@@ -44,11 +44,12 @@ public class CookieUtils {
     }
 
     public void removeCookie(HttpServletResponse response, String path, String name) {
-        Cookie cookie = new Cookie(name, null);
+        Cookie cookie = new Cookie(name, "");
         cookie.setPath(path);
-        cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
         cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 
