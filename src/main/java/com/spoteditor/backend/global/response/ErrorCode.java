@@ -30,6 +30,7 @@ public enum ErrorCode {
 
 	// follow
 	DUPLICATED_FOLLOW(HttpStatus.BAD_REQUEST, "F001", "중복 팔로우는 할 수 없습니다."),
+	SELF_FOLLOW_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "F002", "자기 자신을 팔로우할 수 없습니다."),
 
 	// place
 	NOT_FOUND_PLACE(HttpStatus.NOT_FOUND, "P001", "해당 장소를 찾을 수 없습니다."),

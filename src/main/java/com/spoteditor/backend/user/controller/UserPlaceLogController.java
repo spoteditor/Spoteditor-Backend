@@ -56,7 +56,7 @@ public class UserPlaceLogController {
                 .body(placeRepository.findMyBookmarkPlace(userIdDto.getId(), pageRequest));
     }
 
-    @GetMapping("/user/{userId}/placelogs")
+    @GetMapping("/users/{userId}/placelogs")
     public ResponseEntity<CustomPageResponse<PlaceLogListResponse>> getOtherUserPlaceLogs(
             @PathVariable Long userId,
             CustomPageRequest pageRequest
@@ -66,7 +66,7 @@ public class UserPlaceLogController {
                 .body(placeLogRepository.findOtherPlaceLog(userId, pageRequest));
     }
 
-    @GetMapping("/user/{userId}/bookmark/placelogs")
+    @GetMapping("/users/{userId}/bookmark/placelogs")
     public ResponseEntity<CustomPageResponse<PlaceLogListResponse>> getOtherUserBookmarkPlaceLogs(
             @PathVariable Long userId,
             CustomPageRequest pageRequest
@@ -76,7 +76,7 @@ public class UserPlaceLogController {
                 .body(placeLogRepository.findMyBookmarkPlaceLog(userId, pageRequest));
     }
 
-    @GetMapping("/user/{userId}/bookmark/places")
+    @GetMapping("/users/{userId}/bookmark/places")
     public ResponseEntity<CustomPageResponse<PlaceResponse>> getOtherUserPlaces(
             @PathVariable Long userId,
             CustomPageRequest pageRequest

@@ -19,6 +19,7 @@ public class BookmarkFacade {
 		bookmarkService.addBookmark(userId, command);
 	}
 
+	@DistributedLock(key = "#command.placeId()")
 	public void removeBookmark(Long userId, BookmarkCommand command) {
 		bookmarkService.removeBookmark(userId, command);
 	}

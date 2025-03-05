@@ -12,5 +12,7 @@ public interface PlaceLogService {
 
     PlaceLogResult updatePlaceLog(Long userId, Long placeLogId, PlaceLogUpdateCommand command);
 
+    PlaceLogResult getPublicPlaceLog(Long placeLogId);
+
     void removePlaceLog(Long userId, Long placeLogId);
 }

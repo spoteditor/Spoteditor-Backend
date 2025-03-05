@@ -25,26 +25,31 @@ services:
       slave-node-3:
         condition: service_healthy
       redis-cluster-entry:
-        condition: service_completed_successfully
+        condition: service_healthy
 
-  mysql:
+  spring-2:
+    build: .
     networks:
       - redis-cluster-compose
-    container_name: mysql
-    image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: spoteditor
-      MYSQL_DATABASE: spoteditor
+      - SERVER_PORT=8081
     ports:
-      - "3306:3306"
-    volumes:
-      - ./mysql_data:/var/lib/mysql
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD" ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    restart: unless-stopped
+      - "8081:8081"
+    depends_on:
+      redis-node-1:
+        condition: service_healthy
+      redis-node-2:
+        condition: service_healthy
+      redis-node-3:
+        condition: service_healthy
+      slave-node-1:
+        condition: service_healthy
+      slave-node-2:
+        condition: service_healthy
+      slave-node-3:
+        condition: service_healthy
+      redis-cluster-entry:
+        condition: service_healthy
 
   rabbitmq:
     networks:
@@ -70,7 +75,7 @@ services:
       - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD", "redis-cli", "-p", "6379", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -87,7 +92,7 @@ services:
       - ./conf/redis1.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD", "redis-cli", "-p", "6380", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -104,7 +109,7 @@ services:
       - ./conf/redis2.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD", "redis-cli", "-p", "6381", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -121,7 +126,7 @@ services:
       - ./conf/slave.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD", "redis-cli", "-p", "6382", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -138,7 +143,7 @@ services:
       - ./conf/slave1.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD", "redis-cli", "-p", "6383", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -155,7 +160,7 @@ services:
       - ./conf/slave2.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD", "redis-cli", "-p", "6384", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5

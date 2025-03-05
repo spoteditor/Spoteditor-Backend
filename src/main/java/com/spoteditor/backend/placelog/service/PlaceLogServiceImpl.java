@@ -148,6 +148,19 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Override
+    public PlaceLogResult getPublicPlaceLog(Long placeLogId) {
+
+        PlaceLog placeLog = placeLogRepository.findById(placeLogId)
+                .orElseThrow(() -> new PlaceLogException(NOT_FOUND_PLACE_LOG));
+
+        if(placeLog.getStatus().equals(PlaceLogStatus.PRIVATE)) {
+            throw new PlaceLogException(PRIVATE_PLACE_LOG);
+        }
+
+        return new PlaceLogResult(placeLog, getTags(placeLog.getId()), getPlaces(placeLog.getId()));
+    }
+
+    @Override
     @Transactional
     public PlaceLogResult updatePlaceLog(Long userId, Long placeLogId, PlaceLogUpdateCommand command) {
 

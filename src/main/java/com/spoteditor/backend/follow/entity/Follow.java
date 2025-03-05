@@ -1,12 +1,15 @@
 package com.spoteditor.backend.follow.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
+import com.spoteditor.backend.global.exception.FollowException;
 import com.spoteditor.backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import static com.spoteditor.backend.global.response.ErrorCode.SELF_FOLLOW_NOT_ALLOWED;
 
 @Entity
 @Getter
@@ -31,5 +34,12 @@ public class Follow extends BaseEntity {
 	private Follow(User following, User follower) {
 		this.following = following;
 		this.follower = follower;
+	}
+
+	// 자기 자신 팔로우 금지
+	public void validateNotSelfFollow(User user1, User user2) {
+		if (user1.getId().equals(user2.getId())) {
+			throw new FollowException(SELF_FOLLOW_NOT_ALLOWED);
+		}
 	}
 }
