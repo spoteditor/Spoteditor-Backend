@@ -189,13 +189,9 @@ public class PlaceLogServiceImpl implements PlaceLogService {
 
         deletePlaces(placeLog, command.deletePlaceIds());
 
-        for(PlaceLogPlaceUpdateCommand placeLogPlaceUpdateCommand : command.updatePlaces()) {
-            updatePlace(placeLog, placeLogPlaceUpdateCommand);
-        }
+        updatePlaces(placeLog, command.updatePlaces());
 
-        for(PlaceLogPlaceRegisterRequest request : command.addPlaces()) {
-            addPlace(placeLog, user, request);
-        }
+        addPlaces(placeLog, user, command.addPlaces());
 
         deletePlaceLogTags(placeLog, command.deleteTags());
 
@@ -329,90 +325,93 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Transactional
-    public void updatePlace(PlaceLog placeLog, PlaceLogPlaceUpdateCommand command) {
+    public void updatePlaces(PlaceLog placeLog, List<PlaceLogPlaceUpdateCommand> commands) {
+        for(PlaceLogPlaceUpdateCommand command : commands) {
+            Place place = placeRepository.findById(command.id())
+                    .orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
 
-        Place place = placeRepository.findById(command.id())
-                .orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
+            // placeLog안에 있는 place여야함
+            if (!placeLogPlaceMappingRepository.exists(placeLog.getId(), place.getId())) {
+                throw new PlaceLogException(NOT_FOUND_PLACES);
+            }
 
-        // placeLog안에 있는 place여야함
-        if(!placeLogPlaceMappingRepository.exists(placeLog.getId(), place.getId())) {
-            throw new PlaceLogException(NOT_FOUND_PLACES);
+            // place 정보 수정
+            place.updateDescription(command.description());
+
+            // originalFile, uuid 개수 확인
+            List<String> originalFiles = command.originalFiles();
+            List<String> uuids = command.uuids();
+
+            if (originalFiles.size() != uuids.size()) {
+                throw new ImageException(IMAGE_UUID_MISMATCH);
+            }
+
+            // place 이미지 제거
+            List<Long> deleteImageIds = command.deleteImageIds();
+
+            for (Long deleteImageId : deleteImageIds) {
+                place.deletePlaceImage(deleteImageId);
+            }
+
+            // place 이미지 추가
+            for (int imageIndex = 0; imageIndex < originalFiles.size(); imageIndex++) {
+                imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), place.getId());
+            }
+
+            // place 이미지 개수 확인
+            if (place.getPlaceImages().isEmpty()) {
+                throw new PlaceException(IMAGE_MINIMUM_REQUIRED);
+            }
+
+            if (place.getPlaceImages().size() > 3) {
+                throw new PlaceException(IMAGE_LIMIT_EXCEEDED);
+            }
+
+            // place 저장
+            placeRepository.save(place);
         }
-
-        // place 정보 수정
-        place.updateDescription(command.description());
-
-        // originalFile, uuid 개수 확인
-        List<String> originalFiles = command.originalFiles();
-        List<String> uuids = command.uuids();
-
-        if (originalFiles.size() != uuids.size()) {
-            throw new ImageException(IMAGE_UUID_MISMATCH);
-        }
-
-        // place 이미지 제거
-        List<Long> deleteImageIds = command.deleteImageIds();
-
-        for(Long deleteImageId : deleteImageIds) {
-            place.deletePlaceImage(deleteImageId);
-        }
-
-        // place 이미지 추가
-        for(int imageIndex = 0; imageIndex < originalFiles.size(); imageIndex++) {
-            imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), place.getId());
-        }
-
-        // place 이미지 개수 확인
-        if(place.getPlaceImages().isEmpty()) {
-            throw new PlaceException(IMAGE_MINIMUM_REQUIRED);
-        }
-
-        if(place.getPlaceImages().size() > 3) {
-            throw new PlaceException(IMAGE_LIMIT_EXCEEDED);
-        }
-
-        // place 저장
-        placeRepository.save(place);
     }
 
     @Transactional
-    public void addPlace(PlaceLog placeLog, User user, PlaceLogPlaceRegisterRequest request) {
-        List<String> originalFiles = request.originalFiles();
-        List<String> uuids = request.uuids();
+    public void addPlaces(PlaceLog placeLog, User user, List<PlaceLogPlaceRegisterRequest> requests) {
+        for(PlaceLogPlaceRegisterRequest request : requests) {
+            List<String> originalFiles = request.originalFiles();
+            List<String> uuids = request.uuids();
 
-        if (originalFiles.size() != uuids.size()) {
-            throw new ImageException(IMAGE_UUID_MISMATCH);
+            if (originalFiles.size() != uuids.size()) {
+                throw new ImageException(IMAGE_UUID_MISMATCH);
+            }
+
+            if (originalFiles.isEmpty()) {
+                throw new PlaceException(IMAGE_MINIMUM_REQUIRED);
+            }
+
+            if (originalFiles.size() > 3) {
+                throw new PlaceException(IMAGE_LIMIT_EXCEEDED);
+            }
+
+            PlaceRegisterRequest placeRegisterRequest = PlaceRegisterRequest.builder()
+                    .name(request.name())
+                    .description(request.description())
+                    .originalFile(originalFiles.get(0))
+                    .uuid(uuids.get(0))
+                    .address(request.address())
+                    .category(request.category())
+                    .build();
+            PlaceRegisterCommand placeRegisterCommand = placeRegisterRequest.from();
+
+            Place place = placeRepository.save(placeRegisterCommand.toEntity(user));
+
+            for (int imageIndex = 0; imageIndex < originalFiles.size(); imageIndex++) {
+                imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), place.getId());
+            }
+
+            PlaceLogPlaceMapping mapping = PlaceLogPlaceMapping.builder()
+                    .placeLog(placeLog)
+                    .place(place)
+                    .build();
+
+            placeLog.getPlaceLogPlaceMappings().add(mapping);
         }
-
-        if(originalFiles.isEmpty()) {
-            throw new PlaceException(IMAGE_MINIMUM_REQUIRED);
-        }
-
-        if(originalFiles.size() > 3) {
-            throw new PlaceException(IMAGE_LIMIT_EXCEEDED);
-        }
-
-        PlaceRegisterRequest placeRegisterRequest = PlaceRegisterRequest.builder()
-                .name(request.name())
-                .description(request.description())
-                .originalFile(originalFiles.get(0))
-                .uuid(uuids.get(0))
-                .address(request.address())
-                .category(request.category())
-                .build();
-        PlaceRegisterCommand placeRegisterCommand = placeRegisterRequest.from();
-
-        Place place = placeRepository.save(placeRegisterCommand.toEntity(user));
-
-        for(int imageIndex = 0; imageIndex < originalFiles.size(); imageIndex++) {
-            imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), place.getId());
-        }
-
-        PlaceLogPlaceMapping mapping = PlaceLogPlaceMapping.builder()
-                .placeLog(placeLog)
-                .place(place)
-                .build();
-
-        placeLog.getPlaceLogPlaceMappings().add(mapping);
     }
 }
