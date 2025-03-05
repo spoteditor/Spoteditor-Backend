@@ -157,6 +157,10 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         PlaceLog placeLog = placeLogRepository.findById(placeLogId)
                 .orElseThrow(() -> new PlaceLogException(NOT_FOUND_PLACE_LOG));
 
+        if(user.isDeleted()) {
+            throw new UserException(DELETED_USER);
+        }
+
         if(!placeLog.getUser().getId().equals(userId)) {
             throw new PlaceLogException(NOT_PLACE_LOG_OWNER);
         }
