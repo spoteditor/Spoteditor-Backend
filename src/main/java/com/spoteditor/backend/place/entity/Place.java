@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -65,6 +66,14 @@ public class Place extends BaseEntity {
 		if (placeImage.getPlace() != this) {
 			placeImage.addPlace(this);
 		}
+	}
+
+	public void deletePlaceImage(Long placeImageId) {
+		this.placeImages.removeIf(placeImage -> placeImage.getId().equals(placeImageId));
+	}
+
+	public void updateDescription(Optional<String> description) {
+		if(description.isPresent()) this.description = description.get();
 	}
 
 	public void increaseBookmark() {
