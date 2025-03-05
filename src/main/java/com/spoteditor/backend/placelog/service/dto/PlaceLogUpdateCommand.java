@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Optional;
 
 public record PlaceLogUpdateCommand (
-    Optional<String> name,
-    Optional<String> description,
-    Optional<String> originalFile,
-    Optional<String> uuid,
-    Optional<PlaceLogStatus> status,
+    String name,
+    String description,
+    String originalFile,
+    String uuid,
+    PlaceLogStatus status,
     List<TagDto> deleteTags,
     List<TagDto> addTags,
     List<Long> deletePlaceIds,
@@ -24,11 +24,11 @@ public record PlaceLogUpdateCommand (
 ) {
     public static PlaceLogUpdateCommand from(PlaceLogUpdateRequest request) {
         return new PlaceLogUpdateCommand(
-                Optional.ofNullable(request.name()),
-                Optional.ofNullable(request.description()),
-                Optional.ofNullable(request.originalFile()),
-                Optional.ofNullable(request.uuid()),
-                Optional.ofNullable(request.status()),
+                request.name() != null ? request.name() : null,
+                request.description() != null ? request.description() : null,
+                request.originalFile() != null ? request.originalFile() : null,
+                request.uuid() != null ? request.uuid() : null,
+                request.status() != null ? request.status() : null,
                 request.deleteTags() != null ? request.deleteTags() : Collections.emptyList(),
                 request.addTags() != null ? request.addTags() : Collections.emptyList(),
                 request.deletePlaceIds() != null ? request.deletePlaceIds() : Collections.emptyList(),

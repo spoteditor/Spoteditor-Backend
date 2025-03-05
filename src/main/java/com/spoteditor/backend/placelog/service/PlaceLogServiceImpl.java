@@ -253,13 +253,13 @@ public class PlaceLogServiceImpl implements PlaceLogService {
                 .toList();
     }
 
-    private void updatePlaceLogDetails(PlaceLog placeLog, Optional<String> name, Optional<String> description, Optional<PlaceLogStatus> status) {
+    private void updatePlaceLogDetails(PlaceLog placeLog, String name, String description, PlaceLogStatus status) {
         placeLog.update(name, description, status);
     }
 
     @Transactional
-    public void updatePlaceLogImage(PlaceLog placeLog, Optional<String> originalFile, Optional<String> uuid) {
-        if(originalFile.isEmpty() || uuid.isEmpty()) return;
+    public void updatePlaceLogImage(PlaceLog placeLog, String originalFile, String uuid) {
+        if(originalFile == null || uuid == null) return;
 
         // 기존 이미지 삭제
         PlaceImage beforePlaceLogImage = placeLog.getPlaceLogImage();
@@ -268,7 +268,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         placeImageRepository.delete(beforePlaceLogImage);
 
         // 새로운 이미지 등록
-        PlaceImageResponse placeLogImageResponse = imageService.uploadWithoutPlace(originalFile.get(), uuid.get());
+        PlaceImageResponse placeLogImageResponse = imageService.uploadWithoutPlace(originalFile, uuid);
 
         PlaceImage newPlaceLogImage = placeImageRepository.findById(placeLogImageResponse.imageId())
                 .orElseThrow(() -> new ImageException(NOT_FOUND_IMAGE));

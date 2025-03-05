@@ -72,8 +72,8 @@ public class Place extends BaseEntity {
 		this.placeImages.removeIf(placeImage -> placeImage.getId().equals(placeImageId));
 	}
 
-	public void updateDescription(Optional<String> description) {
-		if(description.isPresent()) this.description = description.get();
+	public void updateDescription(String description) {
+		if(description != null) this.description = description;
 	}
 
 	public void increaseBookmark() {

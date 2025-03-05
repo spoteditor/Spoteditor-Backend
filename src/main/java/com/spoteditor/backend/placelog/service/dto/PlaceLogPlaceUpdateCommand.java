@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public record PlaceLogPlaceUpdateCommand (
     Long id,
-    Optional<String> description,
+    String description,
     List<Long> deleteImageIds,
     List<String> originalFiles,
     List<String> uuids
@@ -16,7 +16,7 @@ public record PlaceLogPlaceUpdateCommand (
     public static PlaceLogPlaceUpdateCommand from(PlaceLogPlaceUpdateRequest request) {
         return new PlaceLogPlaceUpdateCommand(
                 request.id(),
-                Optional.ofNullable(request.description()),
+                request.description() != null ? request.description() : null,
                 request.deleteImageIds() != null ? request.deleteImageIds() : Collections.emptyList(),
                 request.originalFiles() != null ? request.originalFiles() : Collections.emptyList(),
                 request.uuids() != null ? request.uuids() : Collections.emptyList()

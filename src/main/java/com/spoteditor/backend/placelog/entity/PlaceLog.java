@@ -77,10 +77,10 @@ public class PlaceLog extends BaseEntity {
         this.status = status;
     }
 
-    public void update(Optional<String> name, Optional<String> description, Optional<PlaceLogStatus> status) {
-        if (name.isPresent()) this.name = name.get();
-        if (description.isPresent()) this.description = description.get();
-        if (status.isPresent()) this.status = status.get();
+    public void update(String name, String description, PlaceLogStatus status) {
+        if (name != null && name.trim().isEmpty()) this.name = name;
+        if (description != null) this.description = description;
+        if (status != null) this.status = status;
     }
 
     public void deleteImage() {
