@@ -74,4 +74,42 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.follower").value(userResult.follower()))
                 .andExpect(jsonPath("$.following").value(userResult.following()));
     }
+
+    @Test
+    @DisplayName("다른 사용자 정보 조회 API 테스트")
+    void 다른_사용자_정보_조회_테스트() throws Exception {
+        // Given
+        Long otherUserId = 23L;
+
+        User otherUser = User.builder()
+                .email("test@email.com")
+                .build();
+
+        UserUpdateCommand command = new UserUpdateCommand(
+                "test",
+                "test.jpg",
+                "테스트 유저입니다",
+                "test_test"
+        );
+
+        otherUser.update(command);
+
+        ReflectionTestUtils.setField(otherUser, "id", otherUserId);
+
+        UserResult userResult = UserResult.from(otherUser, 203L, 234L);
+
+        given(userService.getUser(otherUserId)).willReturn(userResult);
+
+        // When & Then
+        mockMvc.perform(get("/api/users/23")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(otherUserId))
+                .andExpect(jsonPath("$.name").value(otherUser.getName()))
+                .andExpect(jsonPath("$.instagramId").value(otherUser.getInstagramId()))
+                .andExpect(jsonPath("$.imageUrl").value(otherUser.getImageUrl()))
+                .andExpect(jsonPath("$.description").value(otherUser.getDescription()))
+                .andExpect(jsonPath("$.follower").value(userResult.follower()))
+                .andExpect(jsonPath("$.following").value(userResult.following()));
+    }
 }
