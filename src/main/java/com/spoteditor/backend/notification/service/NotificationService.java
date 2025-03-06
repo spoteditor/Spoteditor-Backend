@@ -28,9 +28,6 @@ public class NotificationService {
 		switch (dto.type()) {
 			case FOLLOW -> notificationPublisher.followPublish(dto);	// Publisher
 		}
-
-		Notification notification = dto.toEntity();
-		notificationRepository.save(notification);
 	}
 
 	/**

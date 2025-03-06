@@ -2,21 +2,25 @@ package com.spoteditor.backend.follow.service;
 
 import com.spoteditor.backend.follow.controller.dto.FollowRequest;
 import com.spoteditor.backend.follow.entity.Follow;
+import com.spoteditor.backend.notification.dto.NotificationMessage;
+import com.spoteditor.backend.notification.entity.Notification;
+import com.spoteditor.backend.notification.event.NotificationEventDto;
 import com.spoteditor.backend.follow.repository.FollowRepository;
 import com.spoteditor.backend.global.exception.FollowException;
 import com.spoteditor.backend.global.exception.UserException;
-import com.spoteditor.backend.notification.dto.NotificationDto;
-import com.spoteditor.backend.notification.service.NotificationService;
-import com.spoteditor.backend.user.common.dto.UserIdDto;
+import com.spoteditor.backend.notification.handler.NotificationEventHandler;
+import com.spoteditor.backend.notification.repository.NotificationRepository;
 import com.spoteditor.backend.user.entity.User;
 import com.spoteditor.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.spoteditor.backend.global.response.ErrorCode.*;
 import static com.spoteditor.backend.notification.entity.NotificationType.FOLLOW;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,21 +28,15 @@ public class FollowServiceImpl implements FollowService {
 
 	private final FollowRepository followRepository;
 	private final UserRepository userRepository;
-	private final NotificationService notificationService;
+	private final NotificationEventHandler handler;
+	private final NotificationRepository notificationRepository;
 
-	/**
-	 *
-	 * @param dto
-	 * @param request
-	 */
 	@Transactional
-	public void saveFollow(UserIdDto dto, FollowRequest request) {
+	public void saveFollow(Long userId, FollowRequest request) {
 
-		User follower = userRepository.findById(dto.getId())
-				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
-
-		User following = userRepository.findById(request.userId())
-				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
+		log.info("Follow Thread Name:{}", Thread.currentThread().getName());
+		User follower = findUserById(userId);
+		User following = findUserById(request.userId());
 
 		followRepository.findFollowByFollowerAndFollowing(follower, following)
 				.ifPresent(follow -> { throw new FollowException(DUPLICATED_FOLLOW); });
@@ -48,31 +46,28 @@ public class FollowServiceImpl implements FollowService {
 				.following(following)
 				.build();
 
-		NotificationDto notificationDto = NotificationDto.builder()
-				.type(FOLLOW)
-				.message("[#] 알림: " + follower.getName() + "님이 " + following.getName() + "님을 팔로우했습니다.")
-				.fromUser(follower)
-				.toUser(following)
-				.build();
-
-		notificationService.send(notificationDto);
 		followRepository.save(follow);
+
+		String message = NotificationMessage.formatFollowMessage(follower.getName(), following.getName());
+		NotificationEventDto eventDto = NotificationEventDto.from(
+				follower, following, FOLLOW, message
+		);
+
+		handler.handleNotificationEvent(eventDto);	// 커밋 성공 시에 비동기로 처리
+		Notification entity = eventDto.toEntity(follower, following, FOLLOW, message);
+		notificationRepository.save(entity);
 	}
 
-	/**
-	 *
-	 * @param dto
-	 * @param request
-	 */
 	@Transactional
-	public void removeFollow(UserIdDto dto, FollowRequest request) {
+	public void removeFollow(Long userId, FollowRequest request) {
 
-		User follower = userRepository.findById(dto.getId())
-				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
-
-		User following = userRepository.findById(request.userId())
-				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
-
+		User follower = findUserById(userId);
+		User following = findUserById(request.userId());
 		followRepository.deleteByFollowerAndFollowing(follower, following);
+	}
+
+	private User findUserById(Long userId) {
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
 	}
 }

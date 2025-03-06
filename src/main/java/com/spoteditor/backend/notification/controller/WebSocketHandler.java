@@ -18,6 +18,6 @@ public class WebSocketHandler {
 	@MessageMapping("/send")
 	public void sendNotificationMessage(NotificationDto notificationDto) {
 		log.info("[#] message = " + notificationDto.message());
-		messagingTemplate.convertAndSend(NotificationSubscriber.CLIENT_URL + notificationDto.toUser().getEmail(), notificationDto.message());
+		messagingTemplate.convertAndSend(NotificationSubscriber.CLIENT_URL + notificationDto.to(), notificationDto.message());
 	}
 }
