@@ -19,6 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -152,5 +153,28 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.imageUrl").value(user.getImageUrl()))
                 .andExpect(jsonPath("$.description").value(user.getDescription()))
                 .andExpect(jsonPath("$.instagramId").value(user.getInstagramId()));
+    }
+
+    @Test
+    @DisplayName("사용자 삭제 API 테스트")
+    void 사용자_삭제_테스트() throws Exception {
+        // Given
+        Long userId = 23L;
+
+        User user = User.builder()
+                .email("test@email.com")
+                .name("testUser1")
+                .imageUrl("testImage1.jpg")
+                .build();
+
+        ReflectionTestUtils.setField(user, "id", userId);
+
+        willDoNothing().given(userService).deleteUser(userId);
+
+        // When & Then
+        mockMvc.perform(delete("/api/users")
+                        .cookie(new Cookie("AccessToken", String.valueOf(userId)))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }
