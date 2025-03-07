@@ -40,22 +40,18 @@ public class FollowServiceImpl implements FollowService {
 		User following = userRepository.findById(request.userId())
 				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
-		followRepository.findFollowByFollowerAndFollowing(follower, following)
-				.ifPresent(follow -> { throw new FollowException(DUPLICATED_FOLLOW); });
+		// 자기 자신 팔로우를 허용하지 않는다.
+		validateNotSelfFollow(follower, following);
+
+		// 중복된 팔로우인지 체크한다.
+		validateDuplicatedFollow(follower, following);
 
 		Follow follow = Follow.builder()
 				.follower(follower)
 				.following(following)
 				.build();
 
-		NotificationDto notificationDto = NotificationDto.builder()
-				.type(FOLLOW)
-				.message("[#] 알림: " + follower.getName() + "님이 " + following.getName() + "님을 팔로우했습니다.")
-				.fromUser(follower)
-				.toUser(following)
-				.build();
-
-		notificationService.send(notificationDto);
+		sendFollowNotification(follower, following);
 		followRepository.save(follow);
 	}
 
@@ -73,6 +69,35 @@ public class FollowServiceImpl implements FollowService {
 		User following = userRepository.findById(request.userId())
 				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
+		validateNotSelfUnFollow(follower, following);
 		followRepository.deleteByFollowerAndFollowing(follower, following);
+	}
+
+	private static void validateNotSelfFollow(User follower, User following) {
+		if (follower.getId().equals(following.getId())) {
+			throw new FollowException(SELF_FOLLOW_NOT_ALLOWED);
+		}
+	}
+
+	private static void validateNotSelfUnFollow(User follower, User following) {
+		if (follower.getId().equals(following.getId())) {
+			throw new FollowException(SELF_FOLLOW_NOT_ALLOWED);
+		}
+	}
+
+	private void validateDuplicatedFollow(User follower, User following) {
+		followRepository.findFollowByFollowerAndFollowing(follower, following)
+				.ifPresent(follow -> { throw new FollowException(DUPLICATED_FOLLOW); });
+	}
+
+	private void sendFollowNotification(User follower, User following) {
+		NotificationDto notificationDto = NotificationDto.builder()
+				.type(FOLLOW)
+				.message("[#] 알림: " + follower.getName() + "님이 " + following.getName() + "님을 팔로우했습니다.")
+				.fromUser(follower)
+				.toUser(following)
+				.build();
+
+		notificationService.send(notificationDto);
 	}
 }
