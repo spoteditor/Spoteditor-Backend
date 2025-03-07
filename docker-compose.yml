@@ -24,8 +24,6 @@ services:
         condition: service_healthy
       slave-node-3:
         condition: service_healthy
-      redis-cluster-entry:
-        condition: service_healthy
 
   spring-2:
     build: .
@@ -47,8 +45,6 @@ services:
       slave-node-2:
         condition: service_healthy
       slave-node-3:
-        condition: service_healthy
-      redis-cluster-entry:
         condition: service_healthy
 
   rabbitmq:
@@ -75,7 +71,7 @@ services:
       - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6379", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h redis-node-1 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -92,7 +88,7 @@ services:
       - ./conf/redis1.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6380", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h redis-node-2 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -109,7 +105,7 @@ services:
       - ./conf/redis2.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6381", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h redis-node-3 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -126,7 +122,7 @@ services:
       - ./conf/slave.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6382", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h slave-node-1 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -143,7 +139,7 @@ services:
       - ./conf/slave1.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6383", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h slave-node-2 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -160,7 +156,7 @@ services:
       - ./conf/slave2.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6384", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h slave-node-3 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
