@@ -24,7 +24,8 @@ services:
         condition: service_healthy
       slave-node-3:
         condition: service_healthy
-    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+      redis-cluster-entry:
+        condition: service_healthy
 
   spring-2:
     build: .
@@ -47,7 +48,8 @@ services:
         condition: service_healthy
       slave-node-3:
         condition: service_healthy
-    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+      redis-cluster-entry:
+        condition: service_healthy
 
   rabbitmq:
     networks:
@@ -172,7 +174,7 @@ services:
     restart: no
     container_name: redis-cluster-entry
     #command: redis-cli --cluster create 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 --cluster-replicas 1 --cluster-yes
-    command: redis-cli --cluster create redis-node-1:6379 redis-node-2:6380 redis-node-3:6381 slave-node-1:6382 slave-node-2:6383 slave-node-3:6384 --cluster-replicas 1 --cluster-yes
+    command: sh -c "redis-cli --cluster create redis-node-1:6379 redis-node-2:6380 redis-node-3:6381 slave-node-1:6382 slave-node-2:6383 slave-node-3:6384 --cluster-replicas 1 --cluster-yes && tail -f /dev/null"
     depends_on:
       - redis-node-1
       - redis-node-2
