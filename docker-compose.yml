@@ -24,8 +24,7 @@ services:
         condition: service_healthy
       slave-node-3:
         condition: service_healthy
-      redis-cluster-entry:
-        condition: service_healthy
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
 
   spring-2:
     build: .
@@ -48,8 +47,7 @@ services:
         condition: service_healthy
       slave-node-3:
         condition: service_healthy
-      redis-cluster-entry:
-        condition: service_healthy
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
 
   rabbitmq:
     networks:
