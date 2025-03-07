@@ -1,4 +1,4 @@
-package com.spoteditor.backend.bookmark.aop;
+package com.spoteditor.backend.config.aop;
 
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;

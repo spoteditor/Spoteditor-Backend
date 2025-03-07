@@ -1,4 +1,4 @@
-package com.spoteditor.backend.bookmark.aop;
+package com.spoteditor.backend.config.aop;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class DistributeLockAop {
 	private final RedissonClient redissonClient;
 	private final AopForTransaction aopForTransaction;
 
-	@Around("@annotation(com.spoteditor.backend.bookmark.aop.DistributedLock)")
+	@Around("@annotation(com.spoteditor.backend.config.aop.DistributedLock)")
 	public Object lock(final ProceedingJoinPoint joinPoint) throws Throwable {
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
