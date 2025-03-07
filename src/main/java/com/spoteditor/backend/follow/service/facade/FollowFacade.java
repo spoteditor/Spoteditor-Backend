@@ -1,6 +1,6 @@
 package com.spoteditor.backend.follow.service.facade;
 
-import com.spoteditor.backend.bookmark.aop.DistributedLock;
+import com.spoteditor.backend.config.aop.DistributedLock;
 import com.spoteditor.backend.follow.controller.dto.FollowRequest;
 import com.spoteditor.backend.follow.service.FollowService;
 import lombok.RequiredArgsConstructor;
