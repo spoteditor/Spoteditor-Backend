@@ -1,6 +1,6 @@
 package com.spoteditor.backend.bookmark.service.facade;
 
-import com.spoteditor.backend.bookmark.aop.DistributedLock;
+import com.spoteditor.backend.config.aop.DistributedLock;
 import com.spoteditor.backend.bookmark.service.BookmarkService;
 import com.spoteditor.backend.bookmark.service.dto.BookmarkCommand;
 import lombok.RequiredArgsConstructor;
