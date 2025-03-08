@@ -69,37 +69,5 @@ public class FollowServiceImpl implements FollowService {
 	private User findUserById(Long userId) {
 		return userRepository.findById(userId)
 				.orElseThrow(() -> new UserException(NOT_FOUND_USER));
-
-
-		validateNotSelfUnFollow(follower, following);
-		followRepository.deleteByFollowerAndFollowing(follower, following);
-	}
-
-	private static void validateNotSelfFollow(User follower, User following) {
-		if (follower.getId().equals(following.getId())) {
-			throw new FollowException(SELF_FOLLOW_NOT_ALLOWED);
-		}
-	}
-
-	private static void validateNotSelfUnFollow(User follower, User following) {
-		if (follower.getId().equals(following.getId())) {
-			throw new FollowException(SELF_FOLLOW_NOT_ALLOWED);
-		}
-	}
-
-	private void validateDuplicatedFollow(User follower, User following) {
-		followRepository.findFollowByFollowerAndFollowing(follower, following)
-				.ifPresent(follow -> { throw new FollowException(DUPLICATED_FOLLOW); });
-	}
-
-	private void sendFollowNotification(User follower, User following) {
-		NotificationDto notificationDto = NotificationDto.builder()
-				.type(FOLLOW)
-				.message("[#] 알림: " + follower.getName() + "님이 " + following.getName() + "님을 팔로우했습니다.")
-				.fromUser(follower)
-				.toUser(following)
-				.build();
-
-		notificationService.send(notificationDto);
 	}
 }
