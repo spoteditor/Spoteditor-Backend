@@ -17,6 +17,9 @@ import com.spoteditor.backend.place.service.dto.PlaceRegisterCommand;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogPlaceRegisterRequest;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.placelog.entity.PlaceLogStatus;
+import com.spoteditor.backend.placelog.event.PlaceLogAfterCommitEvent;
+import com.spoteditor.backend.placelog.event.PlaceLogRollbackEvent;
+import com.spoteditor.backend.placelog.event.dto.PlaceLogPlaceImage;
 import com.spoteditor.backend.placelog.service.dto.*;
 import com.spoteditor.backend.tag.dto.TagDto;
 import com.spoteditor.backend.tag.entity.Tag;
@@ -25,6 +28,7 @@ import com.spoteditor.backend.tag.repository.TagRepository;
 import com.spoteditor.backend.user.entity.User;
 import com.spoteditor.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +50,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     private final PlaceService placeService;
     private final PlaceImageService imageService;
     private final PlaceImageRepository placeImageRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -178,24 +183,36 @@ public class PlaceLogServiceImpl implements PlaceLogService {
             throw new PlaceLogException(NOT_PLACE_LOG_OWNER);
         }
 
+    // S3 무관한 작업
+        // 로그의 이름, 설명, 상태 업데이트
         updatePlaceLogDetails(placeLog, command.name(), command.description(), command.status());
-
-        updatePlaceLogImage(placeLog, command.originalFile(), command.uuid());
 
         // 로그에 제목 있어야함
         if(placeLog.getName() == null || placeLog.getName().trim().isEmpty()) {
             throw new PlaceLogException(NO_PLACE_LOG_NAME);
         }
-
+        // 태그 삭제
+        deletePlaceLogTags(placeLog, command.deleteTags());
+        // 태그 추가
+        addPlaceLogTags(placeLog, command.addTags());
+        // 장소 삭제
         deletePlaces(placeLog, command.deletePlaceIds());
 
-        updatePlaces(placeLog, command.updatePlaces());
+    // S3 연관된 작업
+        List<PlaceLogPlaceImage> rollbackFiles = new ArrayList<>();
+        List<PlaceLogPlaceImage> deleteFiles = new ArrayList<>();
 
-        addPlaces(placeLog, user, command.addPlaces());
-
-        deletePlaceLogTags(placeLog, command.deleteTags());
-
-        addPlaceLogTags(placeLog, command.addTags());
+        try {
+            // 로그 이미지 업데이트
+            updatePlaceLogImage(placeLog, command.originalFile(), command.uuid(), rollbackFiles, deleteFiles);
+            // 장소 업데이트
+            updatePlaces(placeLog, command.updatePlaces(), rollbackFiles, deleteFiles);
+            // 장소 추가
+            addPlaces(placeLog, user, command.addPlaces(), rollbackFiles);
+        } catch (ImageException | PlaceException | PlaceLogException e) {
+            eventPublisher.publishEvent(new PlaceLogRollbackEvent(rollbackFiles));
+            throw e;
+        }
 
         PlaceLog savedPlaceLog = placeLogRepository.save(placeLog);
 
@@ -203,19 +220,11 @@ public class PlaceLogServiceImpl implements PlaceLogService {
                 .map(PlaceLogPlaceMapping::getPlace)
                 .toList();
 
-        // 장소는 1개 이상 등록
-        if(places.isEmpty()) {
-            throw new PlaceLogException(PLACE_MINIMUM_REQUIRED);
-        }
-
-        // 장소 최대 10개까지 등록
-        if(places.size() > 10) {
-            throw new PlaceLogException(PLACE_LIMIT_EXCEEDED);
-        }
-
         List<Tag> tags = savedPlaceLog.getPlaceLogTagMappings().stream()
                 .map(PlaceLogTagMapping::getTag)
                 .toList();
+
+        eventPublisher.publishEvent(new PlaceLogAfterCommitEvent(deleteFiles));
 
         return PlaceLogResult.from(savedPlaceLog, places, tags);
     }
@@ -254,7 +263,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Transactional
-    public void updatePlaceLogImage(PlaceLog placeLog, String originalFile, String uuid) {
+    public void updatePlaceLogImage(PlaceLog placeLog, String originalFile, String uuid, List<PlaceLogPlaceImage> rollbackFiles, List<PlaceLogPlaceImage> deleteFiles) {
         if(originalFile == null || uuid == null) return;
 
         // 기존 이미지 삭제
@@ -262,9 +271,11 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         placeLog.deleteImage();
 
         placeImageRepository.delete(beforePlaceLogImage);
+        deleteFiles.add(PlaceLogPlaceImage.from(beforePlaceLogImage));
 
         // 새로운 이미지 등록
         PlaceImageResponse placeLogImageResponse = imageService.uploadWithoutPlace(originalFile, uuid);
+        rollbackFiles.add(PlaceLogPlaceImage.from(placeLogImageResponse, uuid));
 
         PlaceImage newPlaceLogImage = placeImageRepository.findById(placeLogImageResponse.imageId())
                 .orElseThrow(() -> new ImageException(NOT_FOUND_IMAGE));
@@ -325,7 +336,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Transactional
-    public void updatePlaces(PlaceLog placeLog, List<PlaceLogPlaceUpdateCommand> commands) {
+    public void updatePlaces(PlaceLog placeLog, List<PlaceLogPlaceUpdateCommand> commands, List<PlaceLogPlaceImage> rollbackFiles, List<PlaceLogPlaceImage> deleteFiles) {
         for(PlaceLogPlaceUpdateCommand command : commands) {
             Place place = placeRepository.findById(command.id())
                     .orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
@@ -347,15 +358,15 @@ public class PlaceLogServiceImpl implements PlaceLogService {
             }
 
             // place 이미지 제거
-            List<Long> deleteImageIds = command.deleteImageIds();
-
-            for (Long deleteImageId : deleteImageIds) {
-                place.deletePlaceImage(deleteImageId);
+            for (Long deleteImageId : command.deleteImageIds()) {
+                PlaceImage placeImage = place.deletePlaceImage(deleteImageId);
+                deleteFiles.add(PlaceLogPlaceImage.from(placeImage));
             }
 
             // place 이미지 추가
             for (int imageIndex = 0; imageIndex < originalFiles.size(); imageIndex++) {
-                imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), place.getId());
+                PlaceImageResponse imageResponse = imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), place.getId());
+                rollbackFiles.add(PlaceLogPlaceImage.from(imageResponse, uuids.get(imageIndex)));
             }
 
             // place 이미지 개수 확인
@@ -373,7 +384,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Transactional
-    public void addPlaces(PlaceLog placeLog, User user, List<PlaceLogPlaceRegisterRequest> requests) {
+    public void addPlaces(PlaceLog placeLog, User user, List<PlaceLogPlaceRegisterRequest> requests, List<PlaceLogPlaceImage> rollbackFiles) {
         for(PlaceLogPlaceRegisterRequest request : requests) {
             List<String> originalFiles = request.originalFiles();
             List<String> uuids = request.uuids();
@@ -403,7 +414,8 @@ public class PlaceLogServiceImpl implements PlaceLogService {
             Place place = placeRepository.save(placeRegisterCommand.toEntity(user));
 
             for (int imageIndex = 0; imageIndex < originalFiles.size(); imageIndex++) {
-                imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), place.getId());
+                PlaceImageResponse imageResponse = imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), place.getId());
+                rollbackFiles.add(PlaceLogPlaceImage.from(imageResponse, uuids.get(imageIndex)));
             }
 
             PlaceLogPlaceMapping mapping = PlaceLogPlaceMapping.builder()
@@ -415,3 +427,4 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         }
     }
 }
+
