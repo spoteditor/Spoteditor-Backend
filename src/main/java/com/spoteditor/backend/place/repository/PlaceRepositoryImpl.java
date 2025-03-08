@@ -1,10 +1,13 @@
 package com.spoteditor.backend.place.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
+import com.spoteditor.backend.image.controller.dto.PlaceImageResponse;
+import com.spoteditor.backend.image.entity.QPlaceImage;
 import com.spoteditor.backend.place.controller.dto.PlaceResponse;
 import com.spoteditor.backend.place.entity.Place;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,8 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 	public CustomPageResponse<PlaceResponse> findAllPlace(CustomPageRequest request) {
 		PageRequest pageRequest = request.of();
 
+		QPlaceImage subPlaceImage = new QPlaceImage("subPlaceImage");
+
 		List<PlaceResponse> placeList = queryFactory
 				.select(Projections.constructor(PlaceResponse.class,
 						place.id.as("placeId"),
@@ -36,8 +41,22 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 						place.name,
 						place.description,
 						place.address,
-						place.category))
+						place.category,
+						Projections.constructor(PlaceImageResponse.class,
+								placeImage.id,
+								placeImage.originalFile,
+								placeImage.storedFile
+						)
+				))
 				.from(place)
+				.leftJoin(placeImage).on(placeImage.id.eq(place.id)
+						.and(placeImage.createdAt.eq(
+								JPAExpressions
+										.select(subPlaceImage.createdAt.min())
+										.from(subPlaceImage)
+										.where(subPlaceImage.place.id.eq(place.id))
+						)
+				))
 				.offset(pageRequest.getOffset())
 				.limit(pageRequest.getPageSize())
 				.orderBy(place.createdAt.asc())
@@ -60,6 +79,8 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 	public CustomPageResponse<PlaceResponse> findMyBookmarkPlace(Long userId, CustomPageRequest request) {
 		PageRequest pageRequest = request.of();
 
+		QPlaceImage subPlaceImage = new QPlaceImage("subPlaceImage");
+
 		List<PlaceResponse> placeList = queryFactory
 				.select(Projections.constructor(PlaceResponse.class,
 						place.id.as("placeId"),
@@ -67,9 +88,24 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 						place.name,
 						place.description,
 						place.address,
-						place.category))
+						place.category,
+						Projections.constructor(PlaceImageResponse.class,
+								placeImage.id,
+								placeImage.originalFile,
+								placeImage.storedFile
+						)
+				))
 				.from(bookmark)
 				.join(bookmark.place, place)
+				.leftJoin(placeImage).on(placeImage.id.eq(place.id)
+						.and(placeImage.createdAt.eq(
+								JPAExpressions
+										.select(subPlaceImage.createdAt.min())
+										.from(subPlaceImage)
+										.where(subPlaceImage.place.id.eq(place.id))
+						)
+				))
+				.where(bookmark.user.id.eq(userId))
 				.offset(pageRequest.getOffset())
 				.limit(pageRequest.getPageSize())
 				.orderBy(place.createdAt.desc())

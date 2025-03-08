@@ -10,7 +10,6 @@ import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.place.repository.PlaceRepository;
 import com.spoteditor.backend.user.entity.User;
 import com.spoteditor.backend.user.repository.UserRepository;
-import com.spoteditor.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,13 +44,16 @@ public class BookmarkServiceImpl implements BookmarkService {
 		Place place = placeRepository.findById(command.placeId())
 				.orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
 
-		Bookmark bookmark = Bookmark.builder()
-				.user(user)
-				.place(place)
-				.build();
-
-		place.increaseBookmark();	// UPDATE 쿼리가 호출될 것으로 전망
-		bookmarkRepository.save(bookmark);
+		if (bookmarkRepository.findByUserIdAndPlaceId(userId, command.placeId()).isPresent()) {
+			throw new BookmarkException(BOOKMARK_ALREADY_EXIST);
+		} else {
+			Bookmark bookmark = Bookmark.builder()
+					.user(user)
+					.place(place)
+					.build();
+			bookmarkRepository.save(bookmark);
+			place.increaseBookmark();
+		}
 	}
 
 	/**
@@ -71,5 +73,10 @@ public class BookmarkServiceImpl implements BookmarkService {
 
 		place.decreaseBookmark();
 		bookmarkRepository.delete(bookmark);
+	}
+
+	@Override
+	public boolean existsByUserIdAndPlaceId(Long userId, Long placeId) {
+		return bookmarkRepository.existsByUserAndPlace(userId, placeId);
 	}
 }

@@ -70,7 +70,7 @@ class FollowServiceTest {
 				try {
 					UserIdDto userIdDto = new UserIdDto(savedUsers.get(index).getId());
 					FollowRequest followRequest = new FollowRequest(targetUser.getId());
-					followFacade.saveFollow(userIdDto, followRequest);
+					followFacade.saveFollow(userIdDto.getId(), followRequest);
 				} finally {
 					latch.countDown();
 				}
@@ -86,6 +86,44 @@ class FollowServiceTest {
 	}
 
 	@Test
+	@DisplayName("팔로우삭제_분산락_적용_동시성200명_테스트")
+	void 팔로우삭제_분산락_적용_동시성200명_테스트() throws InterruptedException {
+		// given
+		int numberOfThreads = 200;
+		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+		CountDownLatch latch = new CountDownLatch(numberOfThreads);
+
+		User targetUser = savedUsers.get(0);
+
+		for (int i = 0; i < numberOfThreads; i++) {
+			final Long userId = savedUsers.get(i).getId();
+			FollowRequest followRequest = new FollowRequest(targetUser.getId());
+			followFacade.saveFollow(userId, followRequest);
+		}
+
+		// when
+		for (int i = 0; i < numberOfThreads; i++) {
+			final int index = i;
+			executorService.submit(() -> {
+				try {
+					UserIdDto userIdDto = new UserIdDto(savedUsers.get(index).getId());
+					FollowRequest followRequest = new FollowRequest(targetUser.getId());
+					followFacade.removeFollow(userIdDto.getId(), followRequest);
+				} finally {
+					latch.countDown();
+				}
+			});
+		}
+
+		latch.await();
+		executorService.shutdown();
+
+		// then
+		long count = followRepository.count();
+		assertThat(count).isEqualTo(0);
+	}
+
+	@Test
 	@DisplayName("중복 팔로우를 할 수 없다.")
 	void 중복_팔로우를_할_수_없다() {
 		// given
@@ -96,8 +134,8 @@ class FollowServiceTest {
 
         // when
         UserIdDto userIdDto = new UserIdDto(mainUser.getId());
-        followFacade.saveFollow(userIdDto, followRequest);
+        followFacade.saveFollow(userIdDto.getId(), followRequest);
 
-		assertThrows(FollowException.class, () -> followFacade.saveFollow(userIdDto, followRequest));
+		assertThrows(FollowException.class, () -> followFacade.saveFollow(userIdDto.getId(), followRequest));
 	}
 }

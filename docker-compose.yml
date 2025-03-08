@@ -3,54 +3,6 @@ networks:
     driver: bridge
 
 services:
-  spring-1:
-    build: .
-    networks:
-      - redis-cluster-compose
-    environment:
-      - SERVER_PORT=8080
-    ports:
-      - "8080:8080"
-    depends_on:
-      redis-node-1:
-        condition: service_healthy
-      redis-node-2:
-        condition: service_healthy
-      redis-node-3:
-        condition: service_healthy
-      slave-node-1:
-        condition: service_healthy
-      slave-node-2:
-        condition: service_healthy
-      slave-node-3:
-        condition: service_healthy
-      redis-cluster-entry:
-        condition: service_healthy
-
-  spring-2:
-    build: .
-    networks:
-      - redis-cluster-compose
-    environment:
-      - SERVER_PORT=8081
-    ports:
-      - "8081:8081"
-    depends_on:
-      redis-node-1:
-        condition: service_healthy
-      redis-node-2:
-        condition: service_healthy
-      redis-node-3:
-        condition: service_healthy
-      slave-node-1:
-        condition: service_healthy
-      slave-node-2:
-        condition: service_healthy
-      slave-node-3:
-        condition: service_healthy
-      redis-cluster-entry:
-        condition: service_healthy
-
   rabbitmq:
     networks:
       - redis-cluster-compose
@@ -75,7 +27,7 @@ services:
       - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6379", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h redis-node-1 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -92,7 +44,7 @@ services:
       - ./conf/redis1.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6380", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h redis-node-2 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -109,7 +61,7 @@ services:
       - ./conf/redis2.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6381", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h redis-node-3 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -126,7 +78,7 @@ services:
       - ./conf/slave.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6382", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h slave-node-1 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -143,7 +95,7 @@ services:
       - ./conf/slave1.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6383", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h slave-node-2 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -160,7 +112,7 @@ services:
       - ./conf/slave2.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6384", "ping" ]
+      test: ["CMD", "sh", "-c", "redis-cli -h slave-node-3 cluster info | grep -q 'cluster_state:ok'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -174,7 +126,7 @@ services:
     restart: no
     container_name: redis-cluster-entry
     #command: redis-cli --cluster create 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 --cluster-replicas 1 --cluster-yes
-    command: redis-cli --cluster create redis-node-1:6379 redis-node-2:6380 redis-node-3:6381 slave-node-1:6382 slave-node-2:6383 slave-node-3:6384 --cluster-replicas 1 --cluster-yes
+    command: sh -c "redis-cli --cluster create redis-node-1:6379 redis-node-2:6380 redis-node-3:6381 slave-node-1:6382 slave-node-2:6383 slave-node-3:6384 --cluster-replicas 1 --cluster-yes && tail -f /dev/null"
     depends_on:
       - redis-node-1
       - redis-node-2
@@ -182,3 +134,47 @@ services:
       - slave-node-1
       - slave-node-2
       - slave-node-3
+
+  spring-1:
+    build: .
+    networks:
+      - redis-cluster-compose
+    environment:
+      - SERVER_PORT=8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis-node-1:
+        condition: service_healthy
+      redis-node-2:
+        condition: service_healthy
+      redis-node-3:
+        condition: service_healthy
+      slave-node-1:
+        condition: service_healthy
+      slave-node-2:
+        condition: service_healthy
+      slave-node-3:
+        condition: service_healthy
+
+  spring-2:
+    build: .
+    networks:
+      - redis-cluster-compose
+    environment:
+      - SERVER_PORT=8081
+    ports:
+      - "8081:8081"
+    depends_on:
+      redis-node-1:
+        condition: service_healthy
+      redis-node-2:
+        condition: service_healthy
+      redis-node-3:
+        condition: service_healthy
+      slave-node-1:
+        condition: service_healthy
+      slave-node-2:
+        condition: service_healthy
+      slave-node-3:
+        condition: service_healthy
