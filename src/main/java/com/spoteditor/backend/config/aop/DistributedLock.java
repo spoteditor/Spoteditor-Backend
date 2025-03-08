@@ -1,4 +1,4 @@
-package com.spoteditor.backend.bookmark.aop;
+package com.spoteditor.backend.config.aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

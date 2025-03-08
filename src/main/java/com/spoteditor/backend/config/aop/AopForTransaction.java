@@ -1,4 +1,4 @@
-package com.spoteditor.backend.bookmark.aop;
+package com.spoteditor.backend.config.aop;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.stereotype.Component;

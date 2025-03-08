@@ -20,6 +20,6 @@ public class NotificationSubscriber {
 	@RabbitListener(queues = RabbitMqConfiguration.FOLLOW_QUEUE)	// Subscriber
 	public void subscribeFollow(@Valid NotificationDto dto) {
 		log.info("[#] Received Notification: " + dto);
-		template.convertAndSend(CLIENT_URL + dto.toUser().getEmail(), dto);
+		template.convertAndSend(CLIENT_URL + dto.to(), dto);
 	}
 }

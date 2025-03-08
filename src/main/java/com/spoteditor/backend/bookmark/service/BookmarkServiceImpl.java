@@ -44,13 +44,16 @@ public class BookmarkServiceImpl implements BookmarkService {
 		Place place = placeRepository.findById(command.placeId())
 				.orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
 
-		Bookmark bookmark = Bookmark.builder()
-				.user(user)
-				.place(place)
-				.build();
-
-		place.increaseBookmark();	// UPDATE 쿼리가 호출될 것으로 전망
-		bookmarkRepository.save(bookmark);
+		if (bookmarkRepository.findByUserIdAndPlaceId(userId, command.placeId()).isPresent()) {
+			throw new BookmarkException(BOOKMARK_ALREADY_EXIST);
+		} else {
+			Bookmark bookmark = Bookmark.builder()
+					.user(user)
+					.place(place)
+					.build();
+			bookmarkRepository.save(bookmark);
+			place.increaseBookmark();
+		}
 	}
 
 	/**

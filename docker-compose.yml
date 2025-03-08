@@ -3,50 +3,6 @@ networks:
     driver: bridge
 
 services:
-  spring-1:
-    build: .
-    networks:
-      - redis-cluster-compose
-    environment:
-      - SERVER_PORT=8080
-    ports:
-      - "8080:8080"
-    depends_on:
-      redis-node-1:
-        condition: service_healthy
-      redis-node-2:
-        condition: service_healthy
-      redis-node-3:
-        condition: service_healthy
-      slave-node-1:
-        condition: service_healthy
-      slave-node-2:
-        condition: service_healthy
-      slave-node-3:
-        condition: service_healthy
-
-  spring-2:
-    build: .
-    networks:
-      - redis-cluster-compose
-    environment:
-      - SERVER_PORT=8081
-    ports:
-      - "8081:8081"
-    depends_on:
-      redis-node-1:
-        condition: service_healthy
-      redis-node-2:
-        condition: service_healthy
-      redis-node-3:
-        condition: service_healthy
-      slave-node-1:
-        condition: service_healthy
-      slave-node-2:
-        condition: service_healthy
-      slave-node-3:
-        condition: service_healthy
-
   rabbitmq:
     networks:
       - redis-cluster-compose
@@ -178,3 +134,47 @@ services:
       - slave-node-1
       - slave-node-2
       - slave-node-3
+
+  spring-1:
+    build: .
+    networks:
+      - redis-cluster-compose
+    environment:
+      - SERVER_PORT=8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis-node-1:
+        condition: service_healthy
+      redis-node-2:
+        condition: service_healthy
+      redis-node-3:
+        condition: service_healthy
+      slave-node-1:
+        condition: service_healthy
+      slave-node-2:
+        condition: service_healthy
+      slave-node-3:
+        condition: service_healthy
+
+  spring-2:
+    build: .
+    networks:
+      - redis-cluster-compose
+    environment:
+      - SERVER_PORT=8081
+    ports:
+      - "8081:8081"
+    depends_on:
+      redis-node-1:
+        condition: service_healthy
+      redis-node-2:
+        condition: service_healthy
+      redis-node-3:
+        condition: service_healthy
+      slave-node-1:
+        condition: service_healthy
+      slave-node-2:
+        condition: service_healthy
+      slave-node-3:
+        condition: service_healthy

@@ -30,7 +30,7 @@ public class FollowApiController implements FollowApiDocument {
 	public ResponseEntity<Void> follow(@AuthenticationPrincipal UserIdDto dto,
 									   @RequestBody FollowRequest request) {
 
-		followService.saveFollow(dto, request);
+		followService.saveFollow(dto.getId(), request);
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
@@ -41,14 +41,15 @@ public class FollowApiController implements FollowApiDocument {
 	public ResponseEntity<Void> unfollow(@AuthenticationPrincipal UserIdDto dto,
 										 @RequestBody FollowRequest request) {
 
-		followService.removeFollow(dto, request);
+		followService.removeFollow(dto.getId(), request);
 		return ResponseEntity
 				.status(HttpStatus.NO_CONTENT)
 				.build();
 	}
 
 	@GetMapping("/following")
-	public ResponseEntity<CustomPageResponse<FollowResponse>> followingList(@AuthenticationPrincipal UserIdDto dto, CustomPageRequest request) {
+	public ResponseEntity<CustomPageResponse<FollowResponse>> followingList(@AuthenticationPrincipal UserIdDto dto,
+																			CustomPageRequest request) {
 
 		CustomPageResponse<FollowResponse> data = followRepository.findAllFollowing(dto.getId(), request);
 		return ResponseEntity
@@ -57,7 +58,8 @@ public class FollowApiController implements FollowApiDocument {
 	}
 
 	@GetMapping("/follower")
-	public ResponseEntity<CustomPageResponse<FollowResponse>> followerList(@AuthenticationPrincipal UserIdDto dto, CustomPageRequest request) {
+	public ResponseEntity<CustomPageResponse<FollowResponse>> followerList(@AuthenticationPrincipal UserIdDto dto,
+																		   CustomPageRequest request) {
 
 		CustomPageResponse<FollowResponse> data = followRepository.findAllFollower(dto.getId(), request);
 		return ResponseEntity
