@@ -22,4 +22,23 @@ public class PlaceLogPlaceMappingRepositoryImpl implements PlaceLogPlaceMappingR
                 .where(placeLogPlaceMapping.placeLog.id.eq(placeLogId))
                 .fetch();
     }
+
+    @Override
+    public List<PlaceLogPlaceMapping> findByPlaceLogAndPlaceIn(Long placeLogId, List<Long> placeIds) {
+        return queryFactory
+                .selectFrom(placeLogPlaceMapping)
+                .where(placeLogPlaceMapping.placeLog.id.eq(placeLogId))
+                .where(placeLogPlaceMapping.place.id.in(placeIds))
+                .fetch();
+    }
+
+    @Override
+    public boolean exists(Long placeLogId, Long placeId) {
+        return queryFactory
+                .selectOne()
+                .from(placeLogPlaceMapping)
+                .where(placeLogPlaceMapping.placeLog.id.eq(placeLogId))
+                .where(placeLogPlaceMapping.place.id.eq(placeId))
+                .fetchFirst() != null;
+    }
 }

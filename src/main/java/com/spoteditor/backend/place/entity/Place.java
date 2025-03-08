@@ -1,6 +1,7 @@
 package com.spoteditor.backend.place.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
+import com.spoteditor.backend.global.exception.PlaceException;
 import com.spoteditor.backend.image.entity.PlaceImage;
 import com.spoteditor.backend.mapping.placelogplacemapping.entity.PlaceLogPlaceMapping;
 import com.spoteditor.backend.user.entity.User;
@@ -8,7 +9,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+
+import static com.spoteditor.backend.global.response.ErrorCode.NOT_PLACE_IMAGE;
 
 @Entity
 @Getter
@@ -65,6 +70,22 @@ public class Place extends BaseEntity {
 		if (placeImage.getPlace() != this) {
 			placeImage.addPlace(this);
 		}
+	}
+
+	public PlaceImage deletePlaceImage(Long placeImageId) {
+		Iterator<PlaceImage> iterator = this.placeImages.iterator();
+		while(iterator.hasNext()) {
+			PlaceImage placeImage = iterator.next();
+			if(placeImage.getId().equals(placeImageId)) {
+				iterator.remove();
+				return placeImage;
+			}
+		}
+		throw new PlaceException(NOT_PLACE_IMAGE);
+	}
+
+	public void updateDescription(String description) {
+		if(description != null) this.description = description;
 	}
 
 	public void increaseBookmark() {

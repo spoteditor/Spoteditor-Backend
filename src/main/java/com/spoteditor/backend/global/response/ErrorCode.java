@@ -36,6 +36,7 @@ public enum ErrorCode {
 	NOT_FOUND_PLACE(HttpStatus.NOT_FOUND, "P001", "해당 장소를 찾을 수 없습니다."),
 	IMAGE_MINIMUM_REQUIRED(HttpStatus.BAD_REQUEST, "P002", "장소에 이미지를 최소 1장 이상 등록해야합니다."),
 	IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "P003", "장소에 이미지를 최대 3장까지 등록 가능합니다."),
+	NOT_PLACE_IMAGE(HttpStatus.NOT_FOUND, "P004", "장소의 이미지가 아닙니다"),
 
 	// bookmark
 	NOT_FOUND_BOOKMARK(HttpStatus.NOT_FOUND, "B001", "해당 북마크를 찾을 수 없습니다."),

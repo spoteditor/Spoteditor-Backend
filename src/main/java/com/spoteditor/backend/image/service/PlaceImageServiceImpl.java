@@ -12,6 +12,7 @@ import com.spoteditor.backend.image.entity.PlaceImage;
 import com.spoteditor.backend.image.repository.PlaceImageRepository;
 import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.place.repository.PlaceRepository;
+import com.spoteditor.backend.placelog.event.dto.PlaceLogPlaceImage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -134,6 +135,25 @@ public class PlaceImageServiceImpl implements PlaceImageService {
 		return PlaceImageResponse.from(savedImage);
 	}
 
+	@Override
+	public void rollbackUpload(PlaceLogPlaceImage image) {
+
+		String tempPath = redisTemplate.opsForValue().get(FILE_KEY_PREFIX + image.uuid() + image.originalFile());
+		validateValue(tempPath);
+
+		String mainPath = image.storedFile();
+
+		copyImageToTempBucket(mainPath, tempPath);
+		deleteImageFromMainBucket(mainPath);
+	}
+
+	@Override
+	public void deleteMainBucketImage(PlaceLogPlaceImage image) {
+
+		String mainPath = image.storedFile();
+		deleteImageFromMainBucket(mainPath);
+	}
+
 	private void validateValue(String value) {
 		if (value == null) {
 			throw new ImageException(NOT_FOUND_IMAGE);
@@ -152,10 +172,35 @@ public class PlaceImageServiceImpl implements PlaceImageService {
 		}
 	}
 
+	private void deleteImageFromMainBucket(String mainPath) {
+		DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(
+				mainBucketName, mainPath
+		);
+
+		try {
+			s3Client.deleteObject(deleteObjectRequest);
+		} catch (AmazonS3Exception e) {
+			throw new ImageException(NOT_FOUND_IMAGE);
+		}
+	}
+
 	private void copyImageToMainBucket(String sourcePath, String destinationPath) {
 		CopyObjectRequest copyObjectRequest = new CopyObjectRequest(
 				bucketName, sourcePath,
 				mainBucketName, destinationPath
+		);
+
+		try {
+			s3Client.copyObject(copyObjectRequest);
+		} catch (AmazonS3Exception e) {
+			throw new ImageException(NOT_FOUND_IMAGE);
+		}
+	}
+
+	private void copyImageToTempBucket(String sourcePath, String destinationPath) {
+		CopyObjectRequest copyObjectRequest = new CopyObjectRequest(
+				mainBucketName, sourcePath,
+				bucketName, destinationPath
 		);
 
 		try {

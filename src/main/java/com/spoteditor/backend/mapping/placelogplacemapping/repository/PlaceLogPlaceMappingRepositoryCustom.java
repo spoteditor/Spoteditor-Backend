@@ -7,4 +7,8 @@ import java.util.List;
 public interface PlaceLogPlaceMappingRepositoryCustom {
 
     List<PlaceLogPlaceMapping> findByPlaceLogId(Long placeLogId);
+
+    List<PlaceLogPlaceMapping> findByPlaceLogAndPlaceIn(Long placeLogId, List<Long> placeIds);
+
+    boolean exists(Long placeLogId, Long placeId);
 }

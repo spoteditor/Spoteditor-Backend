@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -76,8 +77,19 @@ public class PlaceLog extends BaseEntity {
         this.status = status;
     }
 
-    public void update(String name, String description) {
-        this.name = name;
-        this.description = description;
+    public void update(String name, String description, PlaceLogStatus status) {
+        if (name != null && name.trim().isEmpty()) this.name = name;
+        if (description != null) this.description = description;
+        if (status != null) this.status = status;
+    }
+
+    public void deleteImage() {
+        if(this.placeLogImage != null) {
+            this.placeLogImage = null;
+        }
+    }
+
+    public void addImage(PlaceImage placeLogImage) {
+        this.placeLogImage = placeLogImage;
     }
 }

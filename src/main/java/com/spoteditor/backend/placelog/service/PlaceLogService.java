@@ -13,6 +13,8 @@ public interface PlaceLogService {
 
     PlaceLogResult getPlaceLog(Long userId, Long placeLogId);
 
+    PlaceLogResult updatePlaceLog(Long userId, Long placeLogId, PlaceLogUpdateCommand command);
+
     PlaceLogResult getPublicPlaceLog(Long placeLogId);
 
     void removePlaceLog(Long userId, Long placeLogId);

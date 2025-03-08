@@ -7,10 +7,12 @@ import com.spoteditor.backend.global.exception.TokenException;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogListResponse;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterRequest;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
+import com.spoteditor.backend.placelog.controller.dto.PlaceLogUpdateRequest;
 import com.spoteditor.backend.placelog.repository.PlaceLogRepository;
 import com.spoteditor.backend.placelog.service.PlaceLogService;
 import com.spoteditor.backend.placelog.service.dto.PlaceLogRegisterCommand;
 import com.spoteditor.backend.placelog.service.dto.PlaceLogResult;
+import com.spoteditor.backend.placelog.service.dto.PlaceLogUpdateCommand;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -64,6 +66,21 @@ public class PlaceLogController implements PlaceLogApiDocument {
         } else {
             result = placeLogService.getPlaceLog(userIdDto.getId(), placeLogId);
         }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(PlaceLogResponse.from(result));
+    }
+
+    @Override
+    @PatchMapping("/placelogs/{placeLogId}")
+    public ResponseEntity<PlaceLogResponse> updatePlaceLog(
+            @AuthenticationPrincipal UserIdDto userIdDto,
+            @PathVariable Long placeLogId,
+            @RequestBody PlaceLogUpdateRequest request
+    ) {
+        PlaceLogUpdateCommand command = PlaceLogUpdateCommand.from(request);
+        PlaceLogResult result = placeLogService.updatePlaceLog(userIdDto.getId(), placeLogId, command);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
