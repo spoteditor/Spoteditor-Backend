@@ -1,4 +1,4 @@
-package com.spoteditor.backend.placelog.service.dto;
+package com.spoteditor.backend.placelog.event.dto;
 
 import com.spoteditor.backend.image.controller.dto.PlaceImageResponse;
 import com.spoteditor.backend.image.entity.PlaceImage;

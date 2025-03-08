@@ -1,7 +1,7 @@
-package com.spoteditor.backend.placelog.service;
+package com.spoteditor.backend.placelog.event;
 
 import com.spoteditor.backend.image.service.PlaceImageService;
-import com.spoteditor.backend.placelog.service.dto.PlaceLogPlaceImage;
+import com.spoteditor.backend.placelog.event.dto.PlaceLogPlaceImage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
