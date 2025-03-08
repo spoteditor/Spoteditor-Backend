@@ -11,19 +11,7 @@ services:
       - SERVER_PORT=8080
     ports:
       - "8080:8080"
-    depends_on:
-      redis-node-1:
-        condition: service_healthy
-      redis-node-2:
-        condition: service_healthy
-      redis-node-3:
-        condition: service_healthy
-      slave-node-1:
-        condition: service_healthy
-      slave-node-2:
-        condition: service_healthy
-      slave-node-3:
-        condition: service_healthy
+    restart: always
 
   spring-2:
     build: .
@@ -33,19 +21,7 @@ services:
       - SERVER_PORT=8081
     ports:
       - "8081:8081"
-    depends_on:
-      redis-node-1:
-        condition: service_healthy
-      redis-node-2:
-        condition: service_healthy
-      redis-node-3:
-        condition: service_healthy
-      slave-node-1:
-        condition: service_healthy
-      slave-node-2:
-        condition: service_healthy
-      slave-node-3:
-        condition: service_healthy
+    restart: on-failure
 
   rabbitmq:
     networks:
