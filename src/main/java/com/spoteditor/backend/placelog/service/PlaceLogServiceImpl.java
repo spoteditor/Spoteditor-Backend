@@ -1,5 +1,6 @@
 package com.spoteditor.backend.placelog.service;
 
+import com.spoteditor.backend.bookmark.repository.BookmarkRepository;
 import com.spoteditor.backend.global.exception.*;
 import com.spoteditor.backend.image.controller.dto.PlaceImageResponse;
 import com.spoteditor.backend.image.entity.PlaceImage;
@@ -14,7 +15,7 @@ import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.place.repository.PlaceRepository;
 import com.spoteditor.backend.place.service.PlaceService;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterCommand;
-import com.spoteditor.backend.place.service.dto.PlaceRegisterResult;
+import com.spoteditor.backend.placelog.controller.dto.PlaceLogBookmarkResponse;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogPlaceRegisterRequest;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.placelog.entity.PlaceLogStatus;
@@ -44,9 +45,9 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     private final TagRepository tagRepository;
     private final PlaceLogTagMappingRepository placeLogTagMappingRepository;
     private final PlaceLogPlaceMappingRepository placeLogPlaceMappingRepository;
-    private final PlaceService placeService;
     private final PlaceImageService imageService;
     private final PlaceImageRepository placeImageRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @Override
     @Transactional
@@ -178,6 +179,33 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         placeLogRepository.delete(placeLog);
     }
 
+    @Override
+    public List<PlaceLogBookmarkResponse> getPlaceBookmarkStatus(Long userId, Long placeLogId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(NOT_FOUND_USER));
+
+        if(user.isDeleted()) {
+            throw new UserException(DELETED_USER);
+        }
+        checkPlaceLog(placeLogId);
+
+        List<Place> places = getPlaces(placeLogId);
+
+        List<Long> placeIds = places.stream()
+                .map(Place::getId)
+                .toList();
+
+        List<Long> bookmarkedPlaceIds = bookmarkRepository.findBookmarkedPlaceIdsByUserId(userId);
+
+        return placeIds.stream()
+                .map(placeId -> new PlaceLogBookmarkResponse(
+                        placeId,
+                        bookmarkedPlaceIds.contains(placeId)
+                ))
+                .toList();
+    }
+
     private List<Place> getPlaces(Long placeLogId) {
         return placeLogPlaceMappingRepository.findByPlaceLogId(placeLogId).stream()
                 .map(PlaceLogPlaceMapping::getPlace)
@@ -188,5 +216,11 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         return placeLogTagMappingRepository.findByPlaceLogId(placeLogId).stream()
                 .map(PlaceLogTagMapping::getTag)
                 .toList();
+    }
+
+    private void checkPlaceLog(Long placeLogId) {
+        if (placeLogRepository.findById(placeLogId).isEmpty()) {
+            throw new PlaceLogException(NOT_FOUND_PLACE_LOG);
+        }
     }
 }

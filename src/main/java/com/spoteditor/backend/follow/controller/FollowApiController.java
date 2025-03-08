@@ -66,4 +66,22 @@ public class FollowApiController implements FollowApiDocument {
 				.status(HttpStatus.OK)
 				.body(data);
 	}
+
+	@GetMapping("/users/{userId}/following")
+	public ResponseEntity<CustomPageResponse<FollowResponse>> userFollowingList(@PathVariable Long userId, CustomPageRequest request) {
+
+		CustomPageResponse<FollowResponse> data = followRepository.findAllFollowing(userId, request);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(data);
+	}
+
+	@GetMapping("/users/{userId}/follower")
+	public ResponseEntity<CustomPageResponse<FollowResponse>> userFollowerList(@PathVariable Long userId, CustomPageRequest request) {
+
+		CustomPageResponse<FollowResponse> data = followRepository.findAllFollower(userId, request);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(data);
+	}
 }

@@ -74,4 +74,9 @@ public class BookmarkServiceImpl implements BookmarkService {
 		place.decreaseBookmark();
 		bookmarkRepository.delete(bookmark);
 	}
+
+	@Override
+	public boolean existsByUserIdAndPlaceId(Long userId, Long placeId) {
+		return bookmarkRepository.existsByUserAndPlace(userId, placeId);
+	}
 }

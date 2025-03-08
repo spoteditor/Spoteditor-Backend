@@ -1,6 +1,8 @@
 package com.spoteditor.backend.bookmark.controller;
 
 import com.spoteditor.backend.bookmark.controller.dto.BookmarkRequest;
+import com.spoteditor.backend.bookmark.controller.dto.BookmarkResponse;
+import com.spoteditor.backend.bookmark.service.BookmarkService;
 import com.spoteditor.backend.bookmark.service.facade.BookmarkFacade;
 import com.spoteditor.backend.config.swagger.BookmarkApiDocument;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "bookmark", description = "북마크 API")
 public class BookmarkApiController implements BookmarkApiDocument {
 
+	private final BookmarkService bookmarkService;
 	private final BookmarkFacade bookmarkFacade;
 
 	@PostMapping("/bookmark")
@@ -46,5 +49,13 @@ public class BookmarkApiController implements BookmarkApiDocument {
 		return ResponseEntity
 				.status(HttpStatus.NO_CONTENT)
 				.build();
+	}
+
+	@GetMapping("/bookmark/check")
+	public ResponseEntity<BookmarkResponse> isBookmarked(@AuthenticationPrincipal UserIdDto dto,
+														 @RequestParam Long placeId) {
+		boolean isBookmarked = bookmarkService.existsByUserIdAndPlaceId(dto.getId(), placeId);
+		BookmarkResponse response = new BookmarkResponse(isBookmarked);
+		return ResponseEntity.ok(response);
 	}
 }
