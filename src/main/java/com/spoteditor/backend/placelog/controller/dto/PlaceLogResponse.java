@@ -12,6 +12,7 @@ import java.util.List;
 
 public record PlaceLogResponse(
         Long placeLogId,
+        Long userId,
         String name,
         String description,
         PlaceImageResponse image,
@@ -24,6 +25,7 @@ public record PlaceLogResponse(
     public static PlaceLogResponse from(PlaceLogResult result) {
         return new PlaceLogResponse(
                 result.placeLog().getId(),
+                result.placeLog().getUser().getId(),
                 result.placeLog().getName(),
                 result.placeLog().getDescription(),
                 PlaceImageResponse.from(result.placeLog().getPlaceLogImage()),
