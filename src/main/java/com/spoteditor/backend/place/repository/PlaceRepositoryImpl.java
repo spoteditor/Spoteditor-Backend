@@ -49,7 +49,7 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 						)
 				))
 				.from(place)
-				.leftJoin(placeImage).on(placeImage.id.eq(place.id)
+				.leftJoin(placeImage).on(placeImage.place.id.eq(place.id)
 						.and(placeImage.createdAt.eq(
 								JPAExpressions
 										.select(subPlaceImage.createdAt.min())
@@ -97,7 +97,7 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 				))
 				.from(bookmark)
 				.join(bookmark.place, place)
-				.leftJoin(placeImage).on(placeImage.id.eq(place.id)
+				.leftJoin(placeImage).on(placeImage.place.id.eq(place.id)
 						.and(placeImage.createdAt.eq(
 								JPAExpressions
 										.select(subPlaceImage.createdAt.min())
