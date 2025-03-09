@@ -30,7 +30,6 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom {
 				.select(Projections.constructor(FollowResponse.class,
 						follow.follower.id,
 						follow.follower.name,
-						follow.follower.email,
 						follow.follower.imageUrl
 				))
 				.from(follow)
@@ -61,7 +60,6 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom {
 				.select(Projections.constructor(FollowResponse.class,
 						follow.following.id,
 						follow.following.name,
-						follow.following.email,
 						follow.following.imageUrl
 				))
 				.from(follow)
