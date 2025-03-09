@@ -1,6 +1,8 @@
 package com.spoteditor.backend.placelog.controller;
 
+import com.spoteditor.backend.bookmark.controller.dto.BookmarkResponse;
 import com.spoteditor.backend.config.swagger.PlaceLogBookmarkApiDocument;
+import com.spoteditor.backend.mapping.userplacelogmapping.repository.UserPlaceLogMappingRepository;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogBookmarkResponse;
 import com.spoteditor.backend.placelog.service.PlaceLogBookmarkService;
 import com.spoteditor.backend.placelog.service.PlaceLogService;
@@ -20,6 +22,7 @@ public class PlaceLogBookmarkController implements PlaceLogBookmarkApiDocument {
 
     private final PlaceLogBookmarkService placeLogBookmarkService;
     private final PlaceLogService placeLogService;
+    private final UserPlaceLogMappingRepository userPlaceLogMappingRepository;
 
     @Override
     @PostMapping("/placelogs/{placeLogId}/bookmark")
@@ -56,5 +59,16 @@ public class PlaceLogBookmarkController implements PlaceLogBookmarkApiDocument {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(placeBookmarkStatus);
+    }
+
+    @GetMapping("/placelogs/bookmark/check")
+    public ResponseEntity<BookmarkResponse> isBookmarked(
+            @AuthenticationPrincipal UserIdDto dto,
+            @RequestParam Long placeLogId
+    ) {
+        boolean isBookmarked = userPlaceLogMappingRepository.existsByUserIdAndPlaceLogId(dto.getId(), placeLogId);
+        BookmarkResponse response = new BookmarkResponse(isBookmarked);
+
+        return ResponseEntity.ok(response);
     }
 }
