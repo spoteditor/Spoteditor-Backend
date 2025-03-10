@@ -102,5 +102,15 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom {
 		return count != null ? count : 0L;
 	}
 
-
+	@Override
+	public boolean findIsFollowing(Long userId, Long otherUserId) {
+		Long fetchOne = queryFactory
+				.select(follow.count())
+				.from(follow)
+				.where(follow.follower.id.eq(userId))
+				.where(follow.following.id.eq(otherUserId))
+				.fetchOne();
+		System.out.println("fetchOne = " + fetchOne);
+		return fetchOne != null && fetchOne > 0L;
+	}
 }
