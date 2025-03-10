@@ -55,10 +55,6 @@ public class UserServiceImpl implements UserService{
             isFollowing = false;
         }
         else {
-            if(userId.equals(otherUserId)) {
-                throw new UserException(NOT_OTHER_USER);
-            }
-
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserException(NOT_FOUND_USER));
 
