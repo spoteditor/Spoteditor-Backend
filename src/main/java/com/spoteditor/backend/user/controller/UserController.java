@@ -2,10 +2,12 @@ package com.spoteditor.backend.user.controller;
 
 import com.spoteditor.backend.config.security.annotation.AdminOnly;
 import com.spoteditor.backend.user.common.dto.UserIdDto;
+import com.spoteditor.backend.user.controller.dto.OtherUserResponse;
 import com.spoteditor.backend.user.controller.dto.UserResponse;
 import com.spoteditor.backend.user.controller.dto.UserUpdateRequest;
 import com.spoteditor.backend.user.controller.dto.UserUpdateResponse;
 import com.spoteditor.backend.user.service.UserService;
+import com.spoteditor.backend.user.service.dto.OtherUserResult;
 import com.spoteditor.backend.user.service.dto.UserResult;
 import com.spoteditor.backend.user.service.dto.UserUpdateCommand;
 import com.spoteditor.backend.user.service.dto.UserUpdateResult;
@@ -33,15 +35,22 @@ public class UserController {
                 .body(UserResponse.from(userResult));
     }
 
-    @GetMapping("/users/{userId}")
-    public ResponseEntity<UserResponse> getOtherUser(
-            @PathVariable Long userId
+    @GetMapping("/user/{otherUserId}")
+    public ResponseEntity<OtherUserResponse> getOtherUser(
+            @AuthenticationPrincipal UserIdDto userIdDto,
+            @PathVariable Long otherUserId
     ) {
-        UserResult userResult = userService.getUser(userId);
+        OtherUserResult result;
+
+        if(userIdDto == null) {
+            result = userService.getOtherUser(null, otherUserId);
+        } else {
+            result = userService.getOtherUser(userIdDto.getId(), otherUserId);
+        }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(UserResponse.from(userResult));
+                .body(OtherUserResponse.from(result));
     }
 
     @PatchMapping("/users")
