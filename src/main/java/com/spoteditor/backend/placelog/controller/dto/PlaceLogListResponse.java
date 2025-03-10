@@ -10,6 +10,7 @@ import java.util.List;
 
 public record PlaceLogListResponse (
         Long placeLogId,
+        String author,
         String name,
         PlaceImageResponse image,
         Address address,
