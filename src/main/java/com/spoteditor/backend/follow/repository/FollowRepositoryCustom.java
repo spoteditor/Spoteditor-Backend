@@ -11,4 +11,6 @@ public interface FollowRepositoryCustom {
 
 	long countFollower(Long userId);
 	long countFollowing(Long userId);
+
+	boolean findIsFollowing(Long userId, Long otherUserId);
 }
