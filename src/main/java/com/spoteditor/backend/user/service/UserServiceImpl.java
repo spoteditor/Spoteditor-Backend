@@ -8,6 +8,7 @@ import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.placelog.repository.PlaceLogRepository;
 import com.spoteditor.backend.user.entity.User;
 import com.spoteditor.backend.user.repository.UserRepository;
+import com.spoteditor.backend.user.service.dto.OtherUserResult;
 import com.spoteditor.backend.user.service.dto.UserResult;
 import com.spoteditor.backend.user.service.dto.UserUpdateCommand;
 import com.spoteditor.backend.user.service.dto.UserUpdateResult;
@@ -17,8 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.spoteditor.backend.global.response.ErrorCode.DELETED_USER;
-import static com.spoteditor.backend.global.response.ErrorCode.NOT_FOUND_USER;
+import static com.spoteditor.backend.global.response.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +42,34 @@ public class UserServiceImpl implements UserService{
         Long following = followRepository.countFollowing(userId);
 
         return new UserResult(user, follower, following);
+    }
+
+    @Override
+    @Transactional
+    public OtherUserResult getOtherUser(Long userId, Long otherUserId) {
+
+        UserResult userResult = getUser(otherUserId);
+        boolean isFollowing;
+
+        if(userId == null) {
+            isFollowing = false;
+        }
+        else {
+            if(userId.equals(otherUserId)) {
+                throw new UserException(NOT_OTHER_USER);
+            }
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserException(NOT_FOUND_USER));
+
+            if(user.isDeleted()) {
+                throw new UserException(DELETED_USER);
+            }
+
+            isFollowing = followRepository.findIsFollowing(userId, otherUserId);
+        }
+
+        return OtherUserResult.from(userResult.user(), userResult.follower(), userResult.following(), isFollowing);
     }
 
     @Override
