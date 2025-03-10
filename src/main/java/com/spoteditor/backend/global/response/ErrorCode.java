@@ -27,6 +27,7 @@ public enum ErrorCode {
 	DELETED_USER(HttpStatus.BAD_REQUEST, "U004", "삭제된 유저입니다."),
 	NEED_ADMIN_ROLE(HttpStatus.FORBIDDEN, "U005", "관리자 권한이 필요합니다."),
 	USER_ROLE_MISSING(HttpStatus.FORBIDDEN, "U006", "사용자의 역할이 없습니다."),
+	NOT_OTHER_USER(HttpStatus.BAD_REQUEST, "U007", "타인정보 조회로 본인을 조회할 수 없습니다"),
 
 	// follow
 	DUPLICATED_FOLLOW(HttpStatus.BAD_REQUEST, "F001", "중복 팔로우는 할 수 없습니다."),
