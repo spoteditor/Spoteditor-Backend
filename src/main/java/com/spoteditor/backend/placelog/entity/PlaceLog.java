@@ -78,7 +78,7 @@ public class PlaceLog extends BaseEntity {
     }
 
     public void update(String name, String description, PlaceLogStatus status) {
-        if (name != null && name.trim().isEmpty()) this.name = name;
+        if (name != null && !name.trim().isEmpty()) this.name = name;
         if (description != null) this.description = description;
         if (status != null) this.status = status;
     }
