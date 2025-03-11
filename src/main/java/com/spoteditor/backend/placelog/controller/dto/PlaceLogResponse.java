@@ -13,6 +13,9 @@ import java.util.List;
 public record PlaceLogResponse(
         Long placeLogId,
         Long userId,
+        String userName,
+        String userImage,
+        boolean isFollowing,
         String name,
         String description,
         PlaceImageResponse image,
@@ -26,6 +29,31 @@ public record PlaceLogResponse(
         return new PlaceLogResponse(
                 result.placeLog().getId(),
                 result.placeLog().getUser().getId(),
+                result.placeLog().getUser().getName(),
+                result.placeLog().getUser().getImageUrl(),
+                false,
+                result.placeLog().getName(),
+                result.placeLog().getDescription(),
+                PlaceImageResponse.from(result.placeLog().getPlaceLogImage()),
+                result.placeLog().getAddress(),
+                result.placeLog().getStatus(),
+                result.placeLog().getViews(),
+                result.tags().stream()
+                        .map(TagDto::from)
+                        .toList(),
+                result.places().stream()
+                        .map(PlaceLogPlaceRegisterResponse::from)
+                        .toList()
+        );
+    }
+
+    public static PlaceLogResponse from(PlaceLogResult result, boolean isFollowing) {
+        return new PlaceLogResponse(
+                result.placeLog().getId(),
+                result.placeLog().getUser().getId(),
+                result.placeLog().getUser().getName(),
+                result.placeLog().getUser().getImageUrl(),
+                isFollowing,
                 result.placeLog().getName(),
                 result.placeLog().getDescription(),
                 PlaceImageResponse.from(result.placeLog().getPlaceLogImage()),

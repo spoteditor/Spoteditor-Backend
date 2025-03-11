@@ -3,6 +3,7 @@ package com.spoteditor.backend.placelog.controller;
 import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.config.swagger.PlaceLogApiDocument;
+import com.spoteditor.backend.follow.repository.FollowRepository;
 import com.spoteditor.backend.global.exception.TokenException;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogListResponse;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogRegisterRequest;
@@ -28,6 +29,7 @@ public class PlaceLogController implements PlaceLogApiDocument {
 
     private final PlaceLogService placeLogService;
     private final PlaceLogRepository placeLogRepository;
+    private final FollowRepository followRepository;
 
     @Override
     @PostMapping("/placelogs")
@@ -60,16 +62,19 @@ public class PlaceLogController implements PlaceLogApiDocument {
             @PathVariable Long placeLogId
     ) {
         PlaceLogResult result;
+        boolean isFollowing;
 
         if (userIdDto == null) {
             result = placeLogService.getPublicPlaceLog(placeLogId);
+            isFollowing = false;
         } else {
             result = placeLogService.getPlaceLog(userIdDto.getId(), placeLogId);
+            isFollowing = followRepository.findIsFollowing(userIdDto.getId(), result.placeLog().getUser().getId());
         }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(PlaceLogResponse.from(result));
+                .body(PlaceLogResponse.from(result, isFollowing));
     }
 
     @Override
