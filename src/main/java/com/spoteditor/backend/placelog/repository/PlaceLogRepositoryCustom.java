@@ -19,4 +19,8 @@ public interface PlaceLogRepositoryCustom {
     CustomPageResponse<PlaceLogListResponse> findOtherPlaceLog(Long userId, CustomPageRequest pageRequest);
 
     CustomPageResponse<PlaceLogListResponse> findMyBookmarkPlaceLog(Long userId, CustomPageRequest pageRequest);
+
+    CustomPageResponse<PlaceLogListResponse> searchBySidoSigungu(CustomPageRequest pageRequest, String sido, String sigungu);
+
+    CustomPageResponse<PlaceLogListResponse> searchByName(CustomPageRequest pageRequest, String name);
 }
