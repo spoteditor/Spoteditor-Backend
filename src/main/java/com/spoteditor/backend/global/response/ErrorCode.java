@@ -64,6 +64,7 @@ public enum ErrorCode {
 	NO_PLACE_LOG_NAME(HttpStatus.BAD_REQUEST, "PL009", "저장하려면 제목이 필요합니다"),
 	STATUS_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "PL010", "지원하지 않는 status 입니다."),
 	PRIVATE_PLACE_LOG(HttpStatus.FORBIDDEN, "PL011", "비공개 로그는 소유자만 조회 가능합니다."),
+	SEARCH_MINIMUM_REQUIRED_LETTERS(HttpStatus.BAD_REQUEST, "PL012", "검색시 2자 이상 입력해야합니다."),
 
 	// tag
 	INVALID_TAG_CATEGORY(HttpStatus.BAD_REQUEST, "T001", "존재하지 않는 태그 카테고리 입니다."),
