@@ -47,7 +47,8 @@ public class JwtFilter extends OncePerRequestFilter {
             "/swagger-ui/**",
             "/api/placelogs",
             "/api/placelogs/*",
-            "/api/users/**"
+            "/api/users/**",
+            "/api/search/placelogs/**"
     );
 
     @Override
