@@ -48,7 +48,7 @@ public class FollowServiceImpl implements FollowService {
 
 		followRepository.save(follow);
 
-		String message = NotificationMessage.formatFollowMessage(follower.getName(), following.getName());
+		String message = NotificationMessage.formatFollowMessage(follower.getName());
 		NotificationEventDto eventDto = NotificationEventDto.from(
 				follower, following, FOLLOW, message
 		);
