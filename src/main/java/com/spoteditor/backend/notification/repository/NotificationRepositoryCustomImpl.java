@@ -1,17 +1,12 @@
 package com.spoteditor.backend.notification.repository;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spoteditor.backend.config.page.CustomPageRequest;
-import com.spoteditor.backend.config.page.CustomPageResponse;
 import com.spoteditor.backend.notification.controller.dto.NotificationListDto;
 import com.spoteditor.backend.notification.entity.Notification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,34 +20,20 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public CustomPageResponse<NotificationListDto> notificationList(Long userId, CustomPageRequest request) {
-
-		PageRequest pageRequest = request.of();
-
-		List<NotificationListDto> content = queryFactory
+	public List<NotificationListDto> notificationList(Long userId) {
+		return queryFactory
 				.select(Projections.constructor(NotificationListDto.class,
-						notification.id,
-						notification.toUser.id,
-						notification.message,
-						notification.notificationType
+				notification.id,					// 알림 PK
+						notification.fromUser.imageUrl,		// 프로필 이미지
+						notification.message,				// 메시지
+						notification.notificationType,		// 알림 타입
+						notification.createdAt,				// 알림 발송 시간
+						notification.isRead					// 알림 읽음 여부
 				))
 				.from(notification)
 				.where(notification.toUser.id.eq(userId))
-				.offset(pageRequest.getOffset())
-				.limit(pageRequest.getPageSize())
+				.orderBy(notification.createdAt.desc())
 				.fetch();
-
-		JPAQuery<Long> querycount = queryFactory
-				.select(notification.count())
-				.from(notification);
-
-		Page<NotificationListDto> page = PageableExecutionUtils.getPage(
-				content,
-				pageRequest,
-				querycount::fetchOne
-		);
-
-		return new CustomPageResponse<>(page);
 	}
 
 	@Override
@@ -81,5 +62,4 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
 				.where(notification.toUser.id.eq(userId))
 				.execute();
 	}
-
 }
