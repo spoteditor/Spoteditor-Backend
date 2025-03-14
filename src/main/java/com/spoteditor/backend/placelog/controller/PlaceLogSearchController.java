@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.spoteditor.backend.global.response.ErrorCode.SEARCH_MINIMUM_REQUIRED_LETTERS;
+import static com.spoteditor.backend.global.response.ErrorCode.INVALID_TYPE_VALUE;
 
 @RestController
 @RequestMapping("/api")
@@ -37,7 +37,7 @@ public class PlaceLogSearchController {
     ) {
         String searchName = name.trim();
         if(searchName.length() < 2) {
-            throw new PlaceLogException(SEARCH_MINIMUM_REQUIRED_LETTERS);
+            throw new PlaceLogException(INVALID_TYPE_VALUE);
         }
 
         return ResponseEntity
