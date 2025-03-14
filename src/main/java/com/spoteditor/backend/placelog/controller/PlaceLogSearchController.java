@@ -21,9 +21,9 @@ public class PlaceLogSearchController {
 
     @GetMapping("/search/placelogs/address")
     public ResponseEntity<CustomPageResponse<PlaceLogListResponse>> getPlaceLogsByAddress(
-            @ModelAttribute CustomPageRequest pageRequest,
-            @RequestParam String sido,
-            @RequestParam String sigungu
+            CustomPageRequest pageRequest,
+            String sido,
+            String sigungu
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -32,8 +32,8 @@ public class PlaceLogSearchController {
 
     @GetMapping("/search/placelogs/name")
     public ResponseEntity<CustomPageResponse<PlaceLogListResponse>> getPlaceLogsByName(
-            @ModelAttribute CustomPageRequest pageRequest,
-            @RequestParam String name
+            CustomPageRequest pageRequest,
+            String name
     ) {
         String searchName = name.trim();
         if(searchName.length() < 2) {
