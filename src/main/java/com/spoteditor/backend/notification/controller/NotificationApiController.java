@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,18 +27,11 @@ public class NotificationApiController implements NotificationApiDocument {
 	private final NotificationRepository notificationRepository;
 	private final NotificationService notificationService;
 
-	/**
-	 *
-	 * @param dto
-	 * @param request
-	 * @return
-	 */
 	@GetMapping("/notice")
-	public ResponseEntity<CustomPageResponse<NotificationListDto>> noticeList(@AuthenticationPrincipal UserIdDto dto, CustomPageRequest request) {
-
+	public ResponseEntity<List<NotificationListDto>> noticeList(@AuthenticationPrincipal UserIdDto dto) {
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.body(notificationRepository.notificationList(dto.getId(), request));
+				.body(notificationRepository.notificationList(dto.getId()));
 	}
 
 	/**

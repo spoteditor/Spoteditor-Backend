@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 @Tag(name = "notification", description = "알림 API")
 public interface NotificationApiDocument {
 
@@ -60,12 +62,9 @@ public interface NotificationApiDocument {
 							))
 			)
 	})
-	ResponseEntity<CustomPageResponse<NotificationListDto>> noticeList(
+	ResponseEntity<List<NotificationListDto>> noticeList(
 			@Parameter(description = "인증된 사용자 정보", required = true)
-			@AuthenticationPrincipal UserIdDto dto,
-
-			@Parameter(description = "페이지 요청 정보", required = true)
-			CustomPageRequest request
+			@AuthenticationPrincipal UserIdDto dto
 	);
 
 	@Operation(summary = "알림 읽음 처리", description = "특정 알림을 읽음 상태로 변경합니다.")
