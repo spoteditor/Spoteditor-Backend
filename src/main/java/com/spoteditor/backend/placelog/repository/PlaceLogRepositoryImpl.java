@@ -204,6 +204,7 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
         List<PlaceLogListResponse> placeLogList = queryFactory
                 .select(Projections.constructor(PlaceLogListResponse.class,
                         placeLog.id,
+                        placeLog.user.name,
                         placeLog.name,
                         Projections.constructor(PlaceImageResponse.class,
                                 placeImage.id,
@@ -246,6 +247,7 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
         List<PlaceLogListResponse> placeLogList = queryFactory
                 .select(Projections.constructor(PlaceLogListResponse.class,
                         placeLog.id,
+                        placeLog.user.name,
                         placeLog.name,
                         Projections.constructor(PlaceImageResponse.class,
                                 placeImage.id,
