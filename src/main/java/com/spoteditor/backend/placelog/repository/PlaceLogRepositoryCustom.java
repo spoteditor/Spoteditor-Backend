@@ -4,11 +4,6 @@ import com.spoteditor.backend.config.page.CustomPageRequest;
 import com.spoteditor.backend.config.page.CustomPageResponse;
 
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogListResponse;
-import com.spoteditor.backend.placelog.controller.dto.PlaceLogResponse;
-import com.spoteditor.backend.placelog.entity.PlaceLog;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface PlaceLogRepositoryCustom {
 
@@ -20,7 +15,7 @@ public interface PlaceLogRepositoryCustom {
 
     CustomPageResponse<PlaceLogListResponse> findMyBookmarkPlaceLog(Long userId, CustomPageRequest pageRequest);
 
-    CustomPageResponse<PlaceLogListResponse> searchBySidoSigungu(CustomPageRequest pageRequest, String sido, String sigungu);
+    CustomPageResponse<PlaceLogListResponse> searchBySidoBname(CustomPageRequest pageRequest, String sido, String bname);
 
     CustomPageResponse<PlaceLogListResponse> searchByName(CustomPageRequest pageRequest, String name);
 }

@@ -198,7 +198,7 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
     }
 
     @Override
-    public CustomPageResponse<PlaceLogListResponse> searchBySidoSigungu(CustomPageRequest request, String sido, String sigungu) {
+    public CustomPageResponse<PlaceLogListResponse> searchBySidoBname(CustomPageRequest request, String sido, String bname) {
         PageRequest pageRequest = request.of();
 
         List<PlaceLogListResponse> placeLogList = queryFactory
@@ -217,7 +217,7 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
                 .from(placeLog)
                 .leftJoin(placeLog.placeLogImage, placeImage)
                 .where(placeLog.address.sido.eq(sido))
-                .where(placeLog.address.sigungu.eq(sigungu))
+                .where(placeLog.address.bname.eq(bname))
                 .where(placeLog.status.eq(PlaceLogStatus.PUBLIC))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
@@ -228,7 +228,7 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
                 .select(placeLog.count())
                 .from(placeLog)
                 .where(placeLog.address.sido.eq(sido))
-                .where(placeLog.address.sigungu.eq(sigungu))
+                .where(placeLog.address.bname.eq(bname))
                 .where(placeLog.status.eq(PlaceLogStatus.PUBLIC));
 
         Page<PlaceLogListResponse> page = PageableExecutionUtils.getPage(
