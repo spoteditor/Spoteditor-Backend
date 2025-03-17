@@ -23,11 +23,11 @@ public class PlaceLogSearchController {
     public ResponseEntity<CustomPageResponse<PlaceLogListResponse>> getPlaceLogsByAddress(
             CustomPageRequest pageRequest,
             String sido,
-            String sigungu
+            String bname
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(placeLogRepository.searchBySidoSigungu(pageRequest, sido, sigungu));
+                .body(placeLogRepository.searchBySidoBname(pageRequest, sido, bname));
     }
 
     @GetMapping("/search/placelogs/name")
