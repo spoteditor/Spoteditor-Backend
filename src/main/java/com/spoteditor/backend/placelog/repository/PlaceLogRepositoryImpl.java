@@ -61,7 +61,7 @@ public class PlaceLogRepositoryImpl implements PlaceLogRepositoryCustom {
                 .where(placeLog.status.eq(PlaceLogStatus.PUBLIC))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
-                .orderBy(placeLog.createdAt.asc())
+                .orderBy(placeLog.createdAt.desc())
                 .fetch();
 
         JPAQuery<Long> queryCount = queryFactory
