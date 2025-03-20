@@ -46,9 +46,12 @@ public class JwtFilter extends OncePerRequestFilter {
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/api/placelogs",
-            "/api/placelogs/*",
-            "/api/users/**",
             "/api/search/placelogs/**"
+    );
+
+    private static final List<String> GUEST_WHITE_LIST = List.of(
+            "/api/placelogs/**",
+            "/api/users/**"
     );
 
     @Override
@@ -65,10 +68,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         // 쿠키에서 jwt 추출
         String accessToken = cookieUtils.getAccessToken(request);
         log.info(accessToken);
+
+        String path = request.getRequestURI();
 
         try {
             // 토큰 인증
@@ -78,8 +82,14 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
-        } catch(ExpiredJwtException | IllegalArgumentException | MalformedJwtException | SignatureException e) {
+        } catch(ExpiredJwtException | MalformedJwtException | SignatureException e) {
             handleException(response, new TokenException(INVALID_ACCESS_TOKEN));
+        } catch(IllegalArgumentException e) {
+            if(isPathInWhiteList(GUEST_WHITE_LIST, path)) {
+                filterChain.doFilter(request, response);
+            } else {
+                handleException(response, new TokenException(INVALID_ACCESS_TOKEN));
+            }
         }
     }
 
