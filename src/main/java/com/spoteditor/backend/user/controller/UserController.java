@@ -35,7 +35,7 @@ public class UserController {
                 .body(UserResponse.from(userResult));
     }
 
-    @GetMapping("/user/{otherUserId}")
+    @GetMapping("/users/{otherUserId}")
     public ResponseEntity<OtherUserResponse> getOtherUser(
             @AuthenticationPrincipal UserIdDto userIdDto,
             @PathVariable Long otherUserId
