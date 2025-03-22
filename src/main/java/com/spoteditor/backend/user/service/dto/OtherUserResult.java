@@ -1,12 +1,13 @@
 package com.spoteditor.backend.user.service.dto;
 
+import com.spoteditor.backend.user.controller.dto.UserProfileImageDto;
 import com.spoteditor.backend.user.entity.User;
 
 public record OtherUserResult(
         Long userId,
         String name,
         String instagramId,
-        String imageUrl,
+        UserProfileImageDto profileImage,
         String description,
         Long follower,
         Long following,
@@ -22,7 +23,7 @@ public record OtherUserResult(
                 user.getId(),
                 user.getName(),
                 user.getInstagramId(),
-                user.getImageUrl(),
+                UserProfileImageDto.from(user),
                 user.getDescription(),
                 follower,
                 following,
