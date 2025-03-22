@@ -1,6 +1,7 @@
 package com.spoteditor.backend.user.entity;
 
 import com.spoteditor.backend.global.common.BaseEntity;
+import com.spoteditor.backend.image.entity.PlaceImage;
 import com.spoteditor.backend.mapping.userplacelogmapping.entity.UserPlaceLogMapping;
 import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.user.service.dto.UserUpdateCommand;
@@ -38,6 +39,10 @@ public class User extends BaseEntity {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private PlaceImage uploadImage;
 
     @Column(name = "description")
     private String description;
