@@ -8,11 +8,10 @@ import com.spoteditor.backend.global.exception.PlaceException;
 import com.spoteditor.backend.image.controller.dto.PlaceImageResponse;
 import com.spoteditor.backend.image.controller.dto.PreSignedUrlResponse;
 import com.spoteditor.backend.image.controller.dto.PreSignedUrlRequest;
-import com.spoteditor.backend.image.entity.PlaceImage;
 import com.spoteditor.backend.image.repository.PlaceImageRepository;
 import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.place.repository.PlaceRepository;
-import com.spoteditor.backend.placelog.event.dto.PlaceLogPlaceImage;
+import com.spoteditor.backend.image.event.dto.S3Image;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -105,14 +104,14 @@ public class PlaceImageServiceImpl implements PlaceImageService {
 		Place place = placeRepository.findById(placeId)
 				.orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
 
-		PlaceImage image = PlaceImage.builder()
+		com.spoteditor.backend.image.entity.PlaceImage image = com.spoteditor.backend.image.entity.PlaceImage.builder()
 				.place(place)
 				.originalFile(originalFile)
 				.storedFile(mainPath)
 				.build();
 
 		place.addPlaceImage(image);
-		PlaceImage savedImage = imageRepository.save(image);
+		com.spoteditor.backend.image.entity.PlaceImage savedImage = imageRepository.save(image);
 		return PlaceImageResponse.from(savedImage);
 	}
 
@@ -126,17 +125,17 @@ public class PlaceImageServiceImpl implements PlaceImageService {
 		copyImageToMainBucket(tempPath, mainPath);
 		deleteImageFromTempBucket(tempPath);
 
-		PlaceImage image = PlaceImage.builder()
+		com.spoteditor.backend.image.entity.PlaceImage image = com.spoteditor.backend.image.entity.PlaceImage.builder()
 				.originalFile(originalFile)
 				.storedFile(mainPath)
 				.build();
 
-		PlaceImage savedImage = imageRepository.save(image);
+		com.spoteditor.backend.image.entity.PlaceImage savedImage = imageRepository.save(image);
 		return PlaceImageResponse.from(savedImage);
 	}
 
 	@Override
-	public void rollbackUpload(PlaceLogPlaceImage image) {
+	public void rollbackUpload(S3Image image) {
 
 		String tempPath = redisTemplate.opsForValue().get(FILE_KEY_PREFIX + image.uuid() + image.originalFile());
 		validateValue(tempPath);
@@ -148,7 +147,7 @@ public class PlaceImageServiceImpl implements PlaceImageService {
 	}
 
 	@Override
-	public void deleteMainBucketImage(PlaceLogPlaceImage image) {
+	public void deleteMainBucketImage(S3Image image) {
 
 		String mainPath = image.storedFile();
 		deleteImageFromMainBucket(mainPath);

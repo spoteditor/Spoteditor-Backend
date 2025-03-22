@@ -3,7 +3,6 @@ package com.spoteditor.backend.placelog.service;
 import com.spoteditor.backend.bookmark.repository.BookmarkRepository;
 import com.spoteditor.backend.global.exception.*;
 import com.spoteditor.backend.image.controller.dto.PlaceImageResponse;
-import com.spoteditor.backend.image.entity.PlaceImage;
 import com.spoteditor.backend.image.repository.PlaceImageRepository;
 import com.spoteditor.backend.image.service.PlaceImageService;
 import com.spoteditor.backend.mapping.placelogplacemapping.entity.PlaceLogPlaceMapping;
@@ -13,16 +12,15 @@ import com.spoteditor.backend.mapping.placelogtagmapping.repository.PlaceLogTagM
 import com.spoteditor.backend.place.controller.dto.PlaceRegisterRequest;
 import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.place.repository.PlaceRepository;
-import com.spoteditor.backend.place.service.PlaceService;
 import com.spoteditor.backend.place.service.dto.PlaceRegisterCommand;
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogBookmarkResponse;
 
 import com.spoteditor.backend.placelog.controller.dto.PlaceLogPlaceRegisterRequest;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
 import com.spoteditor.backend.placelog.entity.PlaceLogStatus;
-import com.spoteditor.backend.placelog.event.PlaceLogAfterCommitEvent;
-import com.spoteditor.backend.placelog.event.PlaceLogRollbackEvent;
-import com.spoteditor.backend.placelog.event.dto.PlaceLogPlaceImage;
+import com.spoteditor.backend.image.event.S3ImageAfterCommitEvent;
+import com.spoteditor.backend.image.event.S3ImageRollbackEvent;
+import com.spoteditor.backend.image.event.dto.S3Image;
 import com.spoteditor.backend.placelog.service.dto.*;
 import com.spoteditor.backend.tag.dto.TagDto;
 import com.spoteditor.backend.tag.entity.Tag;
@@ -130,7 +128,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         // 로그 등록
         PlaceImageResponse placeLogImageResponse = imageService.uploadWithoutPlace(command.originalFile(), command.uuid());
 
-        PlaceImage placeLogImage = placeImageRepository.findById(placeLogImageResponse.imageId())
+        com.spoteditor.backend.image.entity.PlaceImage placeLogImage = placeImageRepository.findById(placeLogImageResponse.imageId())
                 .orElseThrow(() -> new ImageException(NOT_FOUND_IMAGE));
 
         PlaceLog savedPlaceLog = placeLogRepository.save(command.toEntity(user, places, tags, placeLogImage));
@@ -202,8 +200,8 @@ public class PlaceLogServiceImpl implements PlaceLogService {
         deletePlaces(placeLog, command.deletePlaceIds());
 
     // S3 연관된 작업
-        List<PlaceLogPlaceImage> rollbackFiles = new ArrayList<>();
-        List<PlaceLogPlaceImage> deleteFiles = new ArrayList<>();
+        List<S3Image> rollbackFiles = new ArrayList<>();
+        List<S3Image> deleteFiles = new ArrayList<>();
 
         try {
             // 로그 이미지 업데이트
@@ -213,7 +211,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
             // 장소 추가
             addPlaces(placeLog, user, command.addPlaces(), rollbackFiles);
         } catch (ImageException | PlaceException | PlaceLogException e) {
-            eventPublisher.publishEvent(new PlaceLogRollbackEvent(rollbackFiles));
+            eventPublisher.publishEvent(new S3ImageRollbackEvent(rollbackFiles));
             throw e;
         }
 
@@ -227,7 +225,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
                 .map(PlaceLogTagMapping::getTag)
                 .toList();
 
-        eventPublisher.publishEvent(new PlaceLogAfterCommitEvent(deleteFiles));
+        eventPublisher.publishEvent(new S3ImageAfterCommitEvent(deleteFiles));
 
         return PlaceLogResult.from(savedPlaceLog, places, tags);
     }
@@ -293,21 +291,21 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Transactional
-    public void updatePlaceLogImage(PlaceLog placeLog, String originalFile, String uuid, List<PlaceLogPlaceImage> rollbackFiles, List<PlaceLogPlaceImage> deleteFiles) {
+    public void updatePlaceLogImage(PlaceLog placeLog, String originalFile, String uuid, List<S3Image> rollbackFiles, List<S3Image> deleteFiles) {
         if(originalFile == null || uuid == null) return;
 
         // 기존 이미지 삭제
-        PlaceImage beforePlaceLogImage = placeLog.getPlaceLogImage();
+        com.spoteditor.backend.image.entity.PlaceImage beforePlaceLogImage = placeLog.getPlaceLogImage();
         placeLog.deleteImage();
 
         placeImageRepository.delete(beforePlaceLogImage);
-        deleteFiles.add(PlaceLogPlaceImage.from(beforePlaceLogImage));
+        deleteFiles.add(S3Image.from(beforePlaceLogImage));
 
         // 새로운 이미지 등록
         PlaceImageResponse placeLogImageResponse = imageService.uploadWithoutPlace(originalFile, uuid);
-        rollbackFiles.add(PlaceLogPlaceImage.from(placeLogImageResponse, uuid));
+        rollbackFiles.add(S3Image.from(placeLogImageResponse, uuid));
 
-        PlaceImage newPlaceLogImage = placeImageRepository.findById(placeLogImageResponse.imageId())
+        com.spoteditor.backend.image.entity.PlaceImage newPlaceLogImage = placeImageRepository.findById(placeLogImageResponse.imageId())
                 .orElseThrow(() -> new ImageException(NOT_FOUND_IMAGE));
 
         placeLog.addImage(newPlaceLogImage);
@@ -366,7 +364,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Transactional
-    public void updatePlaces(PlaceLog placeLog, List<PlaceLogPlaceUpdateCommand> commands, List<PlaceLogPlaceImage> rollbackFiles, List<PlaceLogPlaceImage> deleteFiles) {
+    public void updatePlaces(PlaceLog placeLog, List<PlaceLogPlaceUpdateCommand> commands, List<S3Image> rollbackFiles, List<S3Image> deleteFiles) {
         for(PlaceLogPlaceUpdateCommand command : commands) {
             Place place = placeRepository.findById(command.id())
                     .orElseThrow(() -> new PlaceException(NOT_FOUND_PLACE));
@@ -389,14 +387,14 @@ public class PlaceLogServiceImpl implements PlaceLogService {
 
             // place 이미지 제거
             for (Long deleteImageId : command.deleteImageIds()) {
-                PlaceImage placeImage = place.deletePlaceImage(deleteImageId);
-                deleteFiles.add(PlaceLogPlaceImage.from(placeImage));
+                com.spoteditor.backend.image.entity.PlaceImage placeImage = place.deletePlaceImage(deleteImageId);
+                deleteFiles.add(S3Image.from(placeImage));
             }
 
             // place 이미지 추가
             for (int imageIndex = 0; imageIndex < originalFiles.size(); imageIndex++) {
                 PlaceImageResponse imageResponse = imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), place.getId());
-                rollbackFiles.add(PlaceLogPlaceImage.from(imageResponse, uuids.get(imageIndex)));
+                rollbackFiles.add(S3Image.from(imageResponse, uuids.get(imageIndex)));
             }
 
             // place 이미지 개수 확인
@@ -414,7 +412,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Transactional
-    public void addPlaces(PlaceLog placeLog, User user, List<PlaceLogPlaceRegisterRequest> requests, List<PlaceLogPlaceImage> rollbackFiles) {
+    public void addPlaces(PlaceLog placeLog, User user, List<PlaceLogPlaceRegisterRequest> requests, List<S3Image> rollbackFiles) {
         for (PlaceLogPlaceRegisterRequest request : requests) {
             List<String> originalFiles = request.originalFiles();
             List<String> uuids = request.uuids();
@@ -445,7 +443,7 @@ public class PlaceLogServiceImpl implements PlaceLogService {
 
             for (int imageIndex = 0; imageIndex < originalFiles.size(); imageIndex++) {
                 PlaceImageResponse imageResponse = imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), place.getId());
-                rollbackFiles.add(PlaceLogPlaceImage.from(imageResponse, uuids.get(imageIndex)));
+                rollbackFiles.add(S3Image.from(imageResponse, uuids.get(imageIndex)));
             }
 
             PlaceLogPlaceMapping mapping = PlaceLogPlaceMapping.builder()
