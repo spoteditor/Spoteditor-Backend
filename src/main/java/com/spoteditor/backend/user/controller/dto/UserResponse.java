@@ -8,7 +8,7 @@ public record UserResponse(
         Long userId,
         String name,
         String instagramId,
-        String imageUrl,
+        UserProfileImageDto profileImage,
         String description,
         Long follower,
         Long following
@@ -18,7 +18,7 @@ public record UserResponse(
                 userResult.user().getId(),
                 userResult.user().getName(),
                 userResult.user().getInstagramId(),
-                userResult.user().getImageUrl(),
+                UserProfileImageDto.from(userResult.user()),
                 userResult.user().getDescription(),
                 userResult.follower(),
                 userResult.following()

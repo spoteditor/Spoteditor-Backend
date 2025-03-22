@@ -5,7 +5,7 @@ import com.spoteditor.backend.user.service.dto.UserUpdateResult;
 public record UserUpdateResponse (
         String email,
         String name,
-        String imageUrl,
+        UserProfileImageDto profileImage,
         String description,
         String instagramId
 ) {
@@ -13,7 +13,7 @@ public record UserUpdateResponse (
         return new UserUpdateResponse(
                 result.user().getEmail(),
                 result.user().getName(),
-                result.user().getImageUrl(),
+                UserProfileImageDto.from(result.user()),
                 result.user().getDescription(),
                 result.user().getInstagramId()
         );
