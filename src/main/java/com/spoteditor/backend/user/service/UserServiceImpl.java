@@ -1,7 +1,15 @@
 package com.spoteditor.backend.user.service;
 
 import com.spoteditor.backend.follow.repository.FollowRepository;
+import com.spoteditor.backend.global.exception.ImageException;
 import com.spoteditor.backend.global.exception.UserException;
+import com.spoteditor.backend.image.controller.dto.PlaceImageResponse;
+import com.spoteditor.backend.image.entity.PlaceImage;
+import com.spoteditor.backend.image.event.S3ImageAfterCommitEvent;
+import com.spoteditor.backend.image.event.S3ImageRollbackEvent;
+import com.spoteditor.backend.image.event.dto.S3Image;
+import com.spoteditor.backend.image.repository.PlaceImageRepository;
+import com.spoteditor.backend.image.service.PlaceImageService;
 import com.spoteditor.backend.place.entity.Place;
 import com.spoteditor.backend.place.repository.PlaceRepository;
 import com.spoteditor.backend.placelog.entity.PlaceLog;
@@ -13,9 +21,11 @@ import com.spoteditor.backend.user.service.dto.UserResult;
 import com.spoteditor.backend.user.service.dto.UserUpdateCommand;
 import com.spoteditor.backend.user.service.dto.UserUpdateResult;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.spoteditor.backend.global.response.ErrorCode.*;
@@ -26,6 +36,9 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final PlaceImageService imageService;
+    private final PlaceImageRepository placeImageRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -79,7 +92,21 @@ public class UserServiceImpl implements UserService{
             throw new UserException(DELETED_USER);
         }
 
-        user.update(command);
+        user.update(command.name(), command.description(), command.instagramId());
+
+        // 이미지 바꿀 때
+        List<S3Image> rollbackFiles = new ArrayList<>();
+        List<S3Image> deleteFiles = new ArrayList<>();
+
+        try {
+            // 트랜잭션 실패시 새 이미지 롤백
+            updateUserImage(user, command.originalFile(), command.uuid(), rollbackFiles, deleteFiles);
+        } catch (ImageException e) {
+            eventPublisher.publishEvent(new S3ImageRollbackEvent(rollbackFiles));
+            throw e;
+        }
+        eventPublisher.publishEvent(new S3ImageAfterCommitEvent(deleteFiles));
+
         userRepository.save(user);
 
         return new UserUpdateResult(user);
@@ -98,5 +125,23 @@ public class UserServiceImpl implements UserService{
 
         user.softDelete();
         userRepository.save(user);
+    }
+
+    private void updateUserImage(User user, String originalFile, String uuid, List<S3Image> rollbackFiles, List<S3Image> deleteFiles) {
+        if(originalFile == null || uuid == null) return;
+
+        // 기존 이미지 삭제
+        if(user.getUploadImage() != null) {
+            deleteFiles.add(S3Image.from(user.getUploadImage()));
+            user.deleteImage();
+        }
+
+        PlaceImageResponse userImageResponse = imageService.uploadWithoutPlace(originalFile, uuid);
+        rollbackFiles.add(S3Image.from(userImageResponse, uuid));
+
+        PlaceImage newUserImage = placeImageRepository.findById(userImageResponse.imageId())
+                .orElseThrow(() -> new ImageException(NOT_FOUND_IMAGE));
+
+        user.addImage(newUserImage);
     }
 }

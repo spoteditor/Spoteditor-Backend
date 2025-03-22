@@ -74,11 +74,20 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
-    public void update(UserUpdateCommand command) {
-        this.name = command.name();
-        this.imageUrl = command.imageUrl();
-        this.description = command.description();
-        this.instagramId = command.instagramId();
+    public void update(String name, String description, String instagramId) {
+        if (name != null && !name.trim().isEmpty()) this.name = name;
+        if (description != null) this.description = description;
+        if (instagramId != null) this.instagramId = instagramId;
+    }
+
+    public void deleteImage() {
+        if(this.uploadImage != null) {
+            this.uploadImage = null;
+        }
+    }
+
+    public void addImage(PlaceImage placeImage) {
+        this.uploadImage = placeImage;
     }
 
     public void softDelete() {
