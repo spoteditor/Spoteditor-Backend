@@ -3,6 +3,7 @@ package com.spoteditor.backend.placelog.service;
 import com.spoteditor.backend.bookmark.repository.BookmarkRepository;
 import com.spoteditor.backend.global.exception.*;
 import com.spoteditor.backend.image.controller.dto.PlaceImageResponse;
+import com.spoteditor.backend.image.entity.PlaceImage;
 import com.spoteditor.backend.image.repository.PlaceImageRepository;
 import com.spoteditor.backend.image.service.PlaceImageService;
 import com.spoteditor.backend.mapping.placelogplacemapping.entity.PlaceLogPlaceMapping;
@@ -79,61 +80,39 @@ public class PlaceLogServiceImpl implements PlaceLogService {
             throw new PlaceLogException(PLACE_LIMIT_EXCEEDED);
         }
 
-        // 장소 등록
-        List<PlaceLogPlaceRegisterRequest> placeRegisterRequests = command.placeRegisterRequests();
+    // S3 무관한 작업
+        // 로그 생성
+        PlaceLog placeLog = PlaceLog.builder()
+                .user(user)
+                .name(command.name())
+                .description(command.description())
+                .status(command.status())
+                .build();
+        placeLogRepository.save(placeLog);
 
-        List<Place> places = new ArrayList<>();
+        // 태그 추가
+        addPlaceLogTags(placeLog, command.tags());
 
-        for(PlaceLogPlaceRegisterRequest request : placeRegisterRequests) {
-            List<String> originalFiles = request.originalFiles();
-            List<String> uuids = request.uuids();
+    // S3 유관한 작업
+        List<S3Image> rollbackFiles = new ArrayList<>();
 
-            if (originalFiles.size() != uuids.size()) {
-                throw new ImageException(IMAGE_UUID_MISMATCH);
-            }
-
-            if(originalFiles.isEmpty()) {
-                throw new PlaceException(IMAGE_MINIMUM_REQUIRED);
-            }
-
-            if(originalFiles.size() > 3) {
-                throw new PlaceException(IMAGE_LIMIT_EXCEEDED);
-            }
-
-            PlaceRegisterRequest placeRegisterRequest = PlaceRegisterRequest.builder()
-                    .name(request.name())
-                    .description(request.description())
-                    .originalFile(originalFiles.get(0))
-                    .uuid(uuids.get(0))
-                    .address(request.address())
-                    .category(request.category())
-                    .build();
-            PlaceRegisterCommand placeRegisterCommand = placeRegisterRequest.from();
-
-            Place savedPlace = placeRepository.save(placeRegisterCommand.toEntity(user));
-
-            for(int imageIndex = 0; imageIndex < originalFiles.size(); imageIndex++) {
-                imageService.upload(originalFiles.get(imageIndex), uuids.get(imageIndex), savedPlace.getId());
-            }
-            places.add(savedPlace);
+        try {
+            // 로그 이미지 추가
+            addPlaceLogImage(placeLog, command.originalFile(), command.uuid(), rollbackFiles);
+            // 장소 추가
+            addPlaces(placeLog, user, command.placeRegisterRequests(), rollbackFiles);
+        } catch (ImageException | PlaceException e) {
+            eventPublisher.publishEvent(new S3ImageRollbackEvent(rollbackFiles));
+            throw e;
         }
+        List<Place> places = getPlaces(placeLog.getId());
 
-        // 태그 등록
-        List<String> tagNames = command.tags().stream()
-                .map(TagDto::name)
-                .toList();
+        placeLog.updateAddress(places.get(0).getAddress());
+        placeLogRepository.save(placeLog);
 
-        List<Tag> tags = tagRepository.findByNameIn(tagNames);
+        List<Tag> tags = getTags(placeLog.getId());
 
-        // 로그 등록
-        PlaceImageResponse placeLogImageResponse = imageService.uploadWithoutPlace(command.originalFile(), command.uuid());
-
-        com.spoteditor.backend.image.entity.PlaceImage placeLogImage = placeImageRepository.findById(placeLogImageResponse.imageId())
-                .orElseThrow(() -> new ImageException(NOT_FOUND_IMAGE));
-
-        PlaceLog savedPlaceLog = placeLogRepository.save(command.toEntity(user, places, tags, placeLogImage));
-
-        return PlaceLogResult.from(savedPlaceLog, places, tags);
+        return PlaceLogResult.from(placeLog, places, tags);
     }
 
     @Override
@@ -217,13 +196,9 @@ public class PlaceLogServiceImpl implements PlaceLogService {
 
         PlaceLog savedPlaceLog = placeLogRepository.save(placeLog);
 
-        List<Place> places = savedPlaceLog.getPlaceLogPlaceMappings().stream()
-                .map(PlaceLogPlaceMapping::getPlace)
-                .toList();
+        List<Place> places = getPlaces(savedPlaceLog.getId());
 
-        List<Tag> tags = savedPlaceLog.getPlaceLogTagMappings().stream()
-                .map(PlaceLogTagMapping::getTag)
-                .toList();
+        List<Tag> tags = getTags(savedPlaceLog.getId());
 
         eventPublisher.publishEvent(new S3ImageAfterCommitEvent(deleteFiles));
 
@@ -291,6 +266,20 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     }
 
     @Transactional
+    public void addPlaceLogImage(PlaceLog placeLog, String originalFile, String uuid, List<S3Image> rollbackFiles) {
+        if(originalFile == null || uuid == null) return;
+
+        // 새로운 이미지 등록
+        PlaceImageResponse placeLogImageResponse = imageService.uploadWithoutPlace(originalFile, uuid);
+        rollbackFiles.add(S3Image.from(placeLogImageResponse, uuid));
+
+        PlaceImage newPlaceLogImage = placeImageRepository.findById(placeLogImageResponse.imageId())
+                .orElseThrow(() -> new ImageException(NOT_FOUND_IMAGE));
+
+        placeLog.addImage(newPlaceLogImage);
+    }
+
+    @Transactional
     public void updatePlaceLogImage(PlaceLog placeLog, String originalFile, String uuid, List<S3Image> rollbackFiles, List<S3Image> deleteFiles) {
         if(originalFile == null || uuid == null) return;
 
@@ -334,19 +323,28 @@ public class PlaceLogServiceImpl implements PlaceLogService {
     public void addPlaceLogTags(PlaceLog placeLog, List<TagDto> addTagDtos) {
         if(addTagDtos.isEmpty()) return;
 
-        List<String> addTagNames = addTagDtos.stream()
+        List<String> tagNames = addTagDtos.stream()
                 .map(TagDto::name)
                 .toList();
 
-        List<Tag> addTags = tagRepository.findByNameIn(addTagNames);
+        List<Tag> addTags = tagRepository.findByNameIn(tagNames);
 
-        List<Long> addTagIds = addTags.stream()
+        List<Long> existTags = getTags(placeLog.getId()).stream()
                 .map(Tag::getId)
                 .toList();
 
-        List<PlaceLogTagMapping> addMappings = placeLogTagMappingRepository.findByPlaceLogAndTagIn(placeLog.getId(), addTagIds);
+        List<PlaceLogTagMapping> tagMappings = new ArrayList<>();
 
-        placeLogTagMappingRepository.saveAll(addMappings);
+        for(Tag tag : addTags) {
+            if(existTags.contains(tag.getId())) continue;
+
+            PlaceLogTagMapping placeLogTagMapping = PlaceLogTagMapping.builder()
+                    .placeLog(placeLog)
+                    .tag(tag)
+                    .build();
+            tagMappings.add(placeLogTagMapping);
+        }
+        placeLogTagMappingRepository.saveAll(tagMappings);
     }
 
     @Transactional
