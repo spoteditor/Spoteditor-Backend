@@ -83,6 +83,10 @@ public class PlaceLog extends BaseEntity {
         if (status != null) this.status = status;
     }
 
+    public void updateAddress(Address address) {
+        this.address = address;
+    }
+
     public void deleteImage() {
         if(this.placeLogImage != null) {
             this.placeLogImage = null;
