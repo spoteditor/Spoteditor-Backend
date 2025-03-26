@@ -1,6 +1,10 @@
 package com.spoteditor.backend.config.cors;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -11,20 +15,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
+@EnableConfigurationProperties(WebConfiguration.CorsProperties.class)
 public class WebConfiguration implements WebMvcConfigurer {
 
-	@Value("${app.oauth.success-redirect-url}")
-	private String FRONT_END;
+	private final CorsProperties corsProperties;
 
-	@Value("${app.oauth.prod-redirect-url}")
-	private String FRONT_END_TEST;
-
-	@Bean
+    @Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 
 		corsConfiguration.setAllowCredentials(true);
-		corsConfiguration.setAllowedOrigins(List.of(FRONT_END, FRONT_END_TEST));
+		corsConfiguration.setAllowedOrigins(corsProperties.getAllowedOrigins());
 		corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		corsConfiguration.setAllowedHeaders(List.of("*"));
 		corsConfiguration.setExposedHeaders(List.of("Set-Cookie", "*"));
@@ -36,4 +38,11 @@ public class WebConfiguration implements WebMvcConfigurer {
 		source.registerCorsConfiguration("/**", corsConfiguration);
 		return source;
 	}
+
+	@Setter
+    @Getter
+    @ConfigurationProperties(prefix = "app.cors")
+	public static class CorsProperties {
+		private List<String> allowedOrigins;
+    }
 }
